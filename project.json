@@ -8,8 +8,7 @@
     "tests": "tests",
     "output": "output",
     "classpath": [
-      "C:/qub/qub/java/1.0.0/qub.jar",
-      "C:/qub/junit/junit/4.10/junit-4.10.jar"
+      "C:/qub/qub/java/1.0.0/qub.jar"
     ]
   }
 }

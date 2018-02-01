@@ -1,9 +1,5 @@
 package qub;
 
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 public class QubCLITests
 {
     private static final String expectedUsageString =
@@ -14,53 +10,64 @@ public class QubCLITests
         "\n" +
         "  Delete: Delete a provided file or folder.\n" +
         "    Usage: Delete [-file] [-folder] <file-folder-or-filter-to-delete> [<additional-file-folder-or-filter-to-delete> ...]\n" +
+        "\n" +
+        "  Test: Run the tests for the coding project in the current directory.\n" +
+        "    Usage: Test\n" +
+        "\n" +
+        "  Bonds: Calculates how much money should be allocated to different time lengths of bond/fixed-income invementments given an initial amount of money.\n" +
+        "    Usage: Bonds [-strategy=<cascade,double-cascade>] <amount-to-invest>\n" +
         "\n";
-
-    @Test
-    public void mainWithNoArguments()
+    
+    public static void test(final TestRunner runner)
     {
-        final Console console = new Console();
-        final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-        console.setOutput(output);
+        runner.testGroup("QubCLI", () ->
+        {
+            runner.testGroup("main(Console)", () ->
+            {
+                runner.test("with " + runner.escapeAndQuote(""), (Test test) ->
+                {
+                    final Console console = new Console();
+                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    console.setOutput(output);
 
-        QubCLI.main(console);
+                    QubCLI.main(console);
 
-        assertEquals(expectedUsageString, output.getText());
-    }
+                    test.assertEqual(expectedUsageString, output.getText());
+                });
 
-    @Test
-    public void mainWithDashQuestionMarkAction()
-    {
-        final Console console = new Console(new String[] { "-?" });
-        final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-        console.setOutput(output);
+                runner.test("with " + runner.escapeAndQuote("-?"), (Test test) ->
+                {
+                    final Console console = new Console(new String[] { "-?" });
+                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    console.setOutput(output);
 
-        QubCLI.main(console);
+                    QubCLI.main(console);
 
-        assertEquals(expectedUsageString, output.getText());
-    }
+                    test.assertEqual(expectedUsageString, output.getText());
+                });
 
-    @Test
-    public void mainWithForwardSlashQuestionMarkAction()
-    {
-        final Console console = new Console(new String[] { "/?" });
-        final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-        console.setOutput(output);
+                runner.test("with " + runner.escapeAndQuote("/?"), (Test test) ->
+                {
+                    final Console console = new Console(new String[] { "/?" });
+                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    console.setOutput(output);
 
-        QubCLI.main(console);
+                    QubCLI.main(console);
 
-        assertEquals(expectedUsageString, output.getText());
-    }
+                    test.assertEqual(expectedUsageString, output.getText());
+                });
 
-    @Test
-    public void mainWithUnrecognizedAction()
-    {
-        final Console console = new Console(new String[] { "spam" });
-        final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-        console.setOutput(output);
+                runner.test("with " + runner.escapeAndQuote("spam"), (Test test) ->
+                {
+                    final Console console = new Console(new String[] { "spam" });
+                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    console.setOutput(output);
 
-        QubCLI.main(console);
+                    QubCLI.main(console);
 
-        assertEquals("Unrecognized action: \"spam\"\n", output.getText());
+                    test.assertEqual("Unrecognized action: \"spam\"\n", output.getText());
+                });
+            });
+        });
     }
 }
