@@ -53,12 +53,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>qub</groupId>
-            <artifactId>qub</artifactId>
-            <version>1.0.0</version>
-        </dependency>
-    </dependencies>
 </project>

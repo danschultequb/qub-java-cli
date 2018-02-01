@@ -4,9 +4,6 @@
   "version": "1.0.0",
   "type": "console-application",
   "java": {
-    "sources": "sources",
-    "tests": "tests",
-    "output": "output",
     "classpath": [
       "C:/qub/qub/java/1.0.0/qub.jar"
     ]
