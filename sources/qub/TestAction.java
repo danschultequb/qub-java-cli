@@ -65,163 +65,170 @@ public class TestAction implements Action
                 {
                     final JSONObject javaObject = (JSONObject) javaSegment;
 
-                    final String output;
-                    final JSONSegment outputSegment = javaObject.getPropertyValue("output");
-                    if (outputSegment == null)
+                    Folder outputsFolder = null;
+                    final JSONSegment outputsSegment = javaObject.getPropertyValue("outputs");
+                    if (outputsSegment == null)
                     {
-                        output = "output";
+                        outputsFolder = currentFolder.getFolder("outputs");
                     }
-                    else if (!(outputSegment instanceof JSONQuotedString))
+                    else if (outputsSegment instanceof JSONQuotedString)
                     {
-                        console.writeLine("Expected \"output\" property to be a quoted string.");
-                        output = "output";
+                        outputsFolder = currentFolder.getFolder(((JSONQuotedString)outputsSegment).toUnquotedString());
                     }
                     else
                     {
-                        final JSONQuotedString outputString = (JSONQuotedString) outputSegment;
-                        output = outputString.toUnquotedString();
+                        console.writeLine("Expected \"outputs\" property to be a quoted string.");
                     }
 
                     if (debug)
                     {
-                        console.writeLine("Output: \"" + output + "\"");
+                        console.writeLine("Outputs: \"" + outputsFolder + "\"");
                     }
 
-                    final List<String> classpaths = ArrayList.fromValues(output);
-                    final JSONSegment classpathSegment = javaObject.getPropertyValue("classpath");
-                    if (classpathSegment != null)
+                    if (outputsFolder != null)
                     {
-                        if (classpathSegment instanceof JSONQuotedString)
+                        Folder testsFolder = null;
+                        final JSONSegment testsSegment = javaObject.getPropertyValue("tests");
+                        if (testsSegment == null)
                         {
-                            final JSONQuotedString classpath = (JSONQuotedString) classpathSegment;
-                            classpaths.add(classpath.toUnquotedString());
+                            testsFolder = currentFolder.getFolder("tests");
                         }
-                        else if (classpathSegment instanceof JSONArray)
+                        else if (testsSegment instanceof JSONQuotedString)
                         {
-                            final JSONArray classpathArray = (JSONArray) classpathSegment;
-                            for (final JSONSegment classpathElementSegment : classpathArray.getElements())
-                            {
-                                if (!(classpathElementSegment instanceof JSONQuotedString))
-                                {
-                                    console.writeLine("Expected element of \"classpath\" array to be a quoted string.");
-                                }
-                                else
-                                {
-                                    final JSONQuotedString classpath = (JSONQuotedString) classpathElementSegment;
-                                    classpaths.add(classpath.toUnquotedString());
-                                }
-                            }
+                            testsFolder = currentFolder.getFolder(((JSONQuotedString)testsSegment).toUnquotedString());
                         }
                         else
                         {
-                            console.writeLine("Expected \"classpath\" to be either a quoted string or an array of quoted strings.");
+                            console.writeLine("Expected \"tests\" to not exist, or to be a quoted string property.");
                         }
-                    }
-                    final String classpath = String.join(";", classpaths);
+                        Folder testOutputsFolder = testsFolder == null ? null : outputsFolder.getFolder(testsFolder.getName());
 
-                    if (debug)
-                    {
-                        console.writeLine("Classpath: \"" + classpath + "\"");
-                    }
-
-                    Path outputFolderPath = Path.parse(output);
-                    if (!outputFolderPath.isRooted())
-                    {
-                        outputFolderPath = currentFolder.getPath().concatenateSegment(outputFolderPath);
-                    }
-
-                    final Folder outputFolder = console.getFileSystem().getFolder(outputFolderPath);
-                    final Iterable<File> outputFiles = outputFolder.getFilesRecursively();
-                    if (outputFiles == null || !outputFiles.any())
-                    {
-                        console.writeLine("No files found in output folder (" + outputFolder.getPath().toString() + ").");
-                    }
-                    else
-                    {
-                        final JSONSegment testsSegment = javaObject.getPropertyValue("tests");
-                        if (testsSegment != null)
+                        if (testOutputsFolder != null)
                         {
-                            if (!(testsSegment instanceof JSONQuotedString))
+                            Folder sourcesFolder = null;
+                            final JSONSegment sourcesSegment = javaObject.getPropertyValue("sources");
+                            if (sourcesSegment == null)
                             {
-                                console.writeLine("Expected \"tests\" to be a quoted string property.");
+                                sourcesFolder = currentFolder.getFolder("sources");
+                            }
+                            else if (sourcesSegment instanceof JSONQuotedString)
+                            {
+                                sourcesFolder = currentFolder.getFolder(((JSONQuotedString)sourcesSegment).toUnquotedString());
                             }
                             else
                             {
-                                final JSONQuotedString testsString = (JSONQuotedString) testsSegment;
-                                final Path testsPath = Path.parse(testsString.toUnquotedString());
-                                if (!currentFolder.folderExists(testsPath))
+                                console.writeLine("Expected \"sources\" to not exist, or to be a quoted string property.");
+                            }
+                            final Folder sourceOutputsFolder = sourcesFolder == null ? null : outputsFolder.getFolder(sourcesFolder.getName());
+
+                            final List<String> classpaths = new ArrayList<>();
+                            final JSONSegment classpathSegment = javaObject.getPropertyValue("classpath");
+                            if (classpathSegment != null)
+                            {
+                                if (classpathSegment instanceof JSONQuotedString)
                                 {
-                                    console.writeLine("No folder found at provided \"tests\" property.");
+                                    final JSONQuotedString classpath = (JSONQuotedString) classpathSegment;
+                                    classpaths.add(classpath.toUnquotedString());
+                                }
+                                else if (classpathSegment instanceof JSONArray)
+                                {
+                                    final JSONArray classpathArray = (JSONArray) classpathSegment;
+                                    for (final JSONSegment classpathElementSegment : classpathArray.getElements())
+                                    {
+                                        if (!(classpathElementSegment instanceof JSONQuotedString))
+                                        {
+                                            console.writeLine("Expected element of \"classpath\" array to be a quoted string.");
+                                        }
+                                        else
+                                        {
+                                            final JSONQuotedString classpath = (JSONQuotedString) classpathElementSegment;
+                                            classpaths.add(classpath.toUnquotedString());
+                                        }
+                                    }
                                 }
                                 else
                                 {
-                                    final Folder testFolder = currentFolder.getFolder(testsPath);
-                                    final Iterable<Path> relativeTestSourcePaths = testFolder.getFilesRecursively()
-                                        .where(file -> file.getFileExtension().equals(".java"))
-                                        .map(file -> file.getPath().relativeTo(testFolder.getPath()));
+                                    console.writeLine("Expected \"classpath\" to be either a quoted string or an array of quoted strings.");
+                                }
+                            }
+                            if (sourceOutputsFolder != null)
+                            {
+                                classpaths.add(sourceOutputsFolder.getPath().toString());
+                            }
+                            classpaths.add(testOutputsFolder.getPath().toString());
+                            final String classpath = String.join(";", classpaths);
 
-                                    final Iterable<String> fullTestClassNames = relativeTestSourcePaths
-                                        .where((Path relativeTestSourcePath) ->
-                                        {
-                                            if (debug)
-                                            {
-                                                console.writeLine("Checking if \"" + relativeTestSourcePath.toString() + "\" has .class file.");
-                                            }
-                                            final Path relativeTestSourcePathWithoutExtension = relativeTestSourcePath.withoutFileExtension();
-                                            final Path testClassFilePath = relativeTestSourcePathWithoutExtension.concatenate(".class");
-                                            return outputFolder.fileExists(testClassFilePath);
-                                        })
-                                        .map((Path relativeTestSourcePath) ->
-                                            relativeTestSourcePath.withoutFileExtension().toString().replace('/', '.').replace('\\', '.'));
+                            if (debug)
+                            {
+                                console.writeLine("Classpath: \"" + classpath + "\"");
+                            }
 
-                                    final ProcessBuilder java = console.getProcessBuilder("java");
-                                    java.redirectOutput(console.getOutputAsByteWriteStream());
-                                    java.redirectError(console.getErrorAsByteWriteStream());
+                            final Iterable<File> testClassFiles = testOutputsFolder.getFilesRecursively()
+                                .where((File file) -> file.getFileExtension().equals(".class") && !file.getName().contains("$"));
+                            if (!testClassFiles.any())
+                            {
+                                console.writeLine("No compiled test classes found.");
+                            }
+                            else
+                            {
+                                final Iterable<Path> relativeTestSourcePaths = testClassFiles
+                                    .map(file -> file.getPath().relativeTo(testOutputsFolder.getPath()));
 
-                                    if (coverage)
-                                    {
-                                        java.addArgument("-javaagent:C:/qub/jacoco/jacococli/0.8.0/jacocoagent.jar=destfile=output/coverage.exec");
-                                    }
+                                final Iterable<String> fullTestClassNames = relativeTestSourcePaths
+                                    .map((Path relativeTestSourcePath) ->
+                                        relativeTestSourcePath.withoutFileExtension().toString().replace('/', '.').replace('\\', '.'));
 
-                                    addNamedArgument(java, "-classpath", classpath);
+                                final ProcessBuilder java = console.getProcessBuilder("java");
+                                java.redirectOutput(console.getOutputAsByteWriteStream());
+                                java.redirectError(console.getErrorAsByteWriteStream());
 
-                                    java.addArgument("qub.ConsoleTestRunner");
+                                File coverageExecFile = null;
+                                if (coverage)
+                                {
+                                    coverageExecFile = outputsFolder.getFile("coverage.exec");
+                                    java.addArgument("-javaagent:C:/qub/jacoco/jacococli/0.8.0/jacocoagent.jar=destfile=" + coverageExecFile.getPath().toString());
+                                }
 
-                                    java.addArguments(fullTestClassNames);
+                                addNamedArgument(java, "-classpath", classpath);
 
+                                java.addArgument("qub.ConsoleTestRunner");
+
+                                java.addArguments(fullTestClassNames);
+
+                                if (debug)
+                                {
+                                    java.addArgument("-debug");
+
+                                    console.writeLine("Command: \"" + java.getCommand() + "\"");
+                                }
+
+                                java.run();
+
+                                if (coverage && sourceOutputsFolder != null)
+                                {
+                                    final Folder coverageFolder = outputsFolder.getFolder("coverage");
+
+                                    final ProcessBuilder jacococli = console.getProcessBuilder("jacococli");
+                                    jacococli.redirectOutput(console.getOutputAsByteWriteStream());
+                                    jacococli.redirectError(console.getErrorAsByteWriteStream());
+                                    jacococli.addArgument("report");
+                                    jacococli.addArgument(coverageExecFile.getPath().toString());
+                                    jacococli.addArguments("--classfiles", sourceOutputsFolder.getPath().toString());
+                                    jacococli.addArguments("--sourcefiles", sourcesFolder.getPath().toString());
+                                    jacococli.addArguments("--html", coverageFolder.getPath().toString());
                                     if (debug)
                                     {
-                                        java.addArgument("-debug");
-
-                                        console.writeLine("Command: \"" + java.getCommand() + "\"");
+                                        console.writeLine("Command: \"" + jacococli.getCommand() + "\"");
                                     }
+                                    jacococli.run();
 
-                                    java.run();
-
-                                    if (coverage)
+                                    try
                                     {
-                                        final ProcessBuilder jacococli = console.getProcessBuilder("jacococli");
-                                        jacococli.redirectOutput(console.getOutputAsByteWriteStream());
-                                        jacococli.redirectError(console.getErrorAsByteWriteStream());
-                                        jacococli.addArgument("report");
-                                        jacococli.addArgument("output/coverage.exec");
-                                        jacococli.addArguments("--classfiles", "output");
-                                        jacococli.addArguments("--sourcefiles", "src/main/java");
-                                        jacococli.addArguments("--html", "output/coverage/");
-                                        if (debug)
-                                        {
-                                            console.writeLine("Command: \"" + jacococli.getCommand() + "\"");
-                                        }
-                                        jacococli.run();
-
-                                        try
-                                        {
-                                            Desktop.getDesktop().open(new java.io.File("output/coverage/index.html"));
-                                        }
-                                        catch (IOException e)
-                                        {
-                                            e.printStackTrace();
-                                        }
+                                        Desktop.getDesktop().open(new java.io.File(coverageFolder.getFile("index.html").getPath().toString()));
+                                    }
+                                    catch (IOException e)
+                                    {
+                                        e.printStackTrace();
                                     }
                                 }
                             }
