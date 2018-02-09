@@ -52,6 +52,53 @@ public class BuildAction implements Action
                             sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
                             compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
+
+                            final ProcessBuilder jar = console.getProcessBuilder("jar");
+                            jar.setWorkingFolder(sourceOutputsFolder);
+                            jar.redirectOutput(console.getOutputAsByteWriteStream());
+                            jar.redirectError(console.getErrorAsByteWriteStream());
+
+                            jar.addArgument("cvf");
+
+                            String jarFileName = null;
+
+                            final JSONSegment jarFileNameSegment = java.getPropertyValue("jarFileName");
+                            if (jarFileNameSegment instanceof JSONQuotedString)
+                            {
+                                jarFileName = ((JSONQuotedString)jarFileNameSegment).toUnquotedString();
+                            }
+
+                            if (jarFileName == null || jarFileName.isEmpty())
+                            {
+                                final JSONSegment projectSegment = projectJsonRoot.getPropertyValue("project");
+                                if (projectSegment instanceof JSONQuotedString)
+                                {
+                                    jarFileName = ((JSONQuotedString)projectSegment).toUnquotedString();
+                                }
+                            }
+
+                            if (jarFileName == null || jarFileName.isEmpty())
+                            {
+                                console.writeLine("Could not determine the desired jar file's name from the \"jarFileName\" property or the \"project\" property.");
+                            }
+                            else
+                            {
+                                if (!jarFileName.endsWith(".jar"))
+                                {
+                                    jarFileName += ".jar";
+                                }
+                                final File jarFile = outputsFolder.getFile(jarFileName);
+                                jar.addArgument(jarFile.getPath().toString());
+
+                                jar.addArgument(".");
+
+                                if (debug)
+                                {
+                                    console.writeLine(jar.getCommand());
+                                }
+
+                                jar.run();
+                            }
                         }
                     }
 
