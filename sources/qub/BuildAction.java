@@ -58,7 +58,7 @@ public class BuildAction implements Action
                             jar.redirectOutput(console.getOutputAsByteWriteStream());
                             jar.redirectError(console.getErrorAsByteWriteStream());
 
-                            jar.addArgument("cvf");
+                            jar.addArgument("cf");
 
                             String jarFileName = null;
 
