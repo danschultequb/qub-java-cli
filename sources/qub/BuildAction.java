@@ -28,162 +28,49 @@ public class BuildAction implements Action
     {
         final boolean debug = (console.getCommandLine().get("debug") != null);
 
-        final Folder currentFolder = console.getCurrentFolder();
-
-        final File projectJsonFile = currentFolder.getFile("project.json");
-        if (!projectJsonFile.exists())
+        final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
+        if (projectJsonRoot != null)
         {
-            console.writeLine("project.json file doesn't exist in the current folder.");
-        }
-        else
-        {
-            JSONDocument projectJsonDocument;
-            try (final CharacterReadStream projectJsonFileReadStream = projectJsonFile.getContentCharacterReadStream())
+            final JSONObject java = QubCLI.getJavaSegment(console, projectJsonRoot);
+            if (java != null)
             {
-                projectJsonDocument = JSON.parse(projectJsonFileReadStream);
-            }
+                final Folder outputsFolder = QubCLI.getOutputsFolder(console, java);
+                if (outputsFolder != null)
+                {
+                    final Iterable<String> classpaths = QubCLI.getClasspaths(console, java);
 
-            final JSONSegment rootSegment = projectJsonDocument.getRoot();
-            if (!(rootSegment instanceof JSONObject))
-            {
-                console.writeLine("project.json root segment must be a JSON object.");
-            }
-            else
-            {
-                final JSONObject root = (JSONObject)rootSegment;
-                final JSONSegment javaSegment = root.getPropertyValue("java");
-                if (javaSegment == null)
-                {
-                    console.writeLine("project.json root object must contain a \"java\" property.");
-                }
-                else if (!(javaSegment instanceof JSONObject))
-                {
-                    console.writeLine("\"java\" property must be a JSON object.");
-                }
-                else
-                {
-                    final JSONObject java = (JSONObject)javaSegment;
+                    final Folder sourcesFolder = QubCLI.getSourcesFolder(console, java);
+                    Folder sourceOutputsFolder = null;
+                    if (sourcesFolder != null)
+                    {
+                        final Iterable<File> sourceFiles = QubCLI.getSourceFiles(console, sourcesFolder);
+                        if (sourceFiles != null && sourceFiles.any())
+                        {
+                            sourceOutputsFolder = outputsFolder.getFolder(sourcesFolder.getName());
 
-                    Folder outputsFolder = null;
-                    final JSONSegment outputsSegment = java.getPropertyValue("outputs");
-                    if (outputsSegment == null)
-                    {
-                        outputsFolder = currentFolder.getFolder("outputs");
-                    }
-                    else if (outputsSegment instanceof JSONQuotedString)
-                    {
-                        outputsFolder = currentFolder.getFolder(((JSONQuotedString)outputsSegment).toUnquotedString());
-                    }
-                    else
-                    {
-                        console.writeLine("Expected \"outputs\" property to be a quoted string.");
+                            final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
+                            sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
+
+                            compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
+                        }
                     }
 
-                    if (outputsFolder != null)
+                    final Folder testsFolder = QubCLI.getTestsFolder(console, java);
+                    if (testsFolder != null)
                     {
-                        final List<String> classpaths = ArrayList.fromValues();
-                        final JSONSegment classpathSegment = java.getPropertyValue("classpath");
-                        if (classpathSegment != null)
+                        final Iterable<File> testFiles = QubCLI.getTestFiles(console, testsFolder);
+                        if (testFiles != null && testFiles.any())
                         {
-                            if (classpathSegment instanceof JSONQuotedString)
+                            final Folder testOutputsFolder = outputsFolder.getFolder(testsFolder.getName());
+
+                            final List<String> testClasspaths = ArrayList.fromValues(classpaths);
+                            testClasspaths.add(testOutputsFolder.getPath().toString());
+                            if (sourceOutputsFolder != null)
                             {
-                                final JSONQuotedString classpath = (JSONQuotedString)classpathSegment;
-                                classpaths.add(classpath.toUnquotedString());
+                                testClasspaths.add(sourceOutputsFolder.getPath().toString());
                             }
-                            else if (classpathSegment instanceof JSONArray)
-                            {
-                                final JSONArray classpathArray = (JSONArray)classpathSegment;
-                                for (final JSONSegment classpathElementSegment : classpathArray.getElements())
-                                {
-                                    if (!(classpathElementSegment instanceof JSONQuotedString))
-                                    {
-                                        console.writeLine("Expected element of \"classpath\" array to be a quoted string.");
-                                    }
-                                    else
-                                    {
-                                        final JSONQuotedString classpath = (JSONQuotedString)classpathElementSegment;
-                                        classpaths.add(classpath.toUnquotedString());
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                console.writeLine("Expected \"classpath\" to be either a quoted string or an array of quoted strings.");
-                            }
-                        }
 
-                        final Function1<File, Boolean> isJavaFile = (File file) -> file.getFileExtension().equals(".java");
-
-                        Folder sourcesFolder = null;
-                        final JSONSegment sourcesSegment = java.getPropertyValue("sources");
-                        if (sourcesSegment == null)
-                        {
-                            sourcesFolder = currentFolder.getFolder("sources");
-                        }
-                        else if (sourcesSegment instanceof JSONQuotedString)
-                        {
-                            sourcesFolder = currentFolder.getFolder(((JSONQuotedString)sourcesSegment).toUnquotedString());
-                        }
-                        else
-                        {
-                            console.writeLine("Expected \"sources\" to not exist, or to be a quoted string property.");
-                        }
-
-                        Folder sourceOutputsFolder = null;
-
-                        if (sourcesFolder != null)
-                        {
-                            final Iterable<File> sourceFiles = sourcesFolder.getFilesRecursively().where(isJavaFile);
-                            if (sourceFiles == null || !sourceFiles.any())
-                            {
-                                console.writeLine("No source files found to compile.");
-                            }
-                            else
-                            {
-                                sourceOutputsFolder = outputsFolder.getFolder(sourcesFolder.getName());
-
-                                final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
-                                sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
-
-                                compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
-                            }
-                        }
-
-                        Folder testsFolder = null;
-                        final JSONSegment testsSegment = java.getPropertyValue("tests");
-                        if (testsSegment == null)
-                        {
-                            testsFolder = currentFolder.getFolder("tests");
-                        }
-                        else if (testsSegment instanceof JSONQuotedString)
-                        {
-                            testsFolder = currentFolder.getFolder(((JSONQuotedString)testsSegment).toUnquotedString());
-                        }
-                        else
-                        {
-                            console.writeLine("Expected \"tests\" to not exist, or to be a quoted string property.");
-                        }
-
-                        if (testsFolder != null)
-                        {
-                            final Iterable<File> testFiles = testsFolder.getFilesRecursively().where(isJavaFile);
-                            if (testFiles == null || !testFiles.any())
-                            {
-                                console.writeLine("No test files found to compile.");
-                            }
-                            else
-                            {
-                                final Folder testOutputsFolder = outputsFolder.getFolder(testsFolder.getName());
-
-                                final List<String> testClasspaths = ArrayList.fromValues(classpaths);
-                                testClasspaths.add(testOutputsFolder.getPath().toString());
-                                if (sourceOutputsFolder != null)
-                                {
-                                    testClasspaths.add(sourceOutputsFolder.getPath().toString());
-                                }
-
-                                compile(console, testClasspaths, testFiles, testOutputsFolder, debug);
-                            }
+                            compile(console, testClasspaths, testFiles, testOutputsFolder, debug);
                         }
                     }
                 }
