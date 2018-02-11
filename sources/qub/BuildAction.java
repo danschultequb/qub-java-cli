@@ -39,6 +39,8 @@ public class BuildAction implements Action
                 {
                     final Iterable<String> classpaths = QubCLI.getClasspaths(console, java);
 
+                    boolean compiledSourcesSuccessfully = true;
+
                     final Folder sourcesFolder = QubCLI.getSourcesFolder(console, java);
                     Folder sourceOutputsFolder = null;
                     if (sourcesFolder != null)
@@ -51,73 +53,77 @@ public class BuildAction implements Action
                             final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
                             sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
-                            compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
-
-                            final ProcessBuilder jar = console.getProcessBuilder("jar");
-                            jar.setWorkingFolder(sourceOutputsFolder);
-                            jar.redirectOutput(console.getOutputAsByteWriteStream());
-                            jar.redirectError(console.getErrorAsByteWriteStream());
-
-                            jar.addArgument("cf");
-
-                            String jarFileName = null;
-
-                            final JSONSegment jarFileNameSegment = java.getPropertyValue("jarFileName");
-                            if (jarFileNameSegment instanceof JSONQuotedString)
+                            compiledSourcesSuccessfully = compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
+                            if (compiledSourcesSuccessfully)
                             {
-                                jarFileName = ((JSONQuotedString)jarFileNameSegment).toUnquotedString();
-                            }
+                                final ProcessBuilder jar = console.getProcessBuilder("jar");
+                                jar.setWorkingFolder(sourceOutputsFolder);
+                                jar.redirectOutput(console.getOutputAsByteWriteStream());
+                                jar.redirectError(console.getErrorAsByteWriteStream());
 
-                            if (jarFileName == null || jarFileName.isEmpty())
-                            {
-                                final JSONSegment projectSegment = projectJsonRoot.getPropertyValue("project");
-                                if (projectSegment instanceof JSONQuotedString)
+                                jar.addArgument("cf");
+
+                                String jarFileName = null;
+                                final JSONSegment jarFileNameSegment = java.getPropertyValue("jarFileName");
+                                if (jarFileNameSegment instanceof JSONQuotedString)
                                 {
-                                    jarFileName = ((JSONQuotedString)projectSegment).toUnquotedString();
-                                }
-                            }
-
-                            if (jarFileName == null || jarFileName.isEmpty())
-                            {
-                                console.writeLine("Could not determine the desired jar file's name from the \"jarFileName\" property or the \"project\" property.");
-                            }
-                            else
-                            {
-                                if (!jarFileName.endsWith(".jar"))
-                                {
-                                    jarFileName += ".jar";
-                                }
-                                final File jarFile = outputsFolder.getFile(jarFileName);
-                                jar.addArgument(jarFile.getPath().toString());
-
-                                jar.addArgument(".");
-
-                                if (debug)
-                                {
-                                    console.writeLine(jar.getCommand());
+                                    jarFileName = ((JSONQuotedString)jarFileNameSegment).toUnquotedString();
                                 }
 
-                                jar.run();
+                                if (jarFileName == null || jarFileName.isEmpty())
+                                {
+                                    final JSONSegment projectSegment = projectJsonRoot.getPropertyValue("project");
+                                    if (projectSegment instanceof JSONQuotedString)
+                                    {
+                                        jarFileName = ((JSONQuotedString)projectSegment).toUnquotedString();
+                                    }
+                                }
+
+                                if (jarFileName == null || jarFileName.isEmpty())
+                                {
+                                    console.writeLine("Could not determine the desired jar file's name from the \"jarFileName\" property or the \"project\" property.");
+                                }
+                                else
+                                {
+                                    if (!jarFileName.endsWith(".jar"))
+                                    {
+                                        jarFileName += ".jar";
+                                    }
+                                    final File jarFile = outputsFolder.getFile(jarFileName);
+                                    jar.addArgument(jarFile.getPath().toString());
+
+                                    jar.addArgument(".");
+
+                                    if (debug)
+                                    {
+                                        console.writeLine(jar.getCommand());
+                                    }
+
+                                    jar.run();
+                                }
                             }
                         }
                     }
 
-                    final Folder testsFolder = QubCLI.getTestsFolder(console, java);
-                    if (testsFolder != null)
+                    if (compiledSourcesSuccessfully)
                     {
-                        final Iterable<File> testFiles = QubCLI.getTestFiles(console, testsFolder);
-                        if (testFiles != null && testFiles.any())
+                        final Folder testsFolder = QubCLI.getTestsFolder(console, java);
+                        if (testsFolder != null)
                         {
-                            final Folder testOutputsFolder = outputsFolder.getFolder(testsFolder.getName());
-
-                            final List<String> testClasspaths = ArrayList.fromValues(classpaths);
-                            testClasspaths.add(testOutputsFolder.getPath().toString());
-                            if (sourceOutputsFolder != null)
+                            final Iterable<File> testFiles = QubCLI.getTestFiles(console, testsFolder);
+                            if (testFiles != null && testFiles.any())
                             {
-                                testClasspaths.add(sourceOutputsFolder.getPath().toString());
-                            }
+                                final Folder testOutputsFolder = outputsFolder.getFolder(testsFolder.getName());
 
-                            compile(console, testClasspaths, testFiles, testOutputsFolder, debug);
+                                final List<String> testClasspaths = ArrayList.fromValues(classpaths);
+                                testClasspaths.add(testOutputsFolder.getPath().toString());
+                                if (sourceOutputsFolder != null)
+                                {
+                                    testClasspaths.add(sourceOutputsFolder.getPath().toString());
+                                }
+
+                                compile(console, testClasspaths, testFiles, testOutputsFolder, debug);
+                            }
                         }
                     }
                 }
@@ -125,7 +131,7 @@ public class BuildAction implements Action
         }
     }
 
-    private static void compile(Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, boolean debug)
+    private static boolean compile(Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, boolean debug)
     {
         final ProcessBuilder javac = console.getProcessBuilder("javac");
         javac.redirectOutput(console.getOutputAsByteWriteStream());
@@ -134,6 +140,7 @@ public class BuildAction implements Action
         addNamedArgument(javac, "-classpath", String.join(";", classpaths));
         addNamedArgument(javac, "-d", outputFolder.getPath().toString());
         javac.addArgument("-g");
+        javac.addArgument("-Xlint:unchecked");
 
         javac.addArguments(filesToCompile.map(file -> file.getPath().toString()));
 
@@ -142,7 +149,9 @@ public class BuildAction implements Action
             console.writeLine(javac.getCommand());
         }
 
-        javac.run();
+        final int exitCode = javac.run();
+
+        return exitCode == 0;
     }
 
     private static void addNamedArgument(ProcessBuilder builder, String argumentName, String argumentValue)

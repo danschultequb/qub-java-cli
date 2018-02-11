@@ -10,10 +10,11 @@ public class QubCLI
     static void main(Console console)
     {
         final Map<String,Action> actions = new ListMap<>();
+        addAction(actions, new BondsAction());
         addAction(actions, new BuildAction());
         addAction(actions, new DeleteAction());
+        addAction(actions, new InstallAction());
         addAction(actions, new TestAction());
-        addAction(actions, new BondsAction());
 
         final CommandLine commandLine = console.getCommandLine();
 
@@ -174,7 +175,7 @@ public class QubCLI
 
     static List<String> getClasspaths(Console console, JSONObject javaSegment)
     {
-        final List<String> classpaths = ArrayList.fromValues();
+        final List<String> classpaths = new ArrayList<>();
         final JSONSegment classpathSegment = javaSegment.getPropertyValue("classpath");
         if (classpathSegment != null)
         {
