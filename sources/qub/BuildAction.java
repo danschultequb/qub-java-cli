@@ -56,13 +56,6 @@ public class BuildAction implements Action
                             compiledSourcesSuccessfully = compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
                             if (compiledSourcesSuccessfully)
                             {
-                                final ProcessBuilder jar = console.getProcessBuilder("jar");
-                                jar.setWorkingFolder(sourceOutputsFolder);
-                                jar.redirectOutput(console.getOutputAsByteWriteStream());
-                                jar.redirectError(console.getErrorAsByteWriteStream());
-
-                                jar.addArgument("cf");
-
                                 String jarFileName = null;
                                 final JSONSegment jarFileNameSegment = java.getPropertyValue("jarFileName");
                                 if (jarFileNameSegment instanceof JSONQuotedString)
@@ -90,7 +83,36 @@ public class BuildAction implements Action
                                         jarFileName += ".jar";
                                     }
                                     final File jarFile = outputsFolder.getFile(jarFileName);
+
+                                    File manifestFile = null;
+                                    final String mainClass = QubCLI.getMainClass(console, java);
+                                    if (mainClass != null && !mainClass.isEmpty())
+                                    {
+                                        manifestFile = sourceOutputsFolder.getFolder("META-INF").getFile("MANIFEST.MF");
+                                        final String manifestFileContents =
+                                            "Manifest-Version: 1.0\n" +
+                                            "Main-Class: " + mainClass + "\n";
+                                        manifestFile.setContents(manifestFileContents, CharacterEncoding.UTF_8);
+                                    }
+
+                                    final ProcessBuilder jar = console.getProcessBuilder("jar");
+                                    jar.setWorkingFolder(sourceOutputsFolder);
+                                    jar.redirectOutput(console.getOutputAsByteWriteStream());
+                                    jar.redirectError(console.getErrorAsByteWriteStream());
+
+                                    String jarArguments = "cf";
+                                    if (manifestFile != null)
+                                    {
+                                        jarArguments += 'm';
+                                    }
+                                    jar.addArgument(jarArguments);
+
                                     jar.addArgument(jarFile.getPath().toString());
+
+                                    if (manifestFile != null)
+                                    {
+                                        jar.addArgument(manifestFile.getPath().relativeTo(sourceOutputsFolder.getPath()).toString());
+                                    }
 
                                     jar.addArgument(".");
 

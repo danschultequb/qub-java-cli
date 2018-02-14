@@ -5,9 +5,17 @@
   "type": "console-application",
   "java": {
     "classpath": [
-      "C:/qub/qub/qub-java/0.1.0/qub.jar"
+      "C:/qub/qub/qub-java/0.1.0/qub-java.jar"
     ],
     "mainClass": "qub.QubCLI",
-    "jarFileName": "qub-cli.jar"
+    "jarFileName": "qub-cli-java.jar",
+    "shortcutName": "qub",
+    "dependencies": [
+      {
+        "publisher": "qub",
+        "project": "qub-java",
+        "version": "0.1.0"
+      }
+    ]
   }
 }

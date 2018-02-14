@@ -251,6 +251,26 @@ public class QubCLI
         return result;
     }
 
+    static String getMainClass(Console console, JSONObject javaObject)
+    {
+        String mainClass = null;
+
+        final JSONSegment mainClassSegment = javaObject.getPropertyValue("mainClass");
+        if (mainClassSegment != null)
+        {
+            if (mainClassSegment instanceof JSONQuotedString)
+            {
+                mainClass = ((JSONQuotedString)mainClassSegment).toUnquotedString();
+            }
+            else
+            {
+                console.writeLine("The \"mainClass\" property in the java object of the project.json file must be a quoted-string.");
+            }
+        }
+
+        return mainClass;
+    }
+
     static JSONObject readProjectJson(Console console)
     {
         JSONObject projectJsonObject = null;

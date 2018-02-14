@@ -102,9 +102,43 @@ public class InstallAction implements Action
                                     final Folder publisherFolder = qubFolder.getFolder(publisher);
                                     final Folder projectFolder = publisherFolder.getFolder(project);
                                     final Folder versionFolder = projectFolder.getFolder(version);
-                                    final File installedJarFile = versionFolder.getFile(jarFileName);
 
+                                    final File installedJarFile = versionFolder.getFile(jarFileName);
                                     installedJarFile.setContents(outputsJarFile.getContents());
+
+                                    final File installedProjectJsonFile = versionFolder.getFile("project.json");
+                                    installedProjectJsonFile.setContents(projectJsonRoot.toString(), CharacterEncoding.UTF_8);
+
+                                    final String mainClass = QubCLI.getMainClass(console, java);
+                                    if (mainClass != null && !mainClass.isEmpty())
+                                    {
+                                        String shortcutName = null;
+                                        final JSONSegment shortcutNameSegment = java.getPropertyValue("shortcutName");
+                                        if (shortcutNameSegment != null)
+                                        {
+                                            if (!(shortcutNameSegment instanceof JSONQuotedString))
+                                            {
+                                                console.writeLine("The \"shortcutName\" property in the java section of the project.json file must be a quoted-string.");
+                                            }
+                                            else
+                                            {
+                                                shortcutName = ((JSONQuotedString)shortcutNameSegment).toUnquotedString();
+                                            }
+                                        }
+                                        if (shortcutName == null || shortcutName.isEmpty())
+                                        {
+                                            shortcutName = installedJarFile.getNameWithoutFileExtension();
+                                        }
+
+                                        String classpath = "%~dp0" + installedJarFile.getPath().relativeTo(qubFolder.getPath()).toString();
+                                        classpath += ";%~dp0qub/qub-java/0.1.0/qub-java.jar";
+
+                                        final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd");
+                                        final String shortcutFileContents =
+                                            "@echo OFF\n" +
+                                            "java -cp " + classpath + " " + mainClass + " %*\n";
+                                        shortcutFile.setContents(shortcutFileContents, CharacterEncoding.UTF_8);
+                                    }
                                 }
                             }
                         }
