@@ -2,13 +2,8 @@
   "publisher": "qub",
   "project": "qub-cli-java",
   "version": "1.0.0",
-  "type": "console-application",
   "java": {
-    "classpath": [
-      "C:/qub/qub/qub-java/0.1.0/qub-java.jar"
-    ],
     "mainClass": "qub.QubCLI",
-    "jarFileName": "qub-cli-java.jar",
     "shortcutName": "qub",
     "dependencies": [
       {

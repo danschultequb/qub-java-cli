@@ -26,8 +26,6 @@ public class InstallAction implements Action
     @Override
     public void run(Console console)
     {
-        final boolean debug = (console.getCommandLine().get("debug") != null);
-
         final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
         if (projectJsonRoot != null)
         {
@@ -44,19 +42,9 @@ public class InstallAction implements Action
             {
                 final String publisher = ((JSONQuotedString)publisherSegment).toUnquotedString();
 
-                final JSONSegment projectSegment = projectJsonRoot.getPropertyValue("project");
-                if (projectSegment == null)
+                final String project = QubCLI.getProject(console, projectJsonRoot);
+                if (project != null && !project.isEmpty())
                 {
-                    console.writeLine("A \"project\" quoted-string property must be specified in the root object of the project.json file.");
-                }
-                else if (!(projectSegment instanceof JSONQuotedString))
-                {
-                    console.writeLine("The \"project\" property in the root object of the project.json file must be a quoted-string.");
-                }
-                else
-                {
-                    final String project = ((JSONQuotedString)projectSegment).toUnquotedString();
-
                     final JSONSegment versionSegment = projectJsonRoot.getPropertyValue("version");
                     if (versionSegment == null)
                     {
@@ -98,7 +86,7 @@ public class InstallAction implements Action
                                     }
                                     final File outputsJarFile = outputsFolder.getFile(jarFileName);
 
-                                    final Folder qubFolder = console.getFileSystem().getFolder("C:/qub");
+                                    final Folder qubFolder = QubCLI.getQubFolder(console);
                                     final Folder publisherFolder = qubFolder.getFolder(publisher);
                                     final Folder projectFolder = publisherFolder.getFolder(project);
                                     final Folder versionFolder = projectFolder.getFolder(version);
@@ -131,7 +119,13 @@ public class InstallAction implements Action
                                         }
 
                                         String classpath = "%~dp0" + installedJarFile.getPath().relativeTo(qubFolder.getPath()).toString();
-                                        classpath += ";%~dp0qub/qub-java/0.1.0/qub-java.jar";
+                                        for (final Dependency dependency : QubCLI.getDependencies(console, java))
+                                        {
+                                            final String dependencyPublisher = dependency.getPublisher();
+                                            final String dependencyProject = dependency.getProject();
+                                            final String dependencyVersion = dependency.getVersion();
+                                            classpath += ";%~dp0" + dependencyPublisher + "/" + dependencyProject + "/" + dependencyVersion + "/" + dependencyProject + ".jar";
+                                        }
 
                                         final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd");
                                         final String shortcutFileContents =

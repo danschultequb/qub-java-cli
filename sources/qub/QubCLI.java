@@ -173,10 +173,10 @@ public class QubCLI
         return result;
     }
 
-    static List<String> getClasspaths(Console console, JSONObject javaSegment)
+    static List<String> getClasspaths(Console console, JSONObject javaObject)
     {
         final List<String> classpaths = new ArrayList<>();
-        final JSONSegment classpathSegment = javaSegment.getPropertyValue("classpath");
+        final JSONSegment classpathSegment = javaObject.getPropertyValue("classpath");
         if (classpathSegment != null)
         {
             if (classpathSegment instanceof JSONQuotedString)
@@ -205,7 +205,49 @@ public class QubCLI
                 console.writeLine("Expected \"classpath\" to be either a quoted string or an array of quoted strings.");
             }
         }
+
+        final Folder qubFolder = getQubFolder(console);
+        final Iterable<Dependency> dependencies = QubCLI.getDependencies(console, javaObject);
+        for (final Dependency dependency : dependencies)
+        {
+            final String publisher = dependency.getPublisher();
+            final String project = dependency.getProject();
+            final String version = dependency.getVersion();
+            classpaths.add(qubFolder.getPath()
+                .concatenateSegment(publisher)
+                .concatenateSegment(project)
+                .concatenateSegment(version)
+                .concatenateSegment(project + ".jar")
+                .toString());
+        }
+
         return classpaths;
+    }
+
+    static String getProject(Console console, JSONObject projectJsonRoot)
+    {
+        String project = null;
+
+        final JSONSegment projectSegment = projectJsonRoot.getPropertyValue("project");
+        if (projectSegment == null)
+        {
+            console.writeLine("A \"project\" quoted-string property must be specified in the root object of the project.json file.");
+        }
+        else if (!(projectSegment instanceof JSONQuotedString))
+        {
+            console.writeLine("The \"project\" property in the root object of the project.json file must be a quoted-string.");
+        }
+        else
+        {
+            project = ((JSONQuotedString)projectSegment).toUnquotedString();
+        }
+
+        return project;
+    }
+
+    static Folder getQubFolder(Console console)
+    {
+        return console.getFileSystem().getFolder("C:/qub");
     }
 
     static Folder getOutputsFolder(Console console, JSONObject javaSegment)
@@ -269,6 +311,69 @@ public class QubCLI
         }
 
         return mainClass;
+    }
+
+    static Iterable<Dependency> getDependencies(Console console, JSONObject javaObject)
+    {
+        List<Dependency> dependencies = new ArrayList<>();
+
+        final JSONSegment dependenciesSegment = javaObject.getPropertyValue("dependencies");
+        if (dependenciesSegment != null)
+        {
+            if (!(dependenciesSegment instanceof JSONArray))
+            {
+                console.writeLine("The \"dependencies\" property in the java section must be an array.");
+            }
+            else
+            {
+                final JSONArray dependenciesArray = (JSONArray)dependenciesSegment;
+                for (final JSONSegment dependencySegment : dependenciesArray.getElements())
+                {
+                    if (!(dependencySegment instanceof JSONObject))
+                    {
+                        console.writeLine("Each dependency in the \"dependencies\" array property must be an object.");
+                    }
+                    else
+                    {
+                        final JSONObject dependencyObject = (JSONObject)dependencySegment;
+
+                        final JSONSegment publisherSegment = dependencyObject.getPropertyValue("publisher");
+                        if (publisherSegment == null || !(publisherSegment instanceof JSONQuotedString))
+                        {
+                            console.writeLine("Each dependency must have a \"publisher\" quoted-string property.");
+                        }
+                        else
+                        {
+                            final String publisher = ((JSONQuotedString)publisherSegment).toUnquotedString();
+
+                            final JSONSegment projectSegment = dependencyObject.getPropertyValue("project");
+                            if (projectSegment == null || !(projectSegment instanceof JSONQuotedString))
+                            {
+                                console.writeLine("Each dependency must have a \"project\" quoted-string property.");
+                            }
+                            else
+                            {
+                                final String project = ((JSONQuotedString)projectSegment).toUnquotedString();
+
+                                final JSONSegment versionSegment = dependencyObject.getPropertyValue("version");
+                                if (versionSegment == null || !(versionSegment instanceof JSONQuotedString))
+                                {
+                                    console.writeLine("Each dependency must have a \"version\" quoted-string property.");
+                                }
+                                else
+                                {
+                                    final String version = ((JSONQuotedString)versionSegment).toUnquotedString();
+
+                                    dependencies.add(new Dependency(publisher, project, version));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return dependencies;
     }
 
     static JSONObject readProjectJson(Console console)

@@ -56,33 +56,14 @@ public class BuildAction implements Action
                             compiledSourcesSuccessfully = compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
                             if (compiledSourcesSuccessfully)
                             {
-                                String jarFileName = null;
-                                final JSONSegment jarFileNameSegment = java.getPropertyValue("jarFileName");
-                                if (jarFileNameSegment instanceof JSONQuotedString)
+                                final String project = QubCLI.getProject(console, projectJsonRoot);
+                                if (project == null || project.isEmpty())
                                 {
-                                    jarFileName = ((JSONQuotedString)jarFileNameSegment).toUnquotedString();
-                                }
-
-                                if (jarFileName == null || jarFileName.isEmpty())
-                                {
-                                    final JSONSegment projectSegment = projectJsonRoot.getPropertyValue("project");
-                                    if (projectSegment instanceof JSONQuotedString)
-                                    {
-                                        jarFileName = ((JSONQuotedString)projectSegment).toUnquotedString();
-                                    }
-                                }
-
-                                if (jarFileName == null || jarFileName.isEmpty())
-                                {
-                                    console.writeLine("Could not determine the desired jar file's name from the \"jarFileName\" property or the \"project\" property.");
+                                    console.writeLine("Could not determine the desired jar file's name from the \"project\" property.");
                                 }
                                 else
                                 {
-                                    if (!jarFileName.endsWith(".jar"))
-                                    {
-                                        jarFileName += ".jar";
-                                    }
-                                    final File jarFile = outputsFolder.getFile(jarFileName);
+                                    final File jarFile = outputsFolder.getFile(project + ".jar");
 
                                     File manifestFile = null;
                                     final String mainClass = QubCLI.getMainClass(console, java);
