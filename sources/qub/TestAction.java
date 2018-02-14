@@ -79,11 +79,18 @@ public class TestAction implements Action
                             java.redirectOutput(console.getOutputAsByteWriteStream());
                             java.redirectError(console.getErrorAsByteWriteStream());
 
+                            final Folder qubFolder = QubCLI.getQubFolder(console);
+                            final Folder jacocoFolder = qubFolder
+                                .getFolder("jacoco")
+                                .getFolder("jacococli")
+                                .getFolder("0.8.0");
+
                             File coverageExecFile = null;
                             if (coverage)
                             {
+                                final File jacocoAgentJarFile = jacocoFolder.getFile("jacocoagent.jar");
                                 coverageExecFile = outputsFolder.getFile("coverage.exec");
-                                java.addArgument("-javaagent:C:/qub/jacoco/jacococli/0.8.0/jacocoagent.jar=destfile=" + coverageExecFile.getPath().toString());
+                                java.addArgument("-javaagent:" + jacocoAgentJarFile.getPath().toString() + "=destfile=" + coverageExecFile.getPath().toString());
                             }
 
                             addNamedArgument(java, "-classpath", classpath);
@@ -103,11 +110,13 @@ public class TestAction implements Action
 
                             if (coverage && sourceOutputsFolder != null)
                             {
+                                final File jacocoCLIJarFile = jacocoFolder.getFile("jacococli.jar");
                                 final Folder coverageFolder = outputsFolder.getFolder("coverage");
 
-                                final ProcessBuilder jacococli = console.getProcessBuilder("jacococli");
+                                final ProcessBuilder jacococli = console.getProcessBuilder("java");
                                 jacococli.redirectOutput(console.getOutputAsByteWriteStream());
                                 jacococli.redirectError(console.getErrorAsByteWriteStream());
+                                jacococli.addArguments("-jar", jacocoCLIJarFile.getPath().toString());
                                 jacococli.addArgument("report");
                                 jacococli.addArgument(coverageExecFile.getPath().toString());
                                 jacococli.addArguments("--classfiles", sourceOutputsFolder.getPath().toString());
