@@ -26,6 +26,9 @@ public class InstallAction implements Action
     @Override
     public void run(Console console)
     {
+        final Stopwatch totalInstall = console.getStopwatch();
+        totalInstall.start();
+
         final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
         if (projectJsonRoot != null)
         {
@@ -92,10 +95,18 @@ public class InstallAction implements Action
                                     final Folder versionFolder = projectFolder.getFolder(version);
 
                                     final File installedJarFile = versionFolder.getFile(jarFileName);
+
+                                    final Stopwatch stopwatch = console.getStopwatch();
+                                    console.write("Copying " + outputsJarFile + " to " + installedJarFile + "...");
+                                    stopwatch.start();
                                     installedJarFile.setContents(outputsJarFile.getContents());
+                                    console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
 
                                     final File installedProjectJsonFile = versionFolder.getFile("project.json");
+                                    console.write("Copying project.json to " + installedProjectJsonFile + "...");
+                                    stopwatch.start();
                                     installedProjectJsonFile.setContents(projectJsonRoot.toString(), CharacterEncoding.UTF_8);
+                                    console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
 
                                     final String mainClass = QubCLI.getMainClass(console, java);
                                     if (mainClass != null && !mainClass.isEmpty())
@@ -131,7 +142,10 @@ public class InstallAction implements Action
                                         final String shortcutFileContents =
                                             "@echo OFF\n" +
                                             "java -cp " + classpath + " " + mainClass + " %*\n";
+                                        console.write("Writing " + shortcutFile + "...");
+                                        stopwatch.start();
                                         shortcutFile.setContents(shortcutFileContents, CharacterEncoding.UTF_8);
+                                        console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
                                     }
                                 }
                             }
@@ -140,5 +154,8 @@ public class InstallAction implements Action
                 }
             }
         }
+
+        final Duration totalBuildDuration = totalInstall.stop().toSeconds();
+        console.writeLine("Total Duration: " + totalBuildDuration.toString("0.0"));
     }
 }

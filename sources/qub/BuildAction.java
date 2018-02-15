@@ -26,6 +26,9 @@ public class BuildAction implements Action
     @Override
     public void run(Console console)
     {
+        final Stopwatch totalBuild = console.getStopwatch();
+        totalBuild.start();
+
         final boolean debug = (console.getCommandLine().get("debug") != null);
 
         final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
@@ -53,7 +56,7 @@ public class BuildAction implements Action
                             final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
                             sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
-                            compiledSourcesSuccessfully = compile(console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
+                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
                             if (compiledSourcesSuccessfully)
                             {
                                 final String project = QubCLI.getProject(console, projectJsonRoot);
@@ -97,12 +100,19 @@ public class BuildAction implements Action
 
                                     jar.addArgument(".");
 
+                                    final Stopwatch stopwatch = console.getStopwatch();
+                                    console.write("Creating sources jar file...");
                                     if (debug)
                                     {
+                                        console.writeLine();
                                         console.writeLine(jar.getCommand());
                                     }
 
+                                    stopwatch.start();
                                     jar.run();
+                                    final Duration jarFileCreationDuration = stopwatch.stop().toSeconds();
+
+                                    console.writeLine(" Done (" + jarFileCreationDuration.toString("#.#") + ")");
                                 }
                             }
                         }
@@ -125,17 +135,24 @@ public class BuildAction implements Action
                                     testClasspaths.add(sourceOutputsFolder.getPath().toString());
                                 }
 
-                                compile(console, testClasspaths, testFiles, testOutputsFolder, debug);
+                                compile("tests", console, testClasspaths, testFiles, testOutputsFolder, debug);
                             }
                         }
                     }
                 }
             }
         }
+
+        final Duration totalBuildDuration = totalBuild.stop().toSeconds();
+        console.writeLine("Total Duration: " + totalBuildDuration.toString("0.0"));
     }
 
-    private static boolean compile(Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, boolean debug)
+    private static boolean compile(String label, Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, boolean debug)
     {
+        final Stopwatch stopwatch = console.getStopwatch();
+        console.write("Compiling " + label + "...");
+        stopwatch.start();
+
         final ProcessBuilder javac = console.getProcessBuilder("javac");
         javac.redirectOutput(console.getOutputAsByteWriteStream());
         javac.redirectError(console.getErrorAsByteWriteStream());
@@ -149,10 +166,14 @@ public class BuildAction implements Action
 
         if (debug)
         {
+            console.writeLine();
             console.writeLine(javac.getCommand());
         }
 
         final int exitCode = javac.run();
+
+        final Duration compilationDuration = stopwatch.stop().toSeconds();
+        console.writeLine(" Done (" + compilationDuration.toString("#.#") + ")");
 
         return exitCode == 0;
     }
