@@ -31,7 +31,14 @@ public class BondsAction implements Action
 
         final CommandLineArgument amountToInvestArgument = commandLine
             .skip(1)
-            .first((CommandLineArgument argument) -> argument.getName() == null);
+            .first(new Function1<CommandLineArgument, Boolean>()
+            {
+                @Override
+                public Boolean run(CommandLineArgument argument)
+                {
+                    return argument.getName() == null;
+                }
+            });
 
         if (amountToInvestArgument == null)
         {

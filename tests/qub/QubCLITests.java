@@ -23,54 +23,78 @@ public class QubCLITests
     
     public static void test(final TestRunner runner)
     {
-        runner.testGroup("QubCLI", () ->
+        runner.testGroup("QubCLI", new Action0()
         {
-            runner.testGroup("main(Console)", () ->
+            @Override
+            public void run()
             {
-                runner.test("with " + runner.escapeAndQuote(""), (Test test) ->
+                runner.testGroup("main(Console)", new Action0()
                 {
-                    final Console console = new Console();
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-                    console.setOutput(output);
+                    @Override
+                    public void run()
+                    {
+                        runner.test("with " + runner.escapeAndQuote(""), new Action1<Test>()
+                        {
+                            @Override
+                            public void run(Test test)
+                            {
+                                final Console console = new Console();
+                                final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                                console.setOutput(output);
 
-                    QubCLI.main(console);
+                                QubCLI.main(console);
 
-                    test.assertEqual(expectedUsageString, output.getText());
+                                test.assertEqual(expectedUsageString, output.getText());
+                            }
+                        });
+
+                        runner.test("with " + runner.escapeAndQuote("-?"), new Action1<Test>()
+                        {
+                            @Override
+                            public void run(Test test)
+                            {
+                                final Console console = new Console(new String[] { "-?" });
+                                final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                                console.setOutput(output);
+
+                                QubCLI.main(console);
+
+                                test.assertEqual(expectedUsageString, output.getText());
+                            }
+                        });
+
+                        runner.test("with " + runner.escapeAndQuote("/?"), new Action1<Test>()
+                        {
+                            @Override
+                            public void run(Test test)
+                            {
+                                final Console console = new Console(new String[] { "/?" });
+                                final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                                console.setOutput(output);
+
+                                QubCLI.main(console);
+
+                                test.assertEqual(expectedUsageString, output.getText());
+                            }
+                        });
+
+                        runner.test("with " + runner.escapeAndQuote("spam"), new Action1<Test>()
+                        {
+                            @Override
+                            public void run(Test test)
+                            {
+                                final Console console = new Console(new String[] { "spam" });
+                                final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                                console.setOutput(output);
+
+                                QubCLI.main(console);
+
+                                test.assertEqual("Unrecognized action: \"spam\"\n", output.getText());
+                            }
+                        });
+                    }
                 });
-
-                runner.test("with " + runner.escapeAndQuote("-?"), (Test test) ->
-                {
-                    final Console console = new Console(new String[] { "-?" });
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-                    console.setOutput(output);
-
-                    QubCLI.main(console);
-
-                    test.assertEqual(expectedUsageString, output.getText());
-                });
-
-                runner.test("with " + runner.escapeAndQuote("/?"), (Test test) ->
-                {
-                    final Console console = new Console(new String[] { "/?" });
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-                    console.setOutput(output);
-
-                    QubCLI.main(console);
-
-                    test.assertEqual(expectedUsageString, output.getText());
-                });
-
-                runner.test("with " + runner.escapeAndQuote("spam"), (Test test) ->
-                {
-                    final Console console = new Console(new String[] { "spam" });
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
-                    console.setOutput(output);
-
-                    QubCLI.main(console);
-
-                    test.assertEqual("Unrecognized action: \"spam\"\n", output.getText());
-                });
-            });
+            }
         });
     }
 }

@@ -56,7 +56,8 @@ public class BuildAction implements Action
                             final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
                             sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
-                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourceFiles, sourceOutputsFolder, debug);
+                            final String sourcesJavaVersion = QubCLI.getSourcesJavaVersion(console, java);
+                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
                             if (compiledSourcesSuccessfully)
                             {
                                 final String project = QubCLI.getProject(console, projectJsonRoot);
@@ -101,10 +102,9 @@ public class BuildAction implements Action
                                     jar.addArgument(".");
 
                                     final Stopwatch stopwatch = console.getStopwatch();
-                                    console.write("Creating sources jar file...");
+                                    console.writeLine("Creating sources jar file...");
                                     if (debug)
                                     {
-                                        console.writeLine();
                                         console.writeLine(jar.getCommand());
                                     }
 
@@ -126,6 +126,7 @@ public class BuildAction implements Action
                             final Iterable<File> testFiles = QubCLI.getTestFiles(console, testsFolder);
                             if (testFiles != null && testFiles.any())
                             {
+                                final String testsJavaVersion = QubCLI.getTestsJavaVersion(console, java);
                                 final Folder testOutputsFolder = outputsFolder.getFolder(testsFolder.getName());
 
                                 final List<String> testClasspaths = ArrayList.fromValues(classpaths);
@@ -135,7 +136,7 @@ public class BuildAction implements Action
                                     testClasspaths.add(sourceOutputsFolder.getPath().toString());
                                 }
 
-                                compile("tests", console, testClasspaths, testFiles, testOutputsFolder, debug);
+                                compile("tests", console, testClasspaths, testFiles, testOutputsFolder, testsJavaVersion, debug);
                             }
                         }
                     }
@@ -147,10 +148,10 @@ public class BuildAction implements Action
         console.writeLine("Total Duration: " + totalBuildDuration.toString("0.0"));
     }
 
-    private static boolean compile(String label, Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, boolean debug)
+    private static boolean compile(String label, Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, String javaVersion, boolean debug)
     {
         final Stopwatch stopwatch = console.getStopwatch();
-        console.write("Compiling " + label + "...");
+        console.writeLine("Compiling " + label + "...");
         stopwatch.start();
 
         final ProcessBuilder javac = console.getProcessBuilder("javac");
@@ -162,18 +163,30 @@ public class BuildAction implements Action
         javac.addArgument("-g");
         javac.addArgument("-Xlint:unchecked");
 
-        javac.addArguments(filesToCompile.map(file -> file.getPath().toString()));
+        if (javaVersion != null && !javaVersion.isEmpty())
+        {
+            javac.addArguments("-source", javaVersion);
+            javac.addArguments("-target", javaVersion);
+        }
+
+        javac.addArguments(filesToCompile.map(new Function1<File, String>()
+        {
+            @Override
+            public String run(File file)
+            {
+                return file.toString();
+            }
+        }));
 
         if (debug)
         {
-            console.writeLine();
             console.writeLine(javac.getCommand());
         }
 
         final int exitCode = javac.run();
 
         final Duration compilationDuration = stopwatch.stop().toSeconds();
-        console.writeLine(" Done (" + compilationDuration.toString("#.#") + ")");
+        console.writeLine(" Done (" + compilationDuration.toString("0.0") + ")");
 
         return exitCode == 0;
     }

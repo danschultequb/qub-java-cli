@@ -101,12 +101,76 @@ public class QubCLI
         {
             sourcesFolder = currentFolder.getFolder(((JSONQuotedString)sourcesSegment).toUnquotedString());
         }
+        else if (sourcesSegment instanceof JSONObject)
+        {
+            final JSONSegment folderSegment = ((JSONObject)sourcesSegment).getPropertyValue("folder");
+            if (folderSegment == null)
+            {
+                sourcesFolder = currentFolder.getFolder("sources");
+            }
+            else if (folderSegment instanceof JSONQuotedString)
+            {
+                sourcesFolder = currentFolder.getFolder(((JSONQuotedString)folderSegment).toUnquotedString());
+            }
+            else
+            {
+                console.writeLine("Expected \"folder\" property in the \"sources\" section to be a quoted-string property.");
+            }
+        }
         else
         {
-            console.writeLine("Expected \"sources\" to not exist, or to be a quoted string property.");
+            console.writeLine("Expected \"sources\" to not exist, be a quoted string property, or be an object property.");
         }
 
         return sourcesFolder;
+    }
+
+    static String getSourcesJavaVersion(Console console, JSONObject javaObject)
+    {
+        String javaVersion = null;
+
+        final JSONSegment sourcesSegment = javaObject.getPropertyValue("sources");
+        if (sourcesSegment != null && sourcesSegment instanceof JSONObject)
+        {
+            final JSONSegment versionSegment = ((JSONObject)sourcesSegment).getPropertyValue("version");
+            if (versionSegment != null)
+            {
+                if (!(versionSegment instanceof JSONQuotedString))
+                {
+                    console.writeLine("Expected \"version\" property in \"sources\" section to be a quoted-string property.");
+                }
+                else
+                {
+                    javaVersion = ((JSONQuotedString)versionSegment).toUnquotedString();
+                }
+            }
+        }
+
+        return javaVersion;
+    }
+
+    static String getTestsJavaVersion(Console console, JSONObject javaObject)
+    {
+        String javaVersion = null;
+
+        final JSONSegment testsSegment = javaObject.getPropertyValue("tests");
+        if (testsSegment != null && testsSegment instanceof JSONObject)
+        {
+            final JSONSegment versionSegment = ((JSONObject)testsSegment).getPropertyValue("version");
+            if (versionSegment != null)
+            {
+                if (!(versionSegment instanceof JSONQuotedString))
+                {
+                    console.writeLine("Expected \"version\" property in \"tests\" section to be a quoted-string property.");
+                }
+                else
+                {
+                    javaVersion = ((JSONQuotedString)versionSegment).toUnquotedString();
+                }
+            }
+        }
+
+        return javaVersion;
     }
 
     static Iterable<File> getTestFiles(Console console, Folder testsFolder)
@@ -118,7 +182,14 @@ public class QubCLI
             final Iterable<File> testsFolderFiles = testsFolder.getFilesRecursively();
             if (testsFolderFiles != null && testsFolderFiles.any())
             {
-                result = testsFolderFiles.where((File file) -> file.getFileExtension().equals(".java"));
+                result = testsFolderFiles.where(new Function1<File, Boolean>()
+                {
+                    @Override
+                    public Boolean run(File file)
+                    {
+                        return file.getFileExtension().equals(".java");
+                    }
+                });
             }
         }
 
@@ -144,6 +215,22 @@ public class QubCLI
         {
             testsFolder = currentFolder.getFolder(((JSONQuotedString)testsSegment).toUnquotedString());
         }
+        else if (testsSegment instanceof JSONObject)
+        {
+            final JSONSegment folderSegment = ((JSONObject)testsSegment).getPropertyValue("folder");
+            if (folderSegment == null)
+            {
+                testsFolder = currentFolder.getFolder("sources");
+            }
+            else if (folderSegment instanceof JSONQuotedString)
+            {
+                testsFolder = currentFolder.getFolder(((JSONQuotedString)folderSegment).toUnquotedString());
+            }
+            else
+            {
+                console.writeLine("Expected \"folder\" property in the \"sources\" section to be a quoted-string property.");
+            }
+        }
         else
         {
             console.writeLine("Expected \"tests\" to not exist, or to be a quoted string property.");
@@ -161,7 +248,14 @@ public class QubCLI
             final Iterable<File> sourcesFolderFiles = sourcesFolder.getFilesRecursively();
             if (sourcesFolderFiles != null && sourcesFolderFiles.any())
             {
-                result = sourcesFolderFiles.where((File file) -> file.getFileExtension().equals(".java"));
+                result = sourcesFolderFiles.where(new Function1<File, Boolean>()
+                {
+                    @Override
+                    public Boolean run(File file)
+                    {
+                        return file.getFileExtension().equals(".java");
+                    }
+                });
             }
         }
 

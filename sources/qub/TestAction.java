@@ -61,7 +61,14 @@ public class TestAction implements Action
                         }
 
                         final Iterable<File> testClassFiles = testOutputsFolder.getFilesRecursively()
-                            .where((File file) -> file.getFileExtension().equals(".class") && !file.getName().contains("$"));
+                            .where(new Function1<File, Boolean>()
+                            {
+                                @Override
+                                public Boolean run(File file)
+                                {
+                                    return file.getFileExtension().equals(".class") && !file.getName().contains("$");
+                                }
+                            });
                         if (!testClassFiles.any())
                         {
                             console.writeLine("No compiled test classes found.");
@@ -69,11 +76,24 @@ public class TestAction implements Action
                         else
                         {
                             final Iterable<Path> relativeTestSourcePaths = testClassFiles
-                                .map(file -> file.getPath().relativeTo(testOutputsFolder.getPath()));
+                                .map(new Function1<File, Path>()
+                                {
+                                    @Override
+                                    public Path run(File file)
+                                    {
+                                        return file.getPath().relativeTo(testOutputsFolder.getPath());
+                                    }
+                                });
 
                             final Iterable<String> fullTestClassNames = relativeTestSourcePaths
-                                .map((Path relativeTestSourcePath) ->
-                                    relativeTestSourcePath.withoutFileExtension().toString().replace('/', '.').replace('\\', '.'));
+                                .map(new Function1<Path, String>()
+                                {
+                                    @Override
+                                    public String run(Path relativeTestSourcePath)
+                                    {
+                                        return relativeTestSourcePath.withoutFileExtension().toString().replace('/', '.').replace('\\', '.');
+                                    }
+                                });
 
                             final ProcessBuilder java = console.getProcessBuilder("java");
                             java.redirectOutput(console.getOutputAsByteWriteStream());
