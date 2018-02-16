@@ -102,9 +102,10 @@ public class BuildAction implements Action
                                     jar.addArgument(".");
 
                                     final Stopwatch stopwatch = console.getStopwatch();
-                                    console.writeLine("Creating sources jar file...");
+                                    console.write("Creating sources jar file...");
                                     if (debug)
                                     {
+                                        console.writeLine();
                                         console.writeLine(jar.getCommand());
                                     }
 
@@ -151,7 +152,11 @@ public class BuildAction implements Action
     private static boolean compile(String label, Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, String javaVersion, boolean debug)
     {
         final Stopwatch stopwatch = console.getStopwatch();
-        console.writeLine("Compiling " + label + "...");
+        console.write("Compiling " + label + "...");
+        if (debug)
+        {
+            console.writeLine();
+        }
         stopwatch.start();
 
         final ProcessBuilder javac = console.getProcessBuilder("javac");
@@ -169,14 +174,7 @@ public class BuildAction implements Action
             javac.addArguments("-target", javaVersion);
         }
 
-        javac.addArguments(filesToCompile.map(new Function1<File, String>()
-        {
-            @Override
-            public String run(File file)
-            {
-                return file.toString();
-            }
-        }));
+        javac.addArguments(filesToCompile.map(FileSystemEntry::toString));
 
         if (debug)
         {
