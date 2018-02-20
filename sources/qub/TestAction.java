@@ -27,8 +27,14 @@ public class TestAction implements Action
     public void run(Console console)
     {
         final CommandLine commandLine = console.getCommandLine();
-        final boolean debug = (commandLine.get("debug") != null);
-        final boolean coverage = (commandLine.get("coverage") != null);
+
+        final CommandLineArgument debugArgument = commandLine.remove("debug");
+        boolean debug = debugArgument != null && (debugArgument.getValue() == null || debugArgument.getValue().equalsIgnoreCase("true"));
+
+        final CommandLineArgument testPatternArgument = commandLine.remove("pattern");
+
+        final CommandLineArgument coverageArgument = commandLine.remove("coverage");
+        final boolean coverage = coverageArgument != null && (coverageArgument.getValue() == null || coverageArgument.getValue().equalsIgnoreCase("true"));
 
         final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
         if (projectJsonRoot != null)
@@ -118,6 +124,11 @@ public class TestAction implements Action
                             java.addArgument("qub.ConsoleTestRunner");
 
                             java.addArguments(fullTestClassNames);
+
+                            if (testPatternArgument != null)
+                            {
+                                java.addArgument(testPatternArgument.toString());
+                            }
 
                             if (debug)
                             {

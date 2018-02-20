@@ -2,6 +2,13 @@ package qub;
 
 public class DeleteActionTests
 {
+    private static Console createConsole(String[] commandLineArguments)
+    {
+        final Console result = new Console(commandLineArguments);
+        result.setLineSeparator("\n");
+        return result;
+    }
+    
     public static void test(final TestRunner runner)
     {
         runner.testGroup("DeleteAction", new Action0()
@@ -19,7 +26,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete" });
+                                final Console console = createConsole(new String[] { "delete" });
                                 final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
                                 console.setOutput(output);
 
@@ -39,7 +46,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "/fileThatDoesntExist.txt" });
+                                final Console console = createConsole(new String[] { "delete", "/fileThatDoesntExist.txt" });
                                 final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
                                 console.setOutput(output);
 
@@ -60,7 +67,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-file", "/fileThatDoesntExist.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-file", "/fileThatDoesntExist.txt" });
                                 final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
                                 console.setOutput(output);
 
@@ -81,7 +88,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-files", "/fileThatDoesntExist.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-files", "/fileThatDoesntExist.txt" });
                                 final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
                                 console.setOutput(output);
 
@@ -102,7 +109,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "fileThatDoesntExist.txt" });
+                                final Console console = createConsole(new String[] { "delete", "fileThatDoesntExist.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -124,7 +131,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-file", "fileThatDoesntExist.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-file", "fileThatDoesntExist.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -146,7 +153,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-files", "fileThatDoesntExist.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-files", "fileThatDoesntExist.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -168,7 +175,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "/fileThatExists.txt" });
+                                final Console console = createConsole(new String[] { "delete", "/fileThatExists.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -191,7 +198,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-file", "/fileThatExists.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-file", "/fileThatExists.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -214,7 +221,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-files", "/fileThatExists.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-files", "/fileThatExists.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -237,7 +244,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "fileThatExists.txt" });
+                                final Console console = createConsole(new String[] { "delete", "fileThatExists.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -260,7 +267,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-file", "fileThatExists.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-file", "fileThatExists.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -283,7 +290,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-files", "fileThatExists.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-files", "fileThatExists.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -306,7 +313,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-folder", "/folderThatDoesntExist" });
+                                final Console console = createConsole(new String[] { "delete", "-folder", "/folderThatDoesntExist" });
                                 final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
                                 console.setOutput(output);
 
@@ -327,7 +334,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-folder", "folderThatDoesntExist" });
+                                final Console console = createConsole(new String[] { "delete", "-folder", "folderThatDoesntExist" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -349,7 +356,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "/folderThatExists" });
+                                final Console console = createConsole(new String[] { "delete", "/folderThatExists" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -372,7 +379,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-folder", "/folderThatExists" });
+                                final Console console = createConsole(new String[] { "delete", "-folder", "/folderThatExists" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -395,7 +402,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-folders", "/folderThatExists" });
+                                final Console console = createConsole(new String[] { "delete", "-folders", "/folderThatExists" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -418,7 +425,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "folderThatExists" });
+                                final Console console = createConsole(new String[] { "delete", "folderThatExists" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -441,7 +448,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-folder", "folderThatExists" });
+                                final Console console = createConsole(new String[] { "delete", "-folder", "folderThatExists" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -464,7 +471,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-folders", "folderThatExists" });
+                                final Console console = createConsole(new String[] { "delete", "-folders", "folderThatExists" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -487,7 +494,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "existingFileAndFolder.txt" });
+                                final Console console = createConsole(new String[] { "delete", "existingFileAndFolder.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -512,7 +519,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-file", "existingFileAndFolder.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-file", "existingFileAndFolder.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -537,7 +544,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-folder", "existingFileAndFolder.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-folder", "existingFileAndFolder.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -562,7 +569,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-file", "-folder", "existingFileAndFolder.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-file", "-folder", "existingFileAndFolder.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -590,7 +597,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "-file", "-folder", "nonExistingFileAndFolder.txt" });
+                                final Console console = createConsole(new String[] { "delete", "-file", "-folder", "nonExistingFileAndFolder.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
@@ -614,7 +621,7 @@ public class DeleteActionTests
                             @Override
                             public void run(Test test)
                             {
-                                final Console console = new Console(new String[] { "delete", "undeletableExistingFile.txt" });
+                                final Console console = createConsole(new String[] { "delete", "undeletableExistingFile.txt" });
 
                                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                                 fileSystem.createRoot("/");
