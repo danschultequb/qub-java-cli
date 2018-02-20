@@ -172,6 +172,31 @@ public class BuildAction implements Action
         {
             javac.addArguments("-source", javaVersion);
             javac.addArguments("-target", javaVersion);
+
+            if (javaVersion.equals("1.7") || javaVersion.equals("7"))
+            {
+                final Folder qubFolder = QubCLI.getQubFolder(console);
+                addNamedArgument(javac, "-bootclasspath",
+                    qubFolder.getPath().
+                        concatenateSegment("oracle").
+                        concatenateSegment("jre").
+                        concatenateSegment("1.7").
+                        concatenateSegment("lib").
+                        concatenateSegment("rt.jar")
+                        .toString());
+            }
+            else if (javaVersion.equals("1.8") || javaVersion.equals("8"))
+            {
+                final Folder qubFolder = QubCLI.getQubFolder(console);
+                addNamedArgument(javac, "-bootclasspath",
+                    qubFolder.getPath().
+                        concatenateSegment("oracle").
+                        concatenateSegment("jre").
+                        concatenateSegment("1.8").
+                        concatenateSegment("lib").
+                        concatenateSegment("rt.jar")
+                        .toString());
+            }
         }
 
         javac.addArguments(filesToCompile.map(FileSystemEntry::toString));
