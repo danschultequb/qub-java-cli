@@ -220,7 +220,7 @@ public class QubCLI
             final JSONSegment folderSegment = ((JSONObject)testsSegment).getPropertyValue("folder");
             if (folderSegment == null)
             {
-                testsFolder = currentFolder.getFolder("sources");
+                testsFolder = currentFolder.getFolder("tests");
             }
             else if (folderSegment instanceof JSONQuotedString)
             {
@@ -228,7 +228,7 @@ public class QubCLI
             }
             else
             {
-                console.writeLine("Expected \"folder\" property in the \"sources\" section to be a quoted-string property.");
+                console.writeLine("Expected \"folder\" property in the \"tests\" section to be a quoted-string property.");
             }
         }
         else
