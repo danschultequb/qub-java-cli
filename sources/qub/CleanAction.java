@@ -26,24 +26,20 @@ public class CleanAction implements Action
     @Override
     public void run(Console console)
     {
-        final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
-        if (projectJsonRoot != null)
+        final ProjectJson projectJson = ProjectJson.parse(console);
+        if (projectJson != null)
         {
-            final JSONObject java = QubCLI.getJavaSegment(console, projectJsonRoot);
-            if (java != null)
+            final Folder outputsFolder = projectJson.getJavaOutputsFolder();
+            if (outputsFolder != null)
             {
-                final Folder outputsFolder = QubCLI.getOutputsFolder(console, java);
-                if (outputsFolder != null)
+                console.write("Deleting folder " + outputsFolder + "...");
+                if (outputsFolder.delete())
                 {
-                    console.write("Deleting folder " + outputsFolder + "...");
-                    if (outputsFolder.delete())
-                    {
-                        console.writeLine(" Done.");
-                    }
-                    else
-                    {
-                        console.writeLine(" Failed.");
-                    }
+                    console.writeLine(" Done.");
+                }
+                else
+                {
+                    console.writeLine(" Failed.");
                 }
             }
         }

@@ -91,68 +91,6 @@ public class QubCLI
         }
     }
 
-    static Folder getSourcesFolder(Console console, JSONObject javaSegment)
-    {
-        Folder sourcesFolder = null;
-
-        final Folder currentFolder = console.getCurrentFolder();
-        final JSONSegment sourcesSegment = javaSegment.getPropertyValue("sources");
-        if (sourcesSegment == null)
-        {
-            sourcesFolder = currentFolder.getFolder("sources");
-        }
-        else if (sourcesSegment instanceof JSONQuotedString)
-        {
-            sourcesFolder = currentFolder.getFolder(((JSONQuotedString)sourcesSegment).toUnquotedString());
-        }
-        else if (sourcesSegment instanceof JSONObject)
-        {
-            final JSONSegment folderSegment = ((JSONObject)sourcesSegment).getPropertyValue("folder");
-            if (folderSegment == null)
-            {
-                sourcesFolder = currentFolder.getFolder("sources");
-            }
-            else if (folderSegment instanceof JSONQuotedString)
-            {
-                sourcesFolder = currentFolder.getFolder(((JSONQuotedString)folderSegment).toUnquotedString());
-            }
-            else
-            {
-                console.writeLine("Expected \"folder\" property in the \"sources\" section to be a quoted-string property.");
-            }
-        }
-        else
-        {
-            console.writeLine("Expected \"sources\" to not exist, be a quoted string property, or be an object property.");
-        }
-
-        return sourcesFolder;
-    }
-
-    static String getSourcesJavaVersion(Console console, JSONObject javaObject)
-    {
-        String javaVersion = null;
-
-        final JSONSegment sourcesSegment = javaObject.getPropertyValue("sources");
-        if (sourcesSegment != null && sourcesSegment instanceof JSONObject)
-        {
-            final JSONSegment versionSegment = ((JSONObject)sourcesSegment).getPropertyValue("version");
-            if (versionSegment != null)
-            {
-                if (!(versionSegment instanceof JSONQuotedString))
-                {
-                    console.writeLine("Expected \"version\" property in \"sources\" section to be a quoted-string property.");
-                }
-                else
-                {
-                    javaVersion = ((JSONQuotedString)versionSegment).toUnquotedString();
-                }
-            }
-        }
-
-        return javaVersion;
-    }
-
     static String getTestsJavaVersion(Console console, JSONObject javaObject)
     {
         String javaVersion = null;
@@ -186,14 +124,7 @@ public class QubCLI
             final Iterable<File> testsFolderFiles = testsFolder.getFilesRecursively();
             if (testsFolderFiles != null && testsFolderFiles.any())
             {
-                result = testsFolderFiles.where(new Function1<File, Boolean>()
-                {
-                    @Override
-                    public Boolean run(File file)
-                    {
-                        return file.getFileExtension().equals(".java");
-                    }
-                });
+                result = testsFolderFiles.where(file -> file.getFileExtension().equals(".java"));
             }
         }
 
@@ -322,93 +253,9 @@ public class QubCLI
         return classpaths;
     }
 
-    static String getProject(Console console, JSONObject projectJsonRoot)
-    {
-        String project = null;
-
-        final JSONSegment projectSegment = projectJsonRoot.getPropertyValue("project");
-        if (projectSegment == null)
-        {
-            console.writeLine("A \"project\" quoted-string property must be specified in the root object of the project.json file.");
-        }
-        else if (!(projectSegment instanceof JSONQuotedString))
-        {
-            console.writeLine("The \"project\" property in the root object of the project.json file must be a quoted-string.");
-        }
-        else
-        {
-            project = ((JSONQuotedString)projectSegment).toUnquotedString();
-        }
-
-        return project;
-    }
-
     static Folder getQubFolder(Console console)
     {
         return console.getFileSystem().getFolder("C:/qub");
-    }
-
-    static Folder getOutputsFolder(Console console, JSONObject javaSegment)
-    {
-        Folder outputsFolder = null;
-
-        final Folder currentFolder = console.getCurrentFolder();
-        final JSONSegment outputsSegment = javaSegment.getPropertyValue("outputs");
-        if (outputsSegment == null)
-        {
-            outputsFolder = currentFolder.getFolder("outputs");
-        }
-        else if (outputsSegment instanceof JSONQuotedString)
-        {
-            outputsFolder = currentFolder.getFolder(((JSONQuotedString)outputsSegment).toUnquotedString());
-        }
-        else
-        {
-            console.writeLine("Expected \"outputs\" property to be a quoted string.");
-        }
-
-        return outputsFolder;
-    }
-
-    static JSONObject getJavaSegment(Console console, JSONObject projectJsonRoot)
-    {
-        JSONObject result = null;
-
-        final JSONSegment javaSegment = projectJsonRoot.getPropertyValue("java");
-        if (javaSegment == null)
-        {
-            console.writeLine("project.json root object must contain a \"java\" property.");
-        }
-        else if (!(javaSegment instanceof JSONObject))
-        {
-            console.writeLine("\"java\" property must be a JSON object.");
-        }
-        else
-        {
-            result = (JSONObject)javaSegment;
-        }
-
-        return result;
-    }
-
-    static String getMainClass(Console console, JSONObject javaObject)
-    {
-        String mainClass = null;
-
-        final JSONSegment mainClassSegment = javaObject.getPropertyValue("mainClass");
-        if (mainClassSegment != null)
-        {
-            if (mainClassSegment instanceof JSONQuotedString)
-            {
-                mainClass = ((JSONQuotedString)mainClassSegment).toUnquotedString();
-            }
-            else
-            {
-                console.writeLine("The \"mainClass\" property in the java object of the project.json file must be a quoted-string.");
-            }
-        }
-
-        return mainClass;
     }
 
     static Iterable<Dependency> getDependencies(Console console, JSONObject javaObject)
@@ -472,37 +319,6 @@ public class QubCLI
         }
 
         return dependencies;
-    }
-
-    static JSONObject readProjectJson(Console console)
-    {
-        JSONObject projectJsonObject = null;
-
-        final File projectJsonFile = console.getCurrentFolder().getFile("project.json");
-        if (!projectJsonFile.exists())
-        {
-            console.writeLine("project.json file doesn't exist in the current folder.");
-        }
-        else
-        {
-            JSONDocument projectJsonDocument;
-            try (final CharacterReadStream projectJsonFileReadStream = projectJsonFile.getContentCharacterReadStream())
-            {
-                projectJsonDocument = JSON.parse(projectJsonFileReadStream);
-            }
-
-            final JSONSegment rootSegment = projectJsonDocument.getRoot();
-            if (!(rootSegment instanceof JSONObject))
-            {
-                console.writeLine("project.json root segment must be a JSON object.");
-            }
-            else
-            {
-                projectJsonObject = (JSONObject)rootSegment;
-            }
-        }
-
-        return projectJsonObject;
     }
 
     static boolean parseDebug(CommandLine commandLine)

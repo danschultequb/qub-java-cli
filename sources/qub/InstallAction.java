@@ -29,65 +29,43 @@ public class InstallAction implements Action
         final Stopwatch totalInstall = console.getStopwatch();
         totalInstall.start();
 
-        final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
-        if (projectJsonRoot != null)
+        final ProjectJson projectJson = ProjectJson.parse(console);
+        if (projectJson != null)
         {
-            final JSONSegment publisherSegment = projectJsonRoot.getPropertyValue("publisher");
-            if (publisherSegment == null)
+            final JSONObject rootObject = projectJson.getRootObject();
+            if (rootObject != null)
             {
-                console.writeLine("A \"publisher\" quoted-string property must be specified in the root object of the project.json file.");
-            }
-            else if (!(publisherSegment instanceof JSONQuotedString))
-            {
-                console.writeLine("The \"publisher\" property in the root object of the project.json file must be a quoted-string.");
-            }
-            else
-            {
-                final String publisher = ((JSONQuotedString)publisherSegment).toUnquotedString();
-
-                final String project = QubCLI.getProject(console, projectJsonRoot);
-                if (project != null && !project.isEmpty())
+                final String publisher = projectJson.getPublisher();
+                if (publisher != null)
                 {
-                    final JSONSegment versionSegment = projectJsonRoot.getPropertyValue("version");
-                    if (versionSegment == null)
+                    final String project = projectJson.getProject();
+                    if (project != null)
                     {
-                        console.writeLine("A \"version\" quoted-string property must be specified in the root object of the project.json file.");
-                    }
-                    else if (!(versionSegment instanceof JSONQuotedString))
-                    {
-                        console.writeLine("The \"version\" property in the root object of the project.json file must be a quoted-string.");
-                    }
-                    else
-                    {
-                        final String version = ((JSONQuotedString)versionSegment).toUnquotedString();
-
-                        final JSONObject java = QubCLI.getJavaSegment(console, projectJsonRoot);
-                        if (java != null)
+                        final String version = projectJson.getVersion();
+                        if (version != null)
                         {
-                            final Folder outputsFolder = QubCLI.getOutputsFolder(console, java);
-                            if (outputsFolder != null)
+                            final JSONObject javaObject = projectJson.getJavaObject();
+                            if (javaObject != null)
                             {
-                                String jarFileName = null;
-                                final JSONSegment jarFileNameSegment = java.getPropertyValue("jarFileName");
-                                if (jarFileNameSegment instanceof JSONQuotedString)
+                                final Folder javaOutputsFolder = projectJson.getJavaOutputsFolder();
+                                if (javaOutputsFolder != null)
                                 {
-                                    jarFileName = ((JSONQuotedString)jarFileNameSegment).toUnquotedString();
-                                }
-                                if (jarFileName == null || jarFileName.isEmpty())
-                                {
-                                    jarFileName = project;
-                                }
-                                if (jarFileName == null || jarFileName.isEmpty())
-                                {
-                                    console.writeLine("Could not determine the desired jar file's name from the \"jarFileName\" property or the \"project\" property.");
-                                }
-                                else
-                                {
+                                    String jarFileName = null;
+                                    final JSONSegment jarFileNameSegment = javaObject.getPropertyValue("jarFileName");
+                                    if (jarFileNameSegment instanceof JSONQuotedString)
+                                    {
+                                        jarFileName = ((JSONQuotedString)jarFileNameSegment).toUnquotedString();
+                                    }
+                                    if (jarFileName == null || jarFileName.isEmpty())
+                                    {
+                                        jarFileName = project;
+                                    }
+
                                     if (!jarFileName.endsWith(".jar"))
                                     {
                                         jarFileName += ".jar";
                                     }
-                                    final File outputsJarFile = outputsFolder.getFile(jarFileName);
+                                    final File outputsJarFile = javaOutputsFolder.getFile(jarFileName);
 
                                     final Folder qubFolder = QubCLI.getQubFolder(console);
                                     final Folder publisherFolder = qubFolder.getFolder(publisher);
@@ -105,14 +83,14 @@ public class InstallAction implements Action
                                     final File installedProjectJsonFile = versionFolder.getFile("project.json");
                                     console.write("Copying project.json to " + installedProjectJsonFile + "...");
                                     stopwatch.start();
-                                    installedProjectJsonFile.setContents(projectJsonRoot.toString(), CharacterEncoding.UTF_8);
+                                    installedProjectJsonFile.setContents(rootObject.toString(), CharacterEncoding.UTF_8);
                                     console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
 
-                                    final String mainClass = QubCLI.getMainClass(console, java);
-                                    if (mainClass != null && !mainClass.isEmpty())
+                                    final String mainClass = projectJson.getMainClass();
+                                    if (mainClass != null)
                                     {
                                         String shortcutName = null;
-                                        final JSONSegment shortcutNameSegment = java.getPropertyValue("shortcutName");
+                                        final JSONSegment shortcutNameSegment = javaObject.getPropertyValue("shortcutName");
                                         if (shortcutNameSegment != null)
                                         {
                                             if (!(shortcutNameSegment instanceof JSONQuotedString))
@@ -130,7 +108,7 @@ public class InstallAction implements Action
                                         }
 
                                         String classpath = "%~dp0" + installedJarFile.getPath().relativeTo(qubFolder.getPath()).toString();
-                                        for (final Dependency dependency : QubCLI.getDependencies(console, java))
+                                        for (final Dependency dependency : QubCLI.getDependencies(console, javaObject))
                                         {
                                             final String dependencyPublisher = dependency.getPublisher();
                                             final String dependencyProject = dependency.getProject();
@@ -141,7 +119,7 @@ public class InstallAction implements Action
                                         final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd");
                                         final String shortcutFileContents =
                                             "@echo OFF\n" +
-                                            "java -cp " + classpath + " " + mainClass + " %*\n";
+                                                "java -cp " + classpath + " " + mainClass + " %*\n";
                                         console.write("Writing " + shortcutFile + "...");
                                         stopwatch.start();
                                         shortcutFile.setContents(shortcutFileContents, CharacterEncoding.UTF_8);

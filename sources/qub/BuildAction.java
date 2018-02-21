@@ -31,47 +31,47 @@ public class BuildAction implements Action
 
         final boolean debug = QubCLI.parseDebug(console.getCommandLine());
 
-        final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
-        if (projectJsonRoot != null)
+        final ProjectJson projectJson = ProjectJson.parse(console);
+        if (projectJson != null)
         {
-            final JSONObject java = QubCLI.getJavaSegment(console, projectJsonRoot);
-            if (java != null)
+            final JSONObject javaObject = projectJson.getJavaObject();
+            if (javaObject != null)
             {
-                final Folder outputsFolder = QubCLI.getOutputsFolder(console, java);
-                if (outputsFolder != null)
+                final Folder javaOutputsFolder = projectJson.getJavaOutputsFolder();
+                if (javaOutputsFolder != null)
                 {
-                    final Iterable<String> classpaths = QubCLI.getClasspaths(console, java);
+                    final Iterable<String> classpaths = QubCLI.getClasspaths(console, javaObject);
 
                     boolean compiledSourcesSuccessfully = true;
 
-                    final Folder sourcesFolder = QubCLI.getSourcesFolder(console, java);
+                    final Folder sourcesFolder = projectJson.getJavaSourcesFolder();
                     Folder sourceOutputsFolder = null;
                     if (sourcesFolder != null)
                     {
                         final Iterable<File> sourceFiles = QubCLI.getSourceFiles(console, sourcesFolder);
                         if (sourceFiles != null && sourceFiles.any())
                         {
-                            sourceOutputsFolder = outputsFolder.getFolder(sourcesFolder.getName());
+                            sourceOutputsFolder = javaOutputsFolder.getFolder(sourcesFolder.getName());
 
                             final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
                             sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
-                            final String sourcesJavaVersion = QubCLI.getSourcesJavaVersion(console, java);
+                            final String sourcesJavaVersion = projectJson.getJavaSourcesVersion();
                             compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
                             if (compiledSourcesSuccessfully)
                             {
-                                final String project = QubCLI.getProject(console, projectJsonRoot);
+                                final String project = projectJson.getProject();
                                 if (project == null || project.isEmpty())
                                 {
                                     console.writeLine("Could not determine the desired jar file's name from the \"project\" property.");
                                 }
                                 else
                                 {
-                                    final File jarFile = outputsFolder.getFile(project + ".jar");
+                                    final File jarFile = javaOutputsFolder.getFile(project + ".jar");
 
                                     File manifestFile = null;
-                                    final String mainClass = QubCLI.getMainClass(console, java);
-                                    if (mainClass != null && !mainClass.isEmpty())
+                                    final String mainClass = projectJson.getMainClass();
+                                    if (mainClass != null)
                                     {
                                         manifestFile = sourceOutputsFolder.getFolder("META-INF").getFile("MANIFEST.MF");
                                         final String manifestFileContents =
@@ -121,14 +121,14 @@ public class BuildAction implements Action
 
                     if (compiledSourcesSuccessfully)
                     {
-                        final Folder testsFolder = QubCLI.getTestsFolder(console, java);
+                        final Folder testsFolder = QubCLI.getTestsFolder(console, javaObject);
                         if (testsFolder != null)
                         {
                             final Iterable<File> testFiles = QubCLI.getTestFiles(console, testsFolder);
                             if (testFiles != null && testFiles.any())
                             {
-                                final String testsJavaVersion = QubCLI.getTestsJavaVersion(console, java);
-                                final Folder testOutputsFolder = outputsFolder.getFolder(testsFolder.getName());
+                                final String testsJavaVersion = QubCLI.getTestsJavaVersion(console, javaObject);
+                                final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName());
 
                                 final List<String> testClasspaths = ArrayList.fromValues(classpaths);
                                 testClasspaths.add(testOutputsFolder.getPath().toString());

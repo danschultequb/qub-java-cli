@@ -11,6 +11,9 @@ public class QubCLITests
         "  Build: Build the coding project in the current folder.\n" +
         "    Usage: Build\n" +
         "\n" +
+        "  Clean: Clean the coding project in the current folder.\n" +
+        "    Usage: Clean\n" +
+        "\n" +
         "  Delete: Delete a provided file or folder.\n" +
         "    Usage: Delete [-file] [-folder] <file-folder-or-filter-to-delete> [<additional-file-folder-or-filter-to-delete> ...]\n" +
         "\n" +
