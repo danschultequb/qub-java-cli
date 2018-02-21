@@ -500,4 +500,10 @@ public class QubCLI
 
         return projectJsonObject;
     }
+
+    static boolean parseDebug(CommandLine commandLine)
+    {
+        final CommandLineArgument debugArgument = commandLine.remove("debug");
+        return debugArgument != null && (debugArgument.getValue() == null || debugArgument.getValue().equalsIgnoreCase("true"));
+    }
 }

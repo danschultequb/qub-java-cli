@@ -28,8 +28,7 @@ public class TestAction implements Action
     {
         final CommandLine commandLine = console.getCommandLine();
 
-        final CommandLineArgument debugArgument = commandLine.remove("debug");
-        boolean debug = debugArgument != null && (debugArgument.getValue() == null || debugArgument.getValue().equalsIgnoreCase("true"));
+        final boolean debug = QubCLI.parseDebug(commandLine);
 
         final CommandLineArgument testPatternArgument = commandLine.remove("pattern");
 

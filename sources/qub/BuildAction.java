@@ -29,7 +29,7 @@ public class BuildAction implements Action
         final Stopwatch totalBuild = console.getStopwatch();
         totalBuild.start();
 
-        final boolean debug = (console.getCommandLine().get("debug") != null);
+        final boolean debug = QubCLI.parseDebug(console.getCommandLine());
 
         final JSONObject projectJsonRoot = QubCLI.readProjectJson(console);
         if (projectJsonRoot != null)
