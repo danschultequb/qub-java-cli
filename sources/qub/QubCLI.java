@@ -4,7 +4,10 @@ public class QubCLI
 {
     public static void main(String[] args)
     {
-        QubCLI.main(new Console(args));
+        try (final Console console = new Console(args))
+        {
+            QubCLI.main(console);
+        }
     }
 
     static void main(Console console)

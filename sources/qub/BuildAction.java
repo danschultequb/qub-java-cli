@@ -57,7 +57,7 @@ public class BuildAction implements Action
                             sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
                             final String sourcesJavaVersion = QubCLI.getSourcesJavaVersion(console, java);
-                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
+                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
                             if (compiledSourcesSuccessfully)
                             {
                                 final String project = QubCLI.getProject(console, projectJsonRoot);
@@ -137,7 +137,7 @@ public class BuildAction implements Action
                                     testClasspaths.add(sourceOutputsFolder.getPath().toString());
                                 }
 
-                                compile("tests", console, testClasspaths, testFiles, testOutputsFolder, testsJavaVersion, debug);
+                                compile("tests", console, testClasspaths, testsFolder, testFiles, testOutputsFolder, testsJavaVersion, debug);
                             }
                         }
                     }
@@ -149,7 +149,7 @@ public class BuildAction implements Action
         console.writeLine("Total Duration: " + totalBuildDuration.toString("0.0"));
     }
 
-    private static boolean compile(String label, Console console, Iterable<String> classpaths, Iterable<File> filesToCompile, Folder outputFolder, String javaVersion, boolean debug)
+    private static boolean compile(String label, Console console, Iterable<String> classpaths, Folder folderToCompile, Iterable<File> filesToCompile, Folder outputFolder, String javaVersion, boolean debug)
     {
         final Stopwatch stopwatch = console.getStopwatch();
         console.write("Compiling " + label + "...");
@@ -207,6 +207,29 @@ public class BuildAction implements Action
         }
 
         final int exitCode = javac.run();
+
+        final Path outputFolderPath = outputFolder.getPath();
+        for (final File outputFile : outputFolder.getFilesRecursively())
+        {
+            if (outputFile.getFileExtension().equals(".class"))
+            {
+                final Path relativeClassFilePath = outputFile.getPath().relativeTo(outputFolderPath).withoutFileExtension();
+
+                final int dollarSignIndex = relativeClassFilePath.toString().indexOf('$');
+
+                String relativeJavaFilePath = relativeClassFilePath.toString();
+                if (dollarSignIndex >= 0)
+                {
+                    relativeJavaFilePath = relativeJavaFilePath.substring(0, dollarSignIndex);
+                }
+                relativeJavaFilePath += ".java";
+
+                if (!folderToCompile.fileExists(relativeJavaFilePath))
+                {
+                    outputFile.delete();
+                }
+            }
+        }
 
         final Duration compilationDuration = stopwatch.stop().toSeconds();
         console.writeLine(" Done (" + compilationDuration.toString("0.0") + ")");
