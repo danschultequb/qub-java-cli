@@ -15,6 +15,7 @@ public class QubCLI
         final Map<String,Action> actions = new ListMap<>();
         addAction(actions, new BondsAction());
         addAction(actions, new BuildAction());
+        addAction(actions, new CleanAction());
         addAction(actions, new DeleteAction());
         addAction(actions, new InstallAction());
         addAction(actions, new TestAction());
