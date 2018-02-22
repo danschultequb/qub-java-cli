@@ -38,21 +38,21 @@ public class TestAction implements Action
         final ProjectJson projectJson = ProjectJson.parse(console);
         if (projectJson != null)
         {
-            final JSONObject javaSegment = projectJson.getJavaObject();
-            if (javaSegment != null)
+            final JSONObject javaObject = projectJson.getJavaObject();
+            if (javaObject != null)
             {
                 final Folder javaOutputsFolder = projectJson.getJavaOutputsFolder();
                 if (javaOutputsFolder != null)
                 {
-                    final Folder testsFolder = QubCLI.getTestsFolder(console, javaSegment);
-                    if (testsFolder != null)
+                    final Folder javaTestsFolder = projectJson.getJavaTestsFolder();
+                    if (javaTestsFolder != null)
                     {
-                        final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName());
+                        final Folder testOutputsFolder = javaOutputsFolder.getFolder(javaTestsFolder.getName());
 
                         final Folder sourcesFolder = projectJson.getJavaSourcesFolder();
                         final Folder sourceOutputsFolder = sourcesFolder == null ? null : javaOutputsFolder.getFolder(sourcesFolder.getName());
 
-                        final List<String> classpaths = QubCLI.getClasspaths(console, javaSegment);
+                        final List<String> classpaths = QubCLI.getClasspaths(console, javaObject);
                         if (sourceOutputsFolder != null)
                         {
                             classpaths.add(sourceOutputsFolder.getPath().toString());

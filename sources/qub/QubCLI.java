@@ -91,30 +91,6 @@ public class QubCLI
         }
     }
 
-    static String getTestsJavaVersion(Console console, JSONObject javaObject)
-    {
-        String javaVersion = null;
-
-        final JSONSegment testsSegment = javaObject.getPropertyValue("tests");
-        if (testsSegment != null && testsSegment instanceof JSONObject)
-        {
-            final JSONSegment versionSegment = ((JSONObject)testsSegment).getPropertyValue("version");
-            if (versionSegment != null)
-            {
-                if (!(versionSegment instanceof JSONQuotedString))
-                {
-                    console.writeLine("Expected \"version\" property in \"tests\" section to be a quoted-string property.");
-                }
-                else
-                {
-                    javaVersion = ((JSONQuotedString)versionSegment).toUnquotedString();
-                }
-            }
-        }
-
-        return javaVersion;
-    }
-
     static Iterable<File> getTestFiles(Console console, Folder testsFolder)
     {
         Iterable<File> result = null;
@@ -134,44 +110,6 @@ public class QubCLI
         }
 
         return result;
-    }
-
-    static Folder getTestsFolder(Console console, JSONObject javaSegment)
-    {
-        Folder testsFolder = null;
-
-        final Folder currentFolder = console.getCurrentFolder();
-        final JSONSegment testsSegment = javaSegment.getPropertyValue("tests");
-        if (testsSegment == null)
-        {
-            testsFolder = currentFolder.getFolder("tests");
-        }
-        else if (testsSegment instanceof JSONQuotedString)
-        {
-            testsFolder = currentFolder.getFolder(((JSONQuotedString)testsSegment).toUnquotedString());
-        }
-        else if (testsSegment instanceof JSONObject)
-        {
-            final JSONSegment folderSegment = ((JSONObject)testsSegment).getPropertyValue("folder");
-            if (folderSegment == null)
-            {
-                testsFolder = currentFolder.getFolder("tests");
-            }
-            else if (folderSegment instanceof JSONQuotedString)
-            {
-                testsFolder = currentFolder.getFolder(((JSONQuotedString)folderSegment).toUnquotedString());
-            }
-            else
-            {
-                console.writeLine("Expected \"folder\" property in the \"tests\" section to be a quoted-string property.");
-            }
-        }
-        else
-        {
-            console.writeLine("Expected \"tests\" to not exist, or to be a quoted string property.");
-        }
-
-        return testsFolder;
     }
 
     static Iterable<File> getSourceFiles(Console console, Folder sourcesFolder)

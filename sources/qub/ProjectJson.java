@@ -11,6 +11,9 @@ public class ProjectJson
     private final JSONObject javaSourcesObject;
     private final Folder javaSourcesFolder;
     private final String javaSourcesVersion;
+    private final JSONObject javaTestsObject;
+    private final Folder javaTestsFolder;
+    private final String javaTestsVersion;
     private final Folder javaOutputsFolder;
 
     ProjectJson(JSONObject rootObject,
@@ -22,6 +25,9 @@ public class ProjectJson
                 JSONObject javaSourcesObject,
                 Folder javaSourcesFolder,
                 String javaSourcesVersion,
+                JSONObject javaTestsObject,
+                Folder javaTestsFolder,
+                String javaTestsVersion,
                 Folder javaOutputsFolder)
     {
         this.rootObject = rootObject;
@@ -33,6 +39,9 @@ public class ProjectJson
         this.javaSourcesObject = javaSourcesObject;
         this.javaSourcesFolder = javaSourcesFolder;
         this.javaSourcesVersion = javaSourcesVersion;
+        this.javaTestsObject = javaTestsObject;
+        this.javaTestsFolder = javaTestsFolder;
+        this.javaTestsVersion = javaTestsVersion;
         this.javaOutputsFolder = javaOutputsFolder;
     }
 
@@ -81,6 +90,21 @@ public class ProjectJson
         return javaSourcesVersion;
     }
 
+    public JSONObject getJavaTestsObject()
+    {
+        return javaTestsObject;
+    }
+
+    public Folder getJavaTestsFolder()
+    {
+        return javaTestsFolder;
+    }
+
+    public String getJavaTestsVersion()
+    {
+        return javaTestsVersion;
+    }
+
     public Folder getJavaOutputsFolder()
     {
         return javaOutputsFolder;
@@ -111,9 +135,12 @@ public class ProjectJson
                 String version = null;
                 JSONObject javaObject = null;
                 String mainClass = null;
-                JSONObject javaSourcesObject = null;
+                JSONObject javaTestsObject = null;
                 Folder javaSourcesFolder = null;
                 String javaSourcesVersion = null;
+                JSONObject javaSourcesObject = null;
+                Folder javaTestsFolder = null;
+                String javaTestsVersion = null;
                 Folder javaOutputsFolder = null;
 
                 final JSONSegment rootSegment = projectJsonDocument.getRoot();
@@ -201,7 +228,7 @@ public class ProjectJson
                             if (mainClassSegment instanceof JSONQuotedString)
                             {
                                 mainClass = ((JSONQuotedString)mainClassSegment).toUnquotedString();
-                                if (mainClass == null || mainClass.isEmpty())
+                                if (mainClass.isEmpty())
                                 {
                                     console.writeLine("The \"mainClass\" property in the java object of the project.json file must be a non-empty quoted-string.");
                                     mainClass = null;
@@ -215,24 +242,24 @@ public class ProjectJson
 
                         final Folder currentFolder = console.getCurrentFolder();
 
-                        final JSONSegment sourcesSegment = javaObject.getPropertyValue("sources");
+                        final JSONSegment javaSourcesSegment = javaObject.getPropertyValue("sources");
                         String sources = null;
-                        if (sourcesSegment == null)
+                        if (javaSourcesSegment == null)
                         {
                             sources = "sources";
                         }
-                        else if (sourcesSegment instanceof JSONQuotedString)
+                        else if (javaSourcesSegment instanceof JSONQuotedString)
                         {
-                            sources = ((JSONQuotedString)sourcesSegment).toUnquotedString();
-                            if (sources == null || sources.isEmpty())
+                            sources = ((JSONQuotedString)javaSourcesSegment).toUnquotedString();
+                            if (sources.isEmpty())
                             {
                                 console.writeLine("Expected \"sources\" to not exist, be a non-empty quoted-string property, or be an object property.");
                                 sources = null;
                             }
                         }
-                        else if (sourcesSegment instanceof JSONObject)
+                        else if (javaSourcesSegment instanceof JSONObject)
                         {
-                            javaSourcesObject = (JSONObject)sourcesSegment;
+                            javaSourcesObject = (JSONObject)javaSourcesSegment;
 
                             final JSONSegment javaSourcesFolderSegment = javaSourcesObject.getPropertyValue("folder");
                             if (javaSourcesFolderSegment == null)
@@ -242,7 +269,7 @@ public class ProjectJson
                             else if (javaSourcesFolderSegment instanceof JSONQuotedString)
                             {
                                 sources = ((JSONQuotedString)javaSourcesFolderSegment).toUnquotedString();
-                                if (sources == null || sources.isEmpty())
+                                if (sources.isEmpty())
                                 {
                                     console.writeLine("Expected \"folder\" property in \"sources\" section to not exist, be a non-empty quoted-string property, or be an object property.");
                                     sources = null;
@@ -263,7 +290,7 @@ public class ProjectJson
                                 else
                                 {
                                     javaSourcesVersion = ((JSONQuotedString)javaSourcesVersionSegment).toUnquotedString();
-                                    if (javaSourcesVersion == null || javaSourcesVersion.isEmpty())
+                                    if (javaSourcesVersion.isEmpty())
                                     {
                                         console.writeLine("Expected \"version\" property in \"sources\" section to be a non-empty quoted-string property.");
                                         javaSourcesVersion = null;
@@ -281,6 +308,72 @@ public class ProjectJson
                             javaSourcesFolder = currentFolder.getFolder(sources);
                         }
 
+                        final JSONSegment testsSegment = javaObject.getPropertyValue("tests");
+                        String tests = null;
+                        if (testsSegment == null)
+                        {
+                            tests = "tests";
+                        }
+                        else if (testsSegment instanceof JSONQuotedString)
+                        {
+                            tests = ((JSONQuotedString)testsSegment).toUnquotedString();
+                            if (tests.isEmpty())
+                            {
+                                console.writeLine("Expected \"tests\" to not exist, be a non-empty quoted-string property, or be an object property.");
+                                tests = null;
+                            }
+                        }
+                        else if (testsSegment instanceof JSONObject)
+                        {
+                            javaTestsObject = (JSONObject)testsSegment;
+
+                            final JSONSegment javaTestsFolderSegment = javaTestsObject.getPropertyValue("folder");
+                            if (javaTestsFolderSegment == null)
+                            {
+                                tests = "tests";
+                            }
+                            else if (javaTestsFolderSegment instanceof JSONQuotedString)
+                            {
+                                tests = ((JSONQuotedString)javaTestsFolderSegment).toUnquotedString();
+                                if (tests.isEmpty())
+                                {
+                                    console.writeLine("Expected \"folder\" property in \"tests\" section to be a non-empty quoted-string property.");
+                                    tests = null;
+                                }
+                            }
+                            else
+                            {
+                                console.writeLine("Expected \"folder\" property in the \"tests\" section to be a non-empty quoted-string property.");
+                            }
+
+                            final JSONSegment javaTestsVersionSegment = javaTestsObject.getPropertyValue("version");
+                            if (javaTestsVersionSegment != null)
+                            {
+                                if (!(javaTestsVersionSegment instanceof JSONQuotedString))
+                                {
+                                    console.writeLine("Expected \"version\" property in \"tests\" section to be a non-empty quoted-string property.");
+                                }
+                                else
+                                {
+                                    javaTestsVersion = ((JSONQuotedString)javaTestsVersionSegment).toUnquotedString();
+                                    if (javaTestsVersion.isEmpty())
+                                    {
+                                        console.writeLine("Expected \"version\" property in \"tests\" section to be a non-empty quoted-string property.");
+                                        javaTestsVersion = null;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            console.writeLine("Expected \"tests\" to not exist, be a non-empty quoted-string property, or be an object property.");
+                        }
+
+                        if (tests != null)
+                        {
+                            javaTestsFolder = currentFolder.getFolder(tests);
+                        }
+
                         final JSONSegment outputsSegment = javaObject.getPropertyValue("outputs");
                         String outputs = null;
                         if (outputsSegment == null)
@@ -290,7 +383,7 @@ public class ProjectJson
                         else if (outputsSegment instanceof JSONQuotedString)
                         {
                             outputs = ((JSONQuotedString)outputsSegment).toUnquotedString();
-                            if (outputs == null || outputs.isEmpty())
+                            if (outputs.isEmpty())
                             {
                                 console.writeLine("Expected \"outputs\" property in \"java\" section to be a non-empty quoted-string.");
                                 outputs = null;
@@ -318,6 +411,9 @@ public class ProjectJson
                     javaSourcesObject,
                     javaSourcesFolder,
                     javaSourcesVersion,
+                    javaTestsObject,
+                    javaTestsFolder,
+                    javaTestsVersion,
                     javaOutputsFolder);
             }
         }

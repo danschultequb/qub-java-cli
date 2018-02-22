@@ -121,13 +121,13 @@ public class BuildAction implements Action
 
                     if (compiledSourcesSuccessfully)
                     {
-                        final Folder testsFolder = QubCLI.getTestsFolder(console, javaObject);
+                        final Folder testsFolder = projectJson.getJavaTestsFolder();
                         if (testsFolder != null)
                         {
                             final Iterable<File> testFiles = QubCLI.getTestFiles(console, testsFolder);
                             if (testFiles != null && testFiles.any())
                             {
-                                final String testsJavaVersion = QubCLI.getTestsJavaVersion(console, javaObject);
+                                final String testsJavaVersion = projectJson.getJavaTestsVersion();
                                 final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName());
 
                                 final List<String> testClasspaths = ArrayList.fromValues(classpaths);
