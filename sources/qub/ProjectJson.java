@@ -8,6 +8,7 @@ public class ProjectJson
     private final String version;
     private final JSONObject javaObject;
     private final String mainClass;
+    private final Iterable<String> classpath;
     private final JSONObject javaSourcesObject;
     private final Folder javaSourcesFolder;
     private final String javaSourcesVersion;
@@ -15,6 +16,7 @@ public class ProjectJson
     private final Folder javaTestsFolder;
     private final String javaTestsVersion;
     private final Folder javaOutputsFolder;
+    private final Iterable<Dependency> dependencies;
 
     ProjectJson(JSONObject rootObject,
                 String publisher,
@@ -22,13 +24,15 @@ public class ProjectJson
                 String version,
                 JSONObject javaObject,
                 String mainClass,
+                Iterable<String> classpath,
                 JSONObject javaSourcesObject,
                 Folder javaSourcesFolder,
                 String javaSourcesVersion,
                 JSONObject javaTestsObject,
                 Folder javaTestsFolder,
                 String javaTestsVersion,
-                Folder javaOutputsFolder)
+                Folder javaOutputsFolder,
+                Iterable<Dependency> dependencies)
     {
         this.rootObject = rootObject;
         this.publisher = publisher;
@@ -36,6 +40,7 @@ public class ProjectJson
         this.version = version;
         this.javaObject = javaObject;
         this.mainClass = mainClass;
+        this.classpath = classpath;
         this.javaSourcesObject = javaSourcesObject;
         this.javaSourcesFolder = javaSourcesFolder;
         this.javaSourcesVersion = javaSourcesVersion;
@@ -43,6 +48,7 @@ public class ProjectJson
         this.javaTestsFolder = javaTestsFolder;
         this.javaTestsVersion = javaTestsVersion;
         this.javaOutputsFolder = javaOutputsFolder;
+        this.dependencies = dependencies;
     }
 
     public JSONObject getRootObject()
@@ -75,6 +81,18 @@ public class ProjectJson
         return mainClass;
     }
 
+    public Iterable<String> getClasspath()
+    {
+        return classpath;
+    }
+
+    public Iterable<String> getAllClasspaths(Folder qubFolder)
+    {
+        final List<String> result = ArrayList.fromValues(classpath);
+        result.addAll(dependencies.map((Dependency dependency) -> dependency.toString(qubFolder)));
+        return result;
+    }
+
     public JSONObject getJavaSourcesObject()
     {
         return javaSourcesObject;
@@ -83,6 +101,14 @@ public class ProjectJson
     public Folder getJavaSourcesFolder()
     {
         return javaSourcesFolder;
+    }
+
+    public Iterable<File> getJavaSourceFiles()
+    {
+        return javaSourcesFolder == null ?
+            new Array<>(0) :
+            javaSourcesFolder.getFilesRecursively()
+                .where((File file) -> file.getFileExtension().equals(".java"));
     }
 
     public String getJavaSourcesVersion()
@@ -100,6 +126,14 @@ public class ProjectJson
         return javaTestsFolder;
     }
 
+    public Iterable<File> getJavaTestFiles()
+    {
+        return javaTestsFolder == null ?
+            new Array<>(0) :
+            javaTestsFolder.getFilesRecursively()
+                .where((File file) -> file.getFileExtension().equals(".java"));
+    }
+
     public String getJavaTestsVersion()
     {
         return javaTestsVersion;
@@ -108,6 +142,11 @@ public class ProjectJson
     public Folder getJavaOutputsFolder()
     {
         return javaOutputsFolder;
+    }
+
+    public Iterable<Dependency> getDependencies()
+    {
+        return dependencies;
     }
 
     public static ProjectJson parse(Console console)
@@ -135,6 +174,7 @@ public class ProjectJson
                 String version = null;
                 JSONObject javaObject = null;
                 String mainClass = null;
+                List<String> classpath = new ArrayList<>();
                 JSONObject javaTestsObject = null;
                 Folder javaSourcesFolder = null;
                 String javaSourcesVersion = null;
@@ -142,6 +182,7 @@ public class ProjectJson
                 Folder javaTestsFolder = null;
                 String javaTestsVersion = null;
                 Folder javaOutputsFolder = null;
+                List<Dependency> dependencies = new ArrayList<>();
 
                 final JSONSegment rootSegment = projectJsonDocument.getRoot();
                 if (!(rootSegment instanceof JSONObject))
@@ -237,6 +278,44 @@ public class ProjectJson
                             else
                             {
                                 console.writeLine("The \"mainClass\" property in the java object of the project.json file must be a non-empty quoted-string.");
+                            }
+                        }
+
+                        final JSONSegment classpathSegment = javaObject.getPropertyValue("classpath");
+                        if (classpathSegment != null)
+                        {
+                            if (classpathSegment instanceof JSONQuotedString)
+                            {
+                                final JSONQuotedString classpathQuotedString = (JSONQuotedString)classpathSegment;
+                                final String classpathQuotedStringValue = classpathQuotedString.toUnquotedString();
+                                if (!classpathQuotedStringValue.isEmpty())
+                                {
+                                    classpath.add(classpathQuotedString.toUnquotedString());
+                                }
+                            }
+                            else if (classpathSegment instanceof JSONArray)
+                            {
+                                final JSONArray classpathArray = (JSONArray)classpathSegment;
+                                for (final JSONSegment classpathElementSegment : classpathArray.getElements())
+                                {
+                                    if (!(classpathElementSegment instanceof JSONQuotedString))
+                                    {
+                                        console.writeLine("Expected element of \"classpath\" array to be a quoted string.");
+                                    }
+                                    else
+                                    {
+                                        final JSONQuotedString classpathQuotedString = (JSONQuotedString)classpathElementSegment;
+                                        final String classpathQuotedStringValue = classpathQuotedString.toUnquotedString();
+                                        if (!classpathQuotedStringValue.isEmpty())
+                                        {
+                                            classpath.add(classpathQuotedString.toUnquotedString());
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                console.writeLine("Expected \"classpath\" to be either a quoted string or an array of quoted strings.");
                             }
                         }
 
@@ -398,6 +477,80 @@ public class ProjectJson
                         {
                             javaOutputsFolder = currentFolder.getFolder(outputs);
                         }
+
+                        final JSONSegment dependenciesSegment = javaObject.getPropertyValue("dependencies");
+                        if (dependenciesSegment != null)
+                        {
+                            if (!(dependenciesSegment instanceof JSONArray))
+                            {
+                                console.writeLine("The \"dependencies\" property in the java section must be an array.");
+                            }
+                            else
+                            {
+                                final JSONArray dependenciesArray = (JSONArray)dependenciesSegment;
+                                for (final JSONSegment dependencySegment : dependenciesArray.getElements())
+                                {
+                                    if (!(dependencySegment instanceof JSONObject))
+                                    {
+                                        console.writeLine("Each dependency in the \"dependencies\" array property must be an object.");
+                                    }
+                                    else
+                                    {
+                                        final JSONObject dependencyObject = (JSONObject)dependencySegment;
+
+                                        final JSONSegment dependencyPublisherSegment = dependencyObject.getPropertyValue("publisher");
+                                        if (dependencyPublisherSegment == null || !(dependencyPublisherSegment instanceof JSONQuotedString))
+                                        {
+                                            console.writeLine("Each dependency must have a non-empty quoted-string \"publisher\" property.");
+                                        }
+                                        else
+                                        {
+                                            final String dependencyPublisher = ((JSONQuotedString)dependencyPublisherSegment).toUnquotedString();
+                                            if (dependencyPublisher.isEmpty())
+                                            {
+                                                console.writeLine("Each dependency must have a non-empty quoted-string \"publisher\" property.");
+                                            }
+                                            else
+                                            {
+                                                final JSONSegment dependencyProjectSegment = dependencyObject.getPropertyValue("project");
+                                                if (dependencyProjectSegment == null || !(dependencyProjectSegment instanceof JSONQuotedString))
+                                                {
+                                                    console.writeLine("Each dependency must have a non-empty quoted-string \"project\" property.");
+                                                }
+                                                else
+                                                {
+                                                    final String dependencyProject = ((JSONQuotedString)dependencyProjectSegment).toUnquotedString();
+                                                    if (dependencyProject.isEmpty())
+                                                    {
+                                                        console.writeLine("Each dependency must have a non-empty quoted-string \"project\" property.");
+                                                    }
+                                                    else
+                                                    {
+                                                        final JSONSegment dependencyVersionSegment = dependencyObject.getPropertyValue("version");
+                                                        if (dependencyVersionSegment == null || !(dependencyVersionSegment instanceof JSONQuotedString))
+                                                        {
+                                                            console.writeLine("Each dependency must have a non-empty quoted-string \"version\" property.");
+                                                        }
+                                                        else
+                                                        {
+                                                            final String dependencyVersion = ((JSONQuotedString)dependencyVersionSegment).toUnquotedString();
+                                                            if (dependencyVersion.isEmpty())
+                                                            {
+                                                                console.writeLine("Each dependency must have a non-empty quoted-string \"version\" property.");
+                                                            }
+                                                            else
+                                                            {
+                                                                dependencies.add(new Dependency(dependencyPublisher, dependencyProject, dependencyVersion));
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -408,13 +561,15 @@ public class ProjectJson
                     version,
                     javaObject,
                     mainClass,
+                    classpath,
                     javaSourcesObject,
                     javaSourcesFolder,
                     javaSourcesVersion,
                     javaTestsObject,
                     javaTestsFolder,
                     javaTestsVersion,
-                    javaOutputsFolder);
+                    javaOutputsFolder,
+                    dependencies);
             }
         }
 

@@ -27,4 +27,34 @@ public class Dependency
     {
         return version;
     }
+
+    @Override
+    public String toString()
+    {
+        return publisher + "/" + project + "/" + version + "/" + project + ".jar";
+    }
+
+    public String toString(Folder qubFolder)
+    {
+        String result = toString();
+        if (qubFolder != null)
+        {
+            result = qubFolder.getPath().concatenateSegment(result).toString();
+        }
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof Dependency && equals((Dependency)obj);
+    }
+
+    public boolean equals(Dependency rhs)
+    {
+        return rhs != null &&
+            publisher.equals(rhs.getPublisher()) &&
+            project.equals(rhs.getProject()) &&
+            version.equals(rhs.getVersion());
+    }
 }

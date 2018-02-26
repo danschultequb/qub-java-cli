@@ -34,111 +34,115 @@ public class BuildAction implements Action
         final ProjectJson projectJson = ProjectJson.parse(console);
         if (projectJson != null)
         {
-            final JSONObject javaObject = projectJson.getJavaObject();
-            if (javaObject != null)
+            final Folder javaOutputsFolder = projectJson.getJavaOutputsFolder();
+            if (javaOutputsFolder != null)
             {
-                final Folder javaOutputsFolder = projectJson.getJavaOutputsFolder();
-                if (javaOutputsFolder != null)
+                final Iterable<String> classpaths = projectJson.getAllClasspaths(QubCLI.getQubFolder(console));
+
+                boolean compiledSourcesSuccessfully = true;
+
+                final Folder sourcesFolder = projectJson.getJavaSourcesFolder();
+                Folder sourceOutputsFolder = null;
+                if (sourcesFolder != null)
                 {
-                    final Iterable<String> classpaths = QubCLI.getClasspaths(console, javaObject);
-
-                    boolean compiledSourcesSuccessfully = true;
-
-                    final Folder sourcesFolder = projectJson.getJavaSourcesFolder();
-                    Folder sourceOutputsFolder = null;
-                    if (sourcesFolder != null)
+                    final Iterable<File> sourceFiles = projectJson.getJavaSourceFiles();
+                    if (!sourceFiles.any())
                     {
-                        final Iterable<File> sourceFiles = QubCLI.getSourceFiles(console, sourcesFolder);
-                        if (sourceFiles != null && sourceFiles.any())
+                        console.writeLine("No source files found to compile.");
+                    }
+                    else
+                    {
+                        sourceOutputsFolder = javaOutputsFolder.getFolder(sourcesFolder.getName());
+
+                        final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
+                        sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
+
+                        final String sourcesJavaVersion = projectJson.getJavaSourcesVersion();
+                        compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
+                        if (compiledSourcesSuccessfully)
                         {
-                            sourceOutputsFolder = javaOutputsFolder.getFolder(sourcesFolder.getName());
-
-                            final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
-                            sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
-
-                            final String sourcesJavaVersion = projectJson.getJavaSourcesVersion();
-                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
-                            if (compiledSourcesSuccessfully)
+                            final String project = projectJson.getProject();
+                            if (project == null || project.isEmpty())
                             {
-                                final String project = projectJson.getProject();
-                                if (project == null || project.isEmpty())
+                                console.writeLine("Could not determine the desired jar file's name from the \"project\" property.");
+                            }
+                            else
+                            {
+                                final File jarFile = javaOutputsFolder.getFile(project + ".jar");
+
+                                File manifestFile = null;
+                                final String mainClass = projectJson.getMainClass();
+                                if (mainClass != null)
                                 {
-                                    console.writeLine("Could not determine the desired jar file's name from the \"project\" property.");
+                                    manifestFile = sourceOutputsFolder.getFolder("META-INF").getFile("MANIFEST.MF");
+                                    final String manifestFileContents =
+                                        "Manifest-Version: 1.0\n" +
+                                        "Main-Class: " + mainClass + "\n";
+                                    manifestFile.setContents(manifestFileContents, CharacterEncoding.UTF_8);
                                 }
-                                else
+
+                                final ProcessBuilder jar = console.getProcessBuilder("jar");
+                                jar.setWorkingFolder(sourceOutputsFolder);
+                                jar.redirectOutput(console.getOutputAsByteWriteStream());
+                                jar.redirectError(console.getErrorAsByteWriteStream());
+
+                                String jarArguments = "cf";
+                                if (manifestFile != null)
                                 {
-                                    final File jarFile = javaOutputsFolder.getFile(project + ".jar");
-
-                                    File manifestFile = null;
-                                    final String mainClass = projectJson.getMainClass();
-                                    if (mainClass != null)
-                                    {
-                                        manifestFile = sourceOutputsFolder.getFolder("META-INF").getFile("MANIFEST.MF");
-                                        final String manifestFileContents =
-                                            "Manifest-Version: 1.0\n" +
-                                            "Main-Class: " + mainClass + "\n";
-                                        manifestFile.setContents(manifestFileContents, CharacterEncoding.UTF_8);
-                                    }
-
-                                    final ProcessBuilder jar = console.getProcessBuilder("jar");
-                                    jar.setWorkingFolder(sourceOutputsFolder);
-                                    jar.redirectOutput(console.getOutputAsByteWriteStream());
-                                    jar.redirectError(console.getErrorAsByteWriteStream());
-
-                                    String jarArguments = "cf";
-                                    if (manifestFile != null)
-                                    {
-                                        jarArguments += 'm';
-                                    }
-                                    jar.addArgument(jarArguments);
-
-                                    jar.addArgument(jarFile.getPath().toString());
-
-                                    if (manifestFile != null)
-                                    {
-                                        jar.addArgument(manifestFile.getPath().relativeTo(sourceOutputsFolder.getPath()).toString());
-                                    }
-
-                                    jar.addArgument(".");
-
-                                    final Stopwatch stopwatch = console.getStopwatch();
-                                    console.write("Creating sources jar file...");
-                                    if (debug)
-                                    {
-                                        console.writeLine();
-                                        console.writeLine(jar.getCommand());
-                                    }
-
-                                    stopwatch.start();
-                                    jar.run();
-                                    final Duration jarFileCreationDuration = stopwatch.stop().toSeconds();
-
-                                    console.writeLine(" Done (" + jarFileCreationDuration.toString("#.#") + ")");
+                                    jarArguments += 'm';
                                 }
+                                jar.addArgument(jarArguments);
+
+                                jar.addArgument(jarFile.getPath().toString());
+
+                                if (manifestFile != null)
+                                {
+                                    jar.addArgument(manifestFile.getPath().relativeTo(sourceOutputsFolder.getPath()).toString());
+                                }
+
+                                jar.addArgument(".");
+
+                                final Stopwatch stopwatch = console.getStopwatch();
+                                console.write("Creating sources jar file...");
+                                if (debug)
+                                {
+                                    console.writeLine();
+                                    console.writeLine(jar.getCommand());
+                                }
+
+                                stopwatch.start();
+                                jar.run();
+                                final Duration jarFileCreationDuration = stopwatch.stop().toSeconds();
+
+                                console.writeLine(" Done (" + jarFileCreationDuration.toString("#.#") + ")");
                             }
                         }
                     }
+                }
 
-                    if (compiledSourcesSuccessfully)
+                if (compiledSourcesSuccessfully)
+                {
+                    final Folder testsFolder = projectJson.getJavaTestsFolder();
+                    if (testsFolder != null)
                     {
-                        final Folder testsFolder = projectJson.getJavaTestsFolder();
-                        if (testsFolder != null)
+                        final Iterable<File> testFiles = projectJson.getJavaTestFiles();
+                        if (!testFiles.any())
                         {
-                            final Iterable<File> testFiles = QubCLI.getTestFiles(console, testsFolder);
-                            if (testFiles != null && testFiles.any())
+                            console.writeLine("No test files found to compile.");
+                        }
+                        else
+                        {
+                            final String testsJavaVersion = projectJson.getJavaTestsVersion();
+                            final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName());
+
+                            final List<String> testClasspaths = ArrayList.fromValues(classpaths);
+                            testClasspaths.add(testOutputsFolder.getPath().toString());
+                            if (sourceOutputsFolder != null)
                             {
-                                final String testsJavaVersion = projectJson.getJavaTestsVersion();
-                                final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName());
-
-                                final List<String> testClasspaths = ArrayList.fromValues(classpaths);
-                                testClasspaths.add(testOutputsFolder.getPath().toString());
-                                if (sourceOutputsFolder != null)
-                                {
-                                    testClasspaths.add(sourceOutputsFolder.getPath().toString());
-                                }
-
-                                compile("tests", console, testClasspaths, testsFolder, testFiles, testOutputsFolder, testsJavaVersion, debug);
+                                testClasspaths.add(sourceOutputsFolder.getPath().toString());
                             }
+
+                            compile("tests", console, testClasspaths, testsFolder, testFiles, testOutputsFolder, testsJavaVersion, debug);
                         }
                     }
                 }

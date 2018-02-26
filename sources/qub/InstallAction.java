@@ -108,18 +108,15 @@ public class InstallAction implements Action
                                         }
 
                                         String classpath = "%~dp0" + installedJarFile.getPath().relativeTo(qubFolder.getPath()).toString();
-                                        for (final Dependency dependency : QubCLI.getDependencies(console, javaObject))
+                                        for (final Dependency dependency : projectJson.getDependencies())
                                         {
-                                            final String dependencyPublisher = dependency.getPublisher();
-                                            final String dependencyProject = dependency.getProject();
-                                            final String dependencyVersion = dependency.getVersion();
-                                            classpath += ";%~dp0" + dependencyPublisher + "/" + dependencyProject + "/" + dependencyVersion + "/" + dependencyProject + ".jar";
+                                            classpath += ";%~dp0" + dependency.toString();
                                         }
 
                                         final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd");
                                         final String shortcutFileContents =
                                             "@echo OFF\n" +
-                                                "java -cp " + classpath + " " + mainClass + " %*\n";
+                                            "java -cp " + classpath + " " + mainClass + " %*\n";
                                         console.write("Writing " + shortcutFile + "...");
                                         stopwatch.start();
                                         shortcutFile.setContents(shortcutFileContents, CharacterEncoding.UTF_8);

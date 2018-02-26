@@ -49,6 +49,8 @@ public class ProjectJsonTests
                             final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
                             fileSystem.createRoot("/");
                             fileSystem.createFile("/project.json", projectJsonText);
+                            fileSystem.createFile("/sources/p/SourceFile.java");
+                            fileSystem.createFile("/tests/p/TestFile.java");
                             console.setFileSystem(fileSystem);
                             console.setCurrentFolderPathString("/");
 
@@ -70,13 +72,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "project.json root segment must be a JSON object.\n");
 
@@ -89,13 +96,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "project.json root segment must be a JSON object.\n");
 
@@ -108,13 +120,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "A \"publisher\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
                     "A \"project\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -130,13 +147,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "A \"project\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
                     "A \"version\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -151,13 +173,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"publisher\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "A \"project\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -173,13 +200,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"publisher\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "A \"project\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -195,13 +227,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"project\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "A \"version\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -216,13 +253,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"project\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "A \"version\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -237,13 +279,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"project\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "A \"version\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -258,13 +305,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"project\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "A \"version\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
@@ -279,13 +331,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "A \"version\" quoted-string property must be specified in the rootObject object of the project.json file.\n" +
                     "project.json root object must contain a \"java\" property.\n");
@@ -299,13 +356,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"version\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "project.json root object must contain a \"java\" property.\n");
@@ -319,13 +381,18 @@ public class ProjectJsonTests
                         test.assertNull(projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"version\" property in the rootObject object of the project.json file must be a non-empty quoted-string.\n" +
                     "project.json root object must contain a \"java\" property.\n");
@@ -339,13 +406,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "project.json root object must contain a \"java\" property.\n");
 
@@ -358,13 +430,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "\"java\" property must be a JSON object.\n");
 
@@ -377,13 +454,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -396,13 +478,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"mainClass\" property in the java object of the project.json file must be a non-empty quoted-string.\n");
 
@@ -415,13 +502,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "The \"mainClass\" property in the java object of the project.json file must be a non-empty quoted-string.\n");
 
@@ -434,13 +526,186 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertEqual("qub.Test", projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"classpath\":12345}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Expected \"classpath\" to be either a quoted string or an array of quoted strings.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"classpath\":\"\"}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"classpath\":\"lentils\"}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(Array.fromValues(new String[] { "lentils" }), projectJson.getClasspath());
+                        test.assertEqual(Array.fromValues(new String[] { "lentils" }), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"classpath\":[]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"classpath\":[false]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Expected element of \"classpath\" array to be a quoted string.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"classpath\":[\"\"]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"classpath\":[\"potatoes\"]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(Array.fromValues(new String[] { "potatoes" }), projectJson.getClasspath());
+                        test.assertEqual(Array.fromValues(new String[] { "potatoes" }), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -453,13 +718,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
                         test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertEqual(Array.fromValues(new File[0]), projectJson.getJavaSourceFiles());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"sources\" to not exist, be a non-empty quoted-string property, or be an object property.\n");
 
@@ -472,13 +742,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(Array.fromValues(new File[0]), projectJson.getJavaSourceFiles());
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"sources\" to not exist, be a non-empty quoted-string property, or be an object property.\n");
 
@@ -491,13 +766,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/spam", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new File[0]), projectJson.getJavaSourceFiles());
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -510,13 +790,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNotNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -529,13 +814,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNotNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(Array.fromValues(new File[0]), projectJson.getJavaSourceFiles());
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"folder\" property in the \"sources\" section to be a non-empty quoted-string property.\n");
 
@@ -548,13 +838,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNotNull(projectJson.getJavaSourcesObject());
                         test.assertNull(projectJson.getJavaSourcesFolder());
+                        test.assertEqual(Array.fromValues(new File[0]), projectJson.getJavaSourceFiles());
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"folder\" property in \"sources\" section to not exist, be a non-empty quoted-string property, or be an object property.\n");
 
@@ -567,13 +862,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNotNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/cats", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new File[0]), projectJson.getJavaSourceFiles());
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -586,13 +886,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNotNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"version\" property in \"sources\" section to be a non-empty quoted-string property.\n");
 
@@ -605,13 +910,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNotNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"version\" property in \"sources\" section to be a non-empty quoted-string property.\n");
 
@@ -624,13 +934,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNotNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertEqual("801", projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -643,13 +958,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"tests\" to not exist, be a non-empty quoted-string property, or be an object property.\n");
 
@@ -662,13 +982,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"tests\" to not exist, be a non-empty quoted-string property, or be an object property.\n");
 
@@ -681,13 +1006,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/fish", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -700,13 +1030,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNotNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -719,13 +1054,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNotNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"folder\" property in the \"tests\" section to be a non-empty quoted-string property.\n");
 
@@ -738,13 +1078,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNotNull(projectJson.getJavaTestsObject());
                         test.assertNull(projectJson.getJavaTestsFolder());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"folder\" property in \"tests\" section to be a non-empty quoted-string property.\n");
 
@@ -757,13 +1102,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNotNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/ugh", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(new Array<String>(0), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -776,13 +1126,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNotNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"version\" property in \"tests\" section to be a non-empty quoted-string property.\n");
 
@@ -795,13 +1150,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNotNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"version\" property in \"tests\" section to be a non-empty quoted-string property.\n");
 
@@ -814,13 +1174,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNotNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertEqual("blah", projectJson.getJavaTestsVersion());
                         test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "");
 
@@ -833,13 +1198,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"outputs\" property in \"java\" section to be a non-empty quoted-string.\n");
 
@@ -852,13 +1222,18 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertNull(projectJson.getJavaOutputsFolder());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
                     },
                     "Expected \"outputs\" property in \"java\" section to be a non-empty quoted-string.\n");
 
@@ -871,13 +1246,330 @@ public class ProjectJsonTests
                         test.assertEqual("c", projectJson.getVersion());
                         test.assertNotNull(projectJson.getJavaObject());
                         test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
                         test.assertNull(projectJson.getJavaSourcesObject());
                         test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaSourcesVersion());
                         test.assertNull(projectJson.getJavaTestsObject());
                         test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
                         test.assertNull(projectJson.getJavaTestsVersion());
                         test.assertEqual("/out", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":false}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "The \"dependencies\" property in the java section must be an array.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[true]}}",
+                (Test test, ProjectJson projectJson) ->
+                {
+                    test.assertNotNull(projectJson.getRootObject());
+                    test.assertEqual("a", projectJson.getPublisher());
+                    test.assertEqual("b", projectJson.getProject());
+                    test.assertEqual("c", projectJson.getVersion());
+                    test.assertNotNull(projectJson.getJavaObject());
+                    test.assertNull(projectJson.getMainClass());
+                    test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                    test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                    test.assertNull(projectJson.getJavaSourcesObject());
+                    test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                    test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                    test.assertNull(projectJson.getJavaSourcesVersion());
+                    test.assertNull(projectJson.getJavaTestsObject());
+                    test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                    test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                    test.assertNull(projectJson.getJavaTestsVersion());
+                    test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                    test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                },
+                "Each dependency in the \"dependencies\" array property must be an object.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"publisher\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":12}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"publisher\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"\"}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"publisher\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"a\"}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"project\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"a\",\"project\":true}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"project\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"a\",\"project\":\"\"}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"project\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"a\",\"project\":\"b\"}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"version\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"a\",\"project\":\"b\",\"version\":[]}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"version\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"\"}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(new Array<String>(0), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(new Array<Dependency>(0), projectJson.getDependencies());
+                    },
+                    "Each dependency must have a non-empty quoted-string \"version\" property.\n");
+
+                parseTest.run("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"dependencies\":[{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\"}]}}",
+                    (Test test, ProjectJson projectJson) ->
+                    {
+                        test.assertNotNull(projectJson.getRootObject());
+                        test.assertEqual("a", projectJson.getPublisher());
+                        test.assertEqual("b", projectJson.getProject());
+                        test.assertEqual("c", projectJson.getVersion());
+                        test.assertNotNull(projectJson.getJavaObject());
+                        test.assertNull(projectJson.getMainClass());
+                        test.assertEqual(new Array<String>(0), projectJson.getClasspath());
+                        test.assertEqual(Array.fromValues(new String[] { "a/b/c/b.jar" }), projectJson.getAllClasspaths(null));
+                        test.assertNull(projectJson.getJavaSourcesObject());
+                        test.assertEqual("/sources", projectJson.getJavaSourcesFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/sources/p/SourceFile.java" }), projectJson.getJavaSourceFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaSourcesVersion());
+                        test.assertNull(projectJson.getJavaTestsObject());
+                        test.assertEqual("/tests", projectJson.getJavaTestsFolder().toString());
+                        test.assertEqual(Array.fromValues(new String[] { "/tests/p/TestFile.java" }), projectJson.getJavaTestFiles().map(File::toString));
+                        test.assertNull(projectJson.getJavaTestsVersion());
+                        test.assertEqual("/outputs", projectJson.getJavaOutputsFolder().toString());
+                        test.assertEqual(Array.fromValues(new Dependency[] { new Dependency("a", "b", "c") }), projectJson.getDependencies());
                     },
                     "");
             });
