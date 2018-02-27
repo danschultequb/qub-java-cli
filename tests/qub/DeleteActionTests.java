@@ -462,6 +462,28 @@ public class DeleteActionTests
                     test.assertTrue(fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
 
+                runner.test("with " + runner.escapeAndQuote("-file -folder existingFile.txt"), test ->
+                {
+                    final Console console = createConsole(new String[] { "delete", "-file", "-folder", "existingFile.txt" });
+
+                    final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
+                    fileSystem.createRoot("/");
+                    fileSystem.createFile("/existingFile.txt");
+                    console.setFileSystem(fileSystem);
+                    console.setCurrentFolderPathString("/");
+
+                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    console.setOutput(output);
+
+                    new DeleteAction().run(console);
+
+                    final String expectedOutput =
+                        "Deleting file /existingFile.txt... Done.\n";
+                    test.assertEqual(expectedOutput, output.getText());
+                    test.assertFalse(fileSystem.folderExists("/existingFileAndFolder.txt"));
+                    test.assertFalse(fileSystem.fileExists("/existingFileAndFolder.txt"));
+                });
+
                 runner.test("with " + runner.escapeAndQuote("-file -folder existingFileAndFolder.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "-folder", "existingFileAndFolder.txt" });

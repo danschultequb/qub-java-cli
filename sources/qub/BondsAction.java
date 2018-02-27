@@ -29,16 +29,11 @@ public class BondsAction implements Action
     {
         final CommandLine commandLine = console.getCommandLine();
 
-        final CommandLineArgument amountToInvestArgument = commandLine
-            .skip(1)
-            .first(new Function1<CommandLineArgument, Boolean>()
-            {
-                @Override
-                public Boolean run(CommandLineArgument argument)
-                {
-                    return argument.getName() == null;
-                }
-            });
+        commandLine.removeAt(0); // remove "bonds" command line argument
+
+        final CommandLineArgument strategyArgument = commandLine.remove("strategy");
+
+        final CommandLineArgument amountToInvestArgument = commandLine.removeAt(0);
 
         if (amountToInvestArgument == null)
         {
@@ -78,25 +73,22 @@ public class BondsAction implements Action
                     "30-year"
                 };
 
-                int[] allocationAmounts = null;
-
-                final CommandLineArgument strategy = commandLine.get("strategy");
-                if (strategy != null)
+                final String strategyString = (strategyArgument == null ? null : strategyArgument.getValue().replace("-", "").replace(" ", ""));
+                Function2<Double,String[],int[]> strategy;
+                if ("cascade".equalsIgnoreCase(strategyString))
                 {
-                    if (strategy.getValue().equalsIgnoreCase("double-cascade"))
-                    {
-                        allocationAmounts = doubleCascadeStrategy(amountToInvest, allocationDurations);
-                    }
-                    else if (strategy.getValue().equalsIgnoreCase("cascade"))
-                    {
-                        allocationAmounts = cascadeStrategy(amountToInvest, allocationDurations);
-                    }
+                    strategy = BondsAction::cascadeStrategy;
+                }
+                else if ("doubleCascade".equalsIgnoreCase(strategyString))
+                {
+                    strategy = BondsAction::doubleCascadeStrategy;
+                }
+                else
+                {
+                    strategy = BondsAction::cascadeStrategy;
                 }
 
-                if (allocationAmounts == null)
-                {
-                    allocationAmounts = cascadeStrategy(amountToInvest, allocationDurations);
-                }
+                int[] allocationAmounts = strategy.run(amountToInvest, allocationDurations);
 
                 int maximumDurationStringLength = 0;
                 for (final String allocationDuration : allocationDurations)

@@ -28,60 +28,28 @@ public class DeleteAction implements Action
     {
         final CommandLine commandLine = console.getCommandLine();
 
-        final boolean fileFlag = (commandLine.get("file") != null || commandLine.get("files") != null);
-        final boolean folderFlag = (commandLine.get("folder") != null || commandLine.get("folders") != null);
+        commandLine.removeAt(0); // Remove the "delete" command line argument.
 
-        final Action2<String, FileSystemEntry> deleteEntry = new Action2<String, FileSystemEntry>()
+        final boolean fileFlag = (commandLine.remove("file") != null | commandLine.remove("files") != null);
+        final boolean folderFlag = (commandLine.remove("folder") != null | commandLine.remove("folders") != null);
+
+        final Action2<String, FileSystemEntry> deleteEntry = (String entryType, FileSystemEntry entry) ->
         {
-            @Override
-            public void run(String entryType, FileSystemEntry entry)
+            console.write("Deleting " + entryType + " " + entry.getPath().toString() + "...");
+            if (entry.delete())
             {
-                console.write("Deleting " + entryType + " " + entry.getPath().toString() + "...");
-                if (entry.delete())
-                {
-                    console.writeLine(" Done.");
-                }
-                else
-                {
-                    console.writeLine(" Failed.");
-                }
+                console.writeLine(" Done.");
+            }
+            else
+            {
+                console.writeLine(" Failed.");
             }
         };
-        final Action1<File> deleteFile = new Action1<File>()
-        {
-            @Override
-            public void run(File file)
-            {
-                deleteEntry.run("file", file);
-            }
-        };
-        final Action1<Folder> deleteFolder = new Action1<Folder>()
-        {
-            @Override
-            public void run(Folder folder)
-            {
-                deleteEntry.run("folder", folder);
-            }
-        };
+        final Action1<File> deleteFile = (File file) -> deleteEntry.run("file", file);
+        final Action1<Folder> deleteFolder = (Folder folder) -> deleteEntry.run("folder", folder);
 
         final Iterable<Path> pathsToDelete = commandLine.getArguments()
-            .skip(1) // Skip the "delete" action.
-            .where(new Function1<CommandLineArgument, Boolean>()
-            {
-                @Override
-                public Boolean run(CommandLineArgument argument)
-                {
-                    return argument.getName() == null;
-                }
-            })
-            .map(new Function1<CommandLineArgument, Path>()
-            {
-                @Override
-                public Path run(CommandLineArgument argument)
-                {
-                    return Path.parse(argument.toString());
-                }
-            });
+            .map((CommandLineArgument argument) -> Path.parse(argument.toString()));
 
         final FileSystem fileSystem = console.getFileSystem();
         final Folder currentFolder = console.getCurrentFolder();
