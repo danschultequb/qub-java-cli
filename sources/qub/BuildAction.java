@@ -39,6 +39,7 @@ public class BuildAction implements Action
             {
                 final Iterable<String> classpaths = projectJson.getAllClasspaths(QubCLI.getQubFolder(console));
 
+                boolean shouldCompileSources = true;
                 boolean compiledSourcesSuccessfully = true;
 
                 final Folder sourcesFolder = projectJson.getJavaSourcesFolder();
@@ -54,12 +55,21 @@ public class BuildAction implements Action
                     {
                         sourceOutputsFolder = javaOutputsFolder.getFolder(sourcesFolder.getName());
 
-                        final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
-                        sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
+                        shouldCompileSources = shouldCompile(sourcesFolder, sourceFiles, sourceOutputsFolder);
+                        if (!shouldCompileSources)
+                        {
+                            console.writeLine("No source files need to be compiled.");
+                        }
+                        else
+                        {
+                            final List<String> sourceClasspaths = ArrayList.fromValues(classpaths);
+                            sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
-                        final String sourcesJavaVersion = projectJson.getJavaSourcesVersion();
-                        compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
-                        if (compiledSourcesSuccessfully)
+                            final String sourcesJavaVersion = projectJson.getJavaSourcesVersion();
+                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
+                        }
+
+                        if (shouldCompileSources && compiledSourcesSuccessfully)
                         {
                             final String project = projectJson.getProject();
                             if (project == null || project.isEmpty())
@@ -132,17 +142,25 @@ public class BuildAction implements Action
                         }
                         else
                         {
-                            final String testsJavaVersion = projectJson.getJavaTestsVersion();
                             final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName());
-
-                            final List<String> testClasspaths = ArrayList.fromValues(classpaths);
-                            testClasspaths.add(testOutputsFolder.getPath().toString());
-                            if (sourceOutputsFolder != null)
+                            final boolean shouldCompileTests = shouldCompileSources || shouldCompile(testsFolder, testFiles, testOutputsFolder);
+                            if (!shouldCompileTests)
                             {
-                                testClasspaths.add(sourceOutputsFolder.getPath().toString());
+                                console.writeLine("No test files need to be compiled.");
                             }
+                            else
+                            {
+                                final String testsJavaVersion = projectJson.getJavaTestsVersion();
 
-                            compile("tests", console, testClasspaths, testsFolder, testFiles, testOutputsFolder, testsJavaVersion, debug);
+                                final List<String> testClasspaths = ArrayList.fromValues(classpaths);
+                                testClasspaths.add(testOutputsFolder.getPath().toString());
+                                if (sourceOutputsFolder != null)
+                                {
+                                    testClasspaths.add(sourceOutputsFolder.getPath().toString());
+                                }
+
+                                compile("tests", console, testClasspaths, testsFolder, testFiles, testOutputsFolder, testsJavaVersion, debug);
+                            }
                         }
                     }
                 }
@@ -151,6 +169,29 @@ public class BuildAction implements Action
 
         final Duration totalBuildDuration = totalBuild.stop().toSeconds();
         console.writeLine("Total Duration: " + totalBuildDuration.toString("0.0"));
+    }
+
+    private static boolean shouldCompile(Folder sourceFileFolder, Iterable<File> sourceFiles, Folder outputFolder)
+    {
+        return sourceFiles.contains((File sourceFile) ->
+        {
+            final Path relativePath = sourceFile.getPath().relativeTo(sourceFileFolder.getPath());
+            final File classFile = outputFolder.getFile(relativePath.withoutFileExtension().concatenate(".class"));
+            boolean needsCompile;
+            if (!classFile.exists())
+            {
+                needsCompile = true;
+            }
+            else if (sourceFile.getLastModified().greaterThan(classFile.getLastModified()))
+            {
+                needsCompile = true;
+            }
+            else
+            {
+                needsCompile = false;
+            }
+            return needsCompile;
+        });
     }
 
     private static boolean compile(String label, Console console, Iterable<String> classpaths, Folder folderToCompile, Iterable<File> filesToCompile, Folder outputFolder, String javaVersion, boolean debug)
