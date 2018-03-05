@@ -115,7 +115,7 @@ public class BuildAction implements Action
 
                                 if (manifestFile != null)
                                 {
-                                    jar.addArgument(manifestFile.getPath().relativeTo(sourceOutputsFolder.getPath()).toString());
+                                    jar.addArgument(manifestFile.relativeTo(sourceOutputsFolder).toString());
                                 }
 
                                 jar.addArgument(".");
@@ -185,7 +185,7 @@ public class BuildAction implements Action
     {
         return sourceFiles.contains((File sourceFile) ->
         {
-            final Path relativePath = sourceFile.getPath().relativeTo(sourceFileFolder.getPath());
+            final Path relativePath = sourceFile.relativeTo(sourceFileFolder);
             final File classFile = outputFolder.getFile(relativePath.withoutFileExtension().concatenate(".class"));
             boolean needsCompile;
             if (!classFile.exists())
@@ -263,12 +263,11 @@ public class BuildAction implements Action
 
         final int exitCode = javac.run();
 
-        final Path outputFolderPath = outputFolder.getPath();
         for (final File outputFile : outputFolder.getFilesRecursively())
         {
             if (outputFile.getFileExtension().equals(".class"))
             {
-                final Path relativeClassFilePath = outputFile.getPath().relativeTo(outputFolderPath).withoutFileExtension();
+                final Path relativeClassFilePath = outputFile.relativeTo(outputFolder).withoutFileExtension();
 
                 final int dollarSignIndex = relativeClassFilePath.toString().indexOf('$');
 

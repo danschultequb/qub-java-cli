@@ -111,7 +111,7 @@ public class InstallAction implements Action
                                                 shortcutName = installedJarFile.getNameWithoutFileExtension();
                                             }
 
-                                            String classpath = "%~dp0" + installedJarFile.getPath().relativeTo(qubFolder.getPath()).toString();
+                                            String classpath = "%~dp0" + installedJarFile.relativeTo(qubFolder);
                                             for (final Dependency dependency : projectJson.getDependencies())
                                             {
                                                 classpath += ";%~dp0" + dependency.toString();

@@ -77,7 +77,7 @@ public class TestAction implements Action
                         else
                         {
                             final Iterable<Path> relativeTestSourcePaths = testClassFiles
-                                .map(file -> file.getPath().relativeTo(testOutputsFolder.getPath()));
+                                .map(file -> file.relativeTo(testOutputsFolder));
 
                             final Iterable<String> fullTestClassNames = relativeTestSourcePaths
                                 .map(relativeTestSourcePath -> relativeTestSourcePath.withoutFileExtension().toString().replace('/', '.').replace('\\', '.'));
@@ -108,7 +108,7 @@ public class TestAction implements Action
 
                             if (pattern != null && !pattern.isEmpty())
                             {
-                                addNamedArgument(java, "pattern", pattern);
+                                java.addArgument("-pattern=" + pattern);
                             }
 
                             if (debug)
