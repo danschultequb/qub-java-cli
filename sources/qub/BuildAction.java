@@ -26,10 +26,17 @@ public class BuildAction implements Action
     @Override
     public void run(Console console)
     {
+        final boolean debug = QubCLI.parseDebug(console.getCommandLine());
+
+        run(console, debug);
+    }
+
+    public static boolean run(Console console, boolean debug)
+    {
+        boolean compilationSucceeded = false;
+
         final Stopwatch totalBuild = console.getStopwatch();
         totalBuild.start();
-
-        final boolean debug = QubCLI.parseDebug(console.getCommandLine());
 
         final ProjectJson projectJson = ProjectJson.parse(console);
         if (projectJson != null)
@@ -40,7 +47,6 @@ public class BuildAction implements Action
                 final Iterable<String> classpaths = projectJson.getAllClasspaths(QubCLI.getQubFolder(console));
 
                 boolean shouldCompileSources = true;
-                boolean compiledSourcesSuccessfully = true;
 
                 final Folder sourcesFolder = projectJson.getJavaSourcesFolder();
                 Folder sourceOutputsFolder = null;
@@ -66,10 +72,10 @@ public class BuildAction implements Action
                             sourceClasspaths.add(sourceOutputsFolder.getPath().toString());
 
                             final String sourcesJavaVersion = projectJson.getJavaSourcesVersion();
-                            compiledSourcesSuccessfully = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
+                            compilationSucceeded = compile("sources", console, sourceClasspaths, sourcesFolder, sourceFiles, sourceOutputsFolder, sourcesJavaVersion, debug);
                         }
 
-                        if (shouldCompileSources && compiledSourcesSuccessfully)
+                        if (shouldCompileSources && compilationSucceeded)
                         {
                             final String project = projectJson.getProject();
                             if (project == null || project.isEmpty())
@@ -87,7 +93,7 @@ public class BuildAction implements Action
                                     manifestFile = sourceOutputsFolder.getFolder("META-INF").getFile("MANIFEST.MF");
                                     final String manifestFileContents =
                                         "Manifest-Version: 1.0\n" +
-                                        "Main-Class: " + mainClass + "\n";
+                                            "Main-Class: " + mainClass + "\n";
                                     manifestFile.setContents(manifestFileContents, CharacterEncoding.UTF_8);
                                 }
 
@@ -130,7 +136,7 @@ public class BuildAction implements Action
                     }
                 }
 
-                if (compiledSourcesSuccessfully)
+                if (compilationSucceeded)
                 {
                     final Folder testsFolder = projectJson.getJavaTestsFolder();
                     if (testsFolder != null)
@@ -159,7 +165,7 @@ public class BuildAction implements Action
                                     testClasspaths.add(sourceOutputsFolder.getPath().toString());
                                 }
 
-                                compile("tests", console, testClasspaths, testsFolder, testFiles, testOutputsFolder, testsJavaVersion, debug);
+                                compilationSucceeded = compile("tests", console, testClasspaths, testsFolder, testFiles, testOutputsFolder, testsJavaVersion, debug);
                             }
                         }
                     }
@@ -168,7 +174,9 @@ public class BuildAction implements Action
         }
 
         final Duration totalBuildDuration = totalBuild.stop().toSeconds();
-        console.writeLine("Total Duration: " + totalBuildDuration.toString("0.0"));
+        console.writeLine("Build Duration: " + totalBuildDuration.toString("0.0"));
+
+        return compilationSucceeded;
     }
 
     private static boolean shouldCompile(Folder sourceFileFolder, Iterable<File> sourceFiles, Folder outputFolder)
