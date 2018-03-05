@@ -44,6 +44,8 @@ public class BuildAction implements Action
             final Folder javaOutputsFolder = projectJson.getJavaOutputsFolder();
             if (javaOutputsFolder != null)
             {
+                compilationSucceeded = true;
+
                 final Iterable<String> classpaths = projectJson.getAllClasspaths(QubCLI.getQubFolder(console));
 
                 boolean shouldCompileSources = true;

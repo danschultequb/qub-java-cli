@@ -96,6 +96,11 @@ public class QubCLI
         return console.getFileSystem().getFolder("C:/qub");
     }
 
+    static boolean parseDebug(Console console)
+    {
+        return parseDebug(console.getCommandLine());
+    }
+
     static boolean parseDebug(CommandLine commandLine)
     {
         final CommandLineArgument debugArgument = commandLine.remove("debug");

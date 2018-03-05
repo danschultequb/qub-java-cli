@@ -26,18 +26,20 @@ public class TestAction implements Action
     @Override
     public void run(Console console)
     {
-        final CommandLine commandLine = console.getCommandLine();
+        final boolean debug = QubCLI.parseDebug(console);
+        final String pattern = TestAction.parsePattern(console);
+        final boolean coverage = TestAction.parseCoverage(console);
 
-        final boolean debug = QubCLI.parseDebug(commandLine);
+        TestAction.run(console, debug, pattern, coverage);
+    }
+
+    public static boolean run(Console console, boolean debug, String pattern, boolean coverage)
+    {
+        boolean testsPassed = false;
 
         if (BuildAction.run(console, debug))
         {
             console.writeLine();
-
-            final CommandLineArgument testPatternArgument = commandLine.remove("pattern");
-
-            final CommandLineArgument coverageArgument = commandLine.remove("coverage");
-            final boolean coverage = coverageArgument != null && (coverageArgument.getValue() == null || coverageArgument.getValue().equalsIgnoreCase("true"));
 
             final ProjectJson projectJson = ProjectJson.parse(console);
             if (projectJson != null)
@@ -104,9 +106,9 @@ public class TestAction implements Action
 
                             java.addArguments(fullTestClassNames);
 
-                            if (testPatternArgument != null)
+                            if (pattern != null && !pattern.isEmpty())
                             {
-                                java.addArgument(testPatternArgument.toString());
+                                addNamedArgument(java, "pattern", pattern);
                             }
 
                             if (debug)
@@ -116,7 +118,7 @@ public class TestAction implements Action
                                 console.writeLine("Command: \"" + java.getCommand() + "\"");
                             }
 
-                            java.run();
+                            testsPassed = (java.run() == 0);
 
                             if (coverage && sourceOutputsFolder != null)
                             {
@@ -152,6 +154,20 @@ public class TestAction implements Action
                 }
             }
         }
+
+        return testsPassed;
+    }
+
+    static String parsePattern(Console console)
+    {
+        final CommandLineArgument testPatternArgument = console.getCommandLine().remove("pattern");
+        return testPatternArgument == null ? null : testPatternArgument.getValue();
+    }
+
+    static boolean parseCoverage(Console console)
+    {
+        final CommandLineArgument coverageArgument = console.getCommandLine().remove("coverage");
+        return coverageArgument != null && (coverageArgument.getValue() == null || coverageArgument.getValue().equalsIgnoreCase("true"));
     }
 
     private static void addNamedArgument(ProcessBuilder builder, String argumentName, String argumentValue)
