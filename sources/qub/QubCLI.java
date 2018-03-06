@@ -17,7 +17,10 @@ public class QubCLI
         addAction(actions, new BuildAction());
         addAction(actions, new CleanAction());
         addAction(actions, new DeleteAction());
+        addAction(actions, new GuessMyNumberAction());
         addAction(actions, new InstallAction());
+        addAction(actions, new KitchenAction());
+        addAction(actions, new OrcBattleAction());
         addAction(actions, new TestAction());
         addAction(actions, new TextAdventureAction());
 

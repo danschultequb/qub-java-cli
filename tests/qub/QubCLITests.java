@@ -17,8 +17,17 @@ public class QubCLITests
         "  Delete: Delete a provided file or folder.\n" +
         "    Usage: Delete [-file] [-folder] <file-folder-or-filter-to-delete> [<additional-file-folder-or-filter-to-delete> ...]\n" +
         "\n" +
+        "  GuessMyNumber: Play a guess my number game.\n" +
+        "    Usage: GuessMyNumber\n" +
+        "\n" +
         "  Install: Install the coding project in the current folder into the system's Qub.\n" +
         "    Usage: Install\n" +
+        "\n" +
+        "  Kitchen: An application that manages recipes.\n" +
+        "    Usage: Kitchen\n" +
+        "\n" +
+        "  OrcBattle: Battle monsters to the death.\n" +
+        "    Usage: OrcBattle\n" +
         "\n" +
         "  Test: Run the tests for the coding project in the current directory.\n" +
         "    Usage: Test\n" +
