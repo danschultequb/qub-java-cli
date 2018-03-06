@@ -19,6 +19,7 @@ public class QubCLI
         addAction(actions, new DeleteAction());
         addAction(actions, new InstallAction());
         addAction(actions, new TestAction());
+        addAction(actions, new TextAdventureAction());
 
         final CommandLine commandLine = console.getCommandLine();
 

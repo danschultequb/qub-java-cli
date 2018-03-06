@@ -123,7 +123,31 @@ public class TestAction implements Action
                             if (coverage && sourceOutputsFolder != null)
                             {
                                 final Iterable<File> classFiles = sourceOutputsFolder.getFilesRecursively()
-                                    .where((File file) -> file.getFileExtension().equals(".class") && !file.getName().contains("$"));
+                                    .where((File file) ->
+                                    {
+                                        boolean isCoverageClassFile = false;
+                                        if (file.getFileExtension().equals(".class"))
+                                        {
+                                            isCoverageClassFile = true;
+                                            final String classFileName = file.getName();
+
+                                            int dollarSignIndex = classFileName.indexOf('$');
+                                            while (dollarSignIndex != -1)
+                                            {
+                                                final char characterAfterDollarSign = classFileName.charAt(dollarSignIndex + 1);
+                                                if ('0' <= characterAfterDollarSign && characterAfterDollarSign <= '9')
+                                                {
+                                                    isCoverageClassFile = false;
+                                                    break;
+                                                }
+                                                else
+                                                {
+                                                    dollarSignIndex = classFileName.indexOf('$', dollarSignIndex + 1);
+                                                }
+                                            }
+                                        }
+                                        return isCoverageClassFile;
+                                    });
                                 final File jacocoCLIJarFile = jacocoFolder.getFile("jacococli.jar");
                                 final Folder coverageFolder = javaOutputsFolder.getFolder("coverage");
 

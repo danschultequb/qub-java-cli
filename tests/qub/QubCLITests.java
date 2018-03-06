@@ -22,6 +22,9 @@ public class QubCLITests
         "\n" +
         "  Test: Run the tests for the coding project in the current directory.\n" +
         "    Usage: Test\n" +
+        "\n" +
+        "  TextAdventure: A text adventure where the life and death of puppies is on the line.\n" +
+        "    Usage: TextAdventure\n" +
         "\n";
 
     private static Console createConsole(String[] commandLineArguments)
