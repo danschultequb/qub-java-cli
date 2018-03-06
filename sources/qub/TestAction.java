@@ -122,6 +122,8 @@ public class TestAction implements Action
 
                             if (coverage && sourceOutputsFolder != null)
                             {
+                                final Iterable<File> classFiles = sourceOutputsFolder.getFilesRecursively()
+                                    .where((File file) -> file.getFileExtension().equals(".class") && !file.getName().contains("$"));
                                 final File jacocoCLIJarFile = jacocoFolder.getFile("jacococli.jar");
                                 final Folder coverageFolder = javaOutputsFolder.getFolder("coverage");
 
@@ -131,7 +133,10 @@ public class TestAction implements Action
                                 jacococli.addArguments("-jar", jacocoCLIJarFile.getPath().toString());
                                 jacococli.addArgument("report");
                                 jacococli.addArgument(coverageExecFile.getPath().toString());
-                                jacococli.addArguments("--classfiles", sourceOutputsFolder.getPath().toString());
+                                for (final File classFile : classFiles)
+                                {
+                                    jacococli.addArguments("--classfiles", classFile.toString());
+                                }
                                 jacococli.addArguments("--sourcefiles", sourcesFolder.getPath().toString());
                                 jacococli.addArguments("--html", coverageFolder.getPath().toString());
                                 if (debug)
