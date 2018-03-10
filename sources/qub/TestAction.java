@@ -92,6 +92,7 @@ public class TestAction implements Action
                                 .getFolder("jacococli")
                                 .getFolder("0.8.0");
 
+                            final Double javaTestsLineCoverageRequirement = projectJson.getJavaTestsLineCoverageRequirement();
                             File coverageExecFile = null;
                             if (coverage)
                             {
@@ -122,6 +123,12 @@ public class TestAction implements Action
 
                             if (coverage && sourceOutputsFolder != null)
                             {
+                                console.writeLine();
+                                console.write("Coverage Analysis... ");
+
+                                final Stopwatch coverageStopwatch = console.getStopwatch();
+                                coverageStopwatch.start();
+
                                 final Iterable<File> classFiles = sourceOutputsFolder.getFilesRecursively()
                                     .where((File file) ->
                                     {
@@ -152,8 +159,11 @@ public class TestAction implements Action
                                 final Folder coverageFolder = javaOutputsFolder.getFolder("coverage");
 
                                 final ProcessBuilder jacococli = console.getProcessBuilder("java");
-                                jacococli.redirectOutput(console.getOutputAsByteWriteStream());
-                                jacococli.redirectError(console.getErrorAsByteWriteStream());
+                                if (debug)
+                                {
+                                    jacococli.redirectOutput(console.getOutputAsByteWriteStream());
+                                    jacococli.redirectError(console.getErrorAsByteWriteStream());
+                                }
                                 jacococli.addArguments("-jar", jacocoCLIJarFile.getPath().toString());
                                 jacococli.addArgument("report");
                                 jacococli.addArgument(coverageExecFile.getPath().toString());
@@ -163,11 +173,69 @@ public class TestAction implements Action
                                 }
                                 jacococli.addArguments("--sourcefiles", sourcesFolder.getPath().toString());
                                 jacococli.addArguments("--html", coverageFolder.getPath().toString());
+
+                                File coverageCSVFile = null;
+                                if (javaTestsLineCoverageRequirement != null)
+                                {
+                                    coverageFolder.create();
+                                    coverageCSVFile = coverageFolder.getFile("coverage.csv");
+                                    jacococli.addArguments("--csv", coverageCSVFile.toString());
+                                }
                                 if (debug)
                                 {
+                                    console.writeLine();
                                     console.writeLine("Command: \"" + jacococli.getCommand() + "\"");
                                 }
                                 jacococli.run();
+
+                                final Duration coverageDuration = coverageStopwatch.stop().toSeconds();
+                                console.writeLine("Done (" + coverageDuration.toString("0.0") + ")");
+
+                                if (javaTestsLineCoverageRequirement != null)
+                                {
+                                    CSVDocument coverageCSVDocument;
+                                    try (final CharacterReadStream coverageCSVFileReadStream = coverageCSVFile.getContentCharacterReadStream())
+                                    {
+                                        coverageCSVDocument = CSV.parse(coverageCSVFileReadStream);
+                                    }
+
+                                    final Function1<CSVRow, String> getFullClassName = (CSVRow coverageEntry) -> coverageEntry.get(1) + "." + coverageEntry.get(2);
+                                    final Function1<CSVRow, Integer> getLinesMissed = (CSVRow coverageEntry) -> Integer.parseInt(coverageEntry.get(7));
+                                    final Function1<CSVRow, Integer> getLinesCovered = (CSVRow coverageEntry) -> Integer.parseInt(coverageEntry.get(8));
+                                    final Function1<CSVRow, Integer> getTotalLines = (CSVRow coverageEntry) -> getLinesMissed.run(coverageEntry) + getLinesCovered.run(coverageEntry);
+
+                                    final Iterable<CSVRow> coverageEntries = coverageCSVDocument.skipFirst();
+                                    int maxFullClassNameLength = 0;
+                                    for (final CSVRow coverageEntry : coverageEntries)
+                                    {
+                                        final String fullClassName = getFullClassName.run(coverageEntry);
+                                        maxFullClassNameLength = Math.maximum(fullClassName.length(), maxFullClassNameLength);
+                                    }
+
+                                    int maxTotalLinesLength = 0;
+                                    for (final CSVRow coverageEntry : coverageEntries)
+                                    {
+                                        final int totalLines = getTotalLines.run(coverageEntry);
+                                        maxTotalLinesLength = Math.maximum(maxTotalLinesLength, Integer.toString(totalLines).length());
+                                    }
+
+                                    final String formatString = "  %-" + maxFullClassNameLength + "s %" + maxTotalLinesLength + "d / %" + maxTotalLinesLength + "d (%3d%%)";
+                                    for (final CSVRow coverageEntry : coverageEntries)
+                                    {
+                                        final int linesCovered = getLinesCovered.run(coverageEntry);
+                                        final int totalLines = getTotalLines.run(coverageEntry);
+                                        final int lineCoverage = (int)(100 * (linesCovered / (double)totalLines));
+                                        if (lineCoverage < javaTestsLineCoverageRequirement.intValue())
+                                        {
+                                            testsPassed = false;
+
+                                            final String fullClassName = getFullClassName.run(coverageEntry);
+                                            console.writeLine(formatString, fullClassName, linesCovered, totalLines, lineCoverage);
+                                        }
+                                    }
+
+                                    console.writeLine("Coverage Requirement (%d%%): %s", javaTestsLineCoverageRequirement.intValue(), (testsPassed ? "Passed" : "Failed"));
+                                }
 
                                 try
                                 {

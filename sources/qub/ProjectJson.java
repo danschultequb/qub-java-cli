@@ -15,6 +15,7 @@ public class ProjectJson
     private final JSONObject javaTestsObject;
     private final Folder javaTestsFolder;
     private final String javaTestsVersion;
+    private final Double javaTestsLineCoverageRequirement;
     private final Folder javaOutputsFolder;
     private final Iterable<Dependency> dependencies;
 
@@ -31,6 +32,7 @@ public class ProjectJson
                 JSONObject javaTestsObject,
                 Folder javaTestsFolder,
                 String javaTestsVersion,
+                Double javaTestsLineCoverageRequirement,
                 Folder javaOutputsFolder,
                 Iterable<Dependency> dependencies)
     {
@@ -47,6 +49,7 @@ public class ProjectJson
         this.javaTestsObject = javaTestsObject;
         this.javaTestsFolder = javaTestsFolder;
         this.javaTestsVersion = javaTestsVersion;
+        this.javaTestsLineCoverageRequirement = javaTestsLineCoverageRequirement;
         this.javaOutputsFolder = javaOutputsFolder;
         this.dependencies = dependencies;
     }
@@ -139,6 +142,11 @@ public class ProjectJson
         return javaTestsVersion;
     }
 
+    public Double getJavaTestsLineCoverageRequirement()
+    {
+        return javaTestsLineCoverageRequirement;
+    }
+
     public Folder getJavaOutputsFolder()
     {
         return javaOutputsFolder;
@@ -181,6 +189,7 @@ public class ProjectJson
                 JSONObject javaSourcesObject = null;
                 Folder javaTestsFolder = null;
                 String javaTestsVersion = null;
+                Double javaTestsLineCoverageRequirement = null;
                 Folder javaOutputsFolder = null;
                 List<Dependency> dependencies = new ArrayList<>();
 
@@ -442,6 +451,8 @@ public class ProjectJson
                                     }
                                 }
                             }
+
+
                         }
                         else
                         {
@@ -551,6 +562,37 @@ public class ProjectJson
                                 }
                             }
                         }
+
+                        final JSONSegment javaTestsLineCoverageRequirementSegment = javaObject.getPropertyValue("lineCoverageRequirement");
+                        if (javaTestsLineCoverageRequirementSegment != null)
+                        {
+                            if (!(javaTestsLineCoverageRequirementSegment instanceof JSONToken))
+                            {
+                                console.writeLine("Expected \"lineCoverageRequirement\" property in \"java\" section to be a number between 0 to 100.");
+                            }
+                            else
+                            {
+                                final JSONToken javaTestsLineCoverageRequirementToken = (JSONToken)javaTestsLineCoverageRequirementSegment;
+                                if (javaTestsLineCoverageRequirementToken.getType() != JSONTokenType.Number)
+                                {
+                                    console.writeLine("Expected \"lineCoverageRequirement\" property in \"java\" section to be a number between 0 to 100.");
+                                }
+                                else
+                                {
+                                    javaTestsLineCoverageRequirement = Double.parseDouble(javaTestsLineCoverageRequirementToken.toString());
+                                    if (javaTestsLineCoverageRequirement < 0)
+                                    {
+                                        console.writeLine("Expected \"lineCoverageRequirement\" property in \"java\" section to be a number between 0 to 100.");
+                                        javaTestsLineCoverageRequirement = 0.0;
+                                    }
+                                    else if (javaTestsLineCoverageRequirement > 100)
+                                    {
+                                        console.writeLine("Expected \"lineCoverageRequirement\" property in \"java\" section to be a number between 0 to 100.");
+                                        javaTestsLineCoverageRequirement = 100.0;
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -568,6 +610,7 @@ public class ProjectJson
                     javaTestsObject,
                     javaTestsFolder,
                     javaTestsVersion,
+                    javaTestsLineCoverageRequirement,
                     javaOutputsFolder,
                     dependencies);
             }

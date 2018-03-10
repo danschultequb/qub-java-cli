@@ -26,16 +26,17 @@ public class InstallAction implements Action
     @Override
     public void run(Console console)
     {
-        if (TestAction.run(console, false, null, false))
+        final ProjectJson projectJson = ProjectJson.parse(console);
+        if (projectJson != null)
         {
-            console.writeLine();
-
-            final Stopwatch totalInstall = console.getStopwatch();
-            totalInstall.start();
-
-            final ProjectJson projectJson = ProjectJson.parse(console);
-            if (projectJson != null)
+            final boolean coverage = projectJson.getJavaTestsLineCoverageRequirement() != null;
+            if (TestAction.run(console, false, null, coverage))
             {
+                console.writeLine();
+
+                final Stopwatch totalInstall = console.getStopwatch();
+                totalInstall.start();
+
                 final JSONObject rootObject = projectJson.getRootObject();
                 if (rootObject != null)
                 {
@@ -120,7 +121,7 @@ public class InstallAction implements Action
                                             final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd");
                                             final String shortcutFileContents =
                                                 "@echo OFF\n" +
-                                                "java -cp " + classpath + " " + mainClass + " %*\n";
+                                                    "java -cp " + classpath + " " + mainClass + " %*\n";
                                             console.write("Writing " + shortcutFile + "...");
                                             stopwatch.start();
                                             shortcutFile.setContents(shortcutFileContents, CharacterEncoding.UTF_8);
@@ -132,10 +133,10 @@ public class InstallAction implements Action
                         }
                     }
                 }
-            }
 
-            final Duration totalBuildDuration = totalInstall.stop().toSeconds();
-            console.writeLine("Install Duration: " + totalBuildDuration.toString("0.0"));
+                final Duration totalBuildDuration = totalInstall.stop().toSeconds();
+                console.writeLine("Install Duration: " + totalBuildDuration.toString("0.0"));
+            }
         }
     }
 }
