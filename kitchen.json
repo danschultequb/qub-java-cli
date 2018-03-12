@@ -1,0 +1,104 @@
+{
+  "recipes": [
+    {
+      "name": "Pizza! Pizza! Egg Mug",
+      "ingredients": [
+        "2 tablespoons canned crushed tomatoes",
+        "1/8 teaspoon Italian seasoning",
+        "1/2 cup fat-free liquid egg substitute",
+        "1 wedge The Laughing Cow Light Creamy Swiss cheese",
+        "6 slices turkey pepperoni, chopped",
+        "1/2 teaspoon reduced-fat Parmesan-style grated topping"
+      ],
+      "steps": [
+        "In a small bowl, combine crushed tomatoes with Italian seasoning. Mix well and set aside.",
+        "Spray a large microwave-safe mug with nonstick spray. Add egg substitute and cheese wedge, breaking the cheese wedge into pieces as you add it. Microwave for 1 minute.",
+        "Gently stir. Microwave for another 30 seconds.",
+        "Add seasoned tomatoes and pepperoni to the mug. Mix well. Microwave for 30 seconds, or until scramble is set.",
+        "Lightly stir. Sprinkle with grated topping. Allow to cool slightly, and then ENJOY!"
+      ],
+      "source": "300 under 300, Page 1"
+    },
+    {
+      "name": "BTA (Bacon, Tomato, Avocado) Egg Mug",
+      "ingredients": [
+        "1/2 cup fat-free liquid egg substitute",
+        "2 tablespoons precooked real crumbled bacon",
+        "1/3 cup chopped tomatoes, patted to remove excess moisture",
+        "1 ounce diced avocado (about 1/4 of an avocado)",
+        "2 tablespoons salsa",
+        "Optional: salt and black pepper"
+      ],
+      "steps": [
+        "Spray a large microwave-safe mug with nonstick spray. Add egg substitute and microwave for 1 minute",
+        "Gently stir. Add bacon and tomatoes. Microwave for 1 minute, or until scramble is just set.",
+        "If you like, season to taste with salt and pepper. Top with avocado and salsa. Now dig in!"
+      ]
+    },
+    {
+      "name": "Buffalo Chicken Egg Mug",
+      "ingredients": [
+        "3/4 cup fat-free liquid egg substitute",
+        "1 teaspoon dried minced onion",
+        "2 ounces cooked and chopped skinless lean chicken breast",
+        "1/2 tablespoon Frank's RedHot Original Cayenne Pepper Sauce",
+        "1 teaspoon light blue cheese dressing",
+        "1/2 teaspoon reduced-fat Parmesan-style grated topping"
+      ],
+      "steps": [
+        "Spray a large microwave-safe mug with nonstick spray. Add egg substitute and onion and microwafe for 1 and 1/2 minutes.",
+        "Gently stir in chicken. Microwave for 1 minute, or until scramble is just set.",
+        "Allow to cool slightly. Top with hot sauce, blue cheese dressing, and Parm-style topping. Grab a spoon and eat up!"
+      ]
+    },
+    {
+      "name": "California Love Mug",
+      "ingredients": [
+        "1/2 cup chopped spinach",
+        "1/2 cup sliced mushrooms",
+        "1/2 cup fat-free liquid egg substitute",
+        "2 tablespoons diced tomatoes",
+        "1 wedge The Laughing Cow Light Creamy Swiss cheese",
+        "2 tablespoons diced avocado"
+      ],
+      "steps": [
+        "Spray a large microwave-safe mug with nonstick spray. Add spinach and mushrooms. Microwave for 1 to 2 minutes, until veggies have softened.",
+        "Blot any excess moisture from the veggies. Add egg substitute, tomatoes, and cheese wedge, breaking the cheese wedge into pieces as you add it. Mix well, and then microwave for 1 minute.",
+        "Gently stir, and then microwave for 1 more minute, or until scramble is just set.",
+        "Lightly stir and allow to cool slightly. Top with avocado and enjoy!"
+      ]
+    },
+    {
+      "name": "Crunchy Beefy Taco Egg Mug",
+      "ingredients": [
+        "1/4 cup frozen ground-beef-style soy crumbles",
+        "1/4 teaspoon taco seasoning mix",
+        "3/4 cup fat-free liquid egg substitute",
+        "1 tablespoon fat-free shredded cheddar cheese",
+        "4 low-fat baked tortilla chips, roughly crushed",
+        "1 tablespoon salsa",
+        "1 tablespoon fat-free sour cream"
+      ],
+      "steps": [
+        "Spray a large microwave-safe mug with nonstick spray. Add frozen crumbles and microwave for 45 seconds, or until thawed.",
+        "Add taco seasoning and mix well. Add egg substitute, stir, and microwave for 1 and 1/2 minutes.",
+        "Gently stir and then sprinkle with cheese. Microwave for 1 minute, or until scramble is just set. Top with tortilla chips, salsa, and sour cream!"
+      ]
+    },
+    {
+      "name": "Peanut Butter and Jelly Sandwich",
+      "ingredients": [
+        "2 slices of bread",
+        "3 tablespoons of peanut butter",
+        "2 tablespoons of jelly"
+      ],
+      "steps": [
+        "Place bread on a plate or other clean surface.",
+        "Apply the peanut butter to one of the pieces of bread.",
+        "Apply the jelly to the other piece of bread.",
+        "Put the pieces of bread together so that the jelly and the peanut butter are touching.",
+        "Eat."
+      ]
+    }
+  ]
+}

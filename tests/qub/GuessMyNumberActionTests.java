@@ -97,7 +97,7 @@ public class GuessMyNumberActionTests
             {
                 final Action2<String,Boolean> playAgainTest = (String line, Boolean expectedPlayAgain) ->
                 {
-                    runner.test("with " + runner.escapeAndQuote(line), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote(line), (Test test) ->
                     {
                         final Console console = new Console();
 

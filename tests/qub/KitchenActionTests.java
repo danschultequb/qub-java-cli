@@ -133,7 +133,7 @@ public class KitchenActionTests
 
                 runner.testGroup("parse(String)", () ->
                 {
-                    runner.test("with " + runner.escapeAndQuote(null), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote(null), (Test test) ->
                     {
                         final Kitchen kitchen = Kitchen.parse((String)null);
                         test.assertNotNull(kitchen);
@@ -141,7 +141,7 @@ public class KitchenActionTests
                         test.assertEqual(0, kitchen.getRecipes().getCount());
                     });
 
-                    runner.test("with " + runner.escapeAndQuote(""), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote(""), (Test test) ->
                     {
                         final Kitchen kitchen = Kitchen.parse("");
                         test.assertNotNull(kitchen);
@@ -149,7 +149,7 @@ public class KitchenActionTests
                         test.assertEqual(0, kitchen.getRecipes().getCount());
                     });
 
-                    runner.test("with " + runner.escapeAndQuote("One,Two"), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote("One,Two"), (Test test) ->
                     {
                         final Kitchen kitchen = Kitchen.parse("One,Two");
                         test.assertNotNull(kitchen);
@@ -157,7 +157,7 @@ public class KitchenActionTests
                         test.assertEqual(0, kitchen.getRecipes().getCount());
                     });
 
-                    runner.test("with " + runner.escapeAndQuote("{}"), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote("{}"), (Test test) ->
                     {
                         final Kitchen kitchen = Kitchen.parse("{}");
                         test.assertNotNull(kitchen);
@@ -165,7 +165,7 @@ public class KitchenActionTests
                         test.assertEqual(0, kitchen.getRecipes().getCount());
                     });
 
-                    runner.test("with " + runner.escapeAndQuote("{\"recipes\":[{\"name\":\"Cereal\"}]}"), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote("{\"recipes\":[{\"name\":\"Cereal\"}]}"), (Test test) ->
                     {
                         final Kitchen kitchen = Kitchen.parse("{\"recipes\":[{\"name\":\"Cereal\"}]}");
                         test.assertNotNull(kitchen);
@@ -227,7 +227,8 @@ public class KitchenActionTests
     private static String enterRecipeName()
     {
         return "\n" +
-            "Enter recipe name: \n";
+            "Enter recipe name: \n" +
+            "\n";
     }
 
     private static String enterNewIngredientName()

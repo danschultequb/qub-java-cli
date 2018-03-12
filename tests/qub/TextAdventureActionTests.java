@@ -28,7 +28,7 @@ public class TextAdventureActionTests
             {
                 final Action2<String,String> runTest = (String inputText, String expectedOutput) ->
                 {
-                    runner.test("with " + runner.escapeAndQuote(inputText), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote(inputText), (Test test) ->
                     {
                         final Console console = new Console();
                         console.setLineSeparator("\n");

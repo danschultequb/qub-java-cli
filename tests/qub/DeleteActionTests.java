@@ -15,7 +15,7 @@ public class DeleteActionTests
         {
             runner.testGroup("run(Console)", () ->
             {
-                runner.test("with " + runner.escapeAndQuote(""), test ->
+                runner.test("with " + Strings.escapeAndQuote(""), test ->
                 {
                     final Console console = createConsole(new String[] { "delete" });
                     final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
@@ -31,7 +31,7 @@ public class DeleteActionTests
                     test.assertEqual("", output.getText());
                 });
 
-                runner.test("with " + runner.escapeAndQuote("/fileThatDoesntExist.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("/fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "/fileThatDoesntExist.txt" });
                     final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
@@ -48,7 +48,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-flag /fileThatDoesntExist.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-flag /fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "/fileThatDoesntExist.txt" });
                     final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
@@ -65,7 +65,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-files /fileThatDoesntExist.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-files /fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-files", "/fileThatDoesntExist.txt" });
                     final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
@@ -82,7 +82,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("fileThatDoesntExist.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "fileThatDoesntExist.txt" });
 
@@ -100,7 +100,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-file fileThatDoesntExist.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-file fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "fileThatDoesntExist.txt" });
 
@@ -118,7 +118,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-files fileThatDoesntExist.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-files fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-files", "fileThatDoesntExist.txt" });
 
@@ -136,7 +136,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("/fileThatExists.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("/fileThatExists.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "/fileThatExists.txt" });
 
@@ -155,7 +155,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-file /fileThatExists.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-file /fileThatExists.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "/fileThatExists.txt" });
 
@@ -174,7 +174,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-files /fileThatExists.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-files /fileThatExists.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-files", "/fileThatExists.txt" });
 
@@ -193,7 +193,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("fileThatExists.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("fileThatExists.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "fileThatExists.txt" });
 
@@ -212,7 +212,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-file fileThatExists.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-file fileThatExists.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "fileThatExists.txt" });
 
@@ -231,7 +231,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-files fileThatExists.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-files fileThatExists.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-files", "fileThatExists.txt" });
 
@@ -250,7 +250,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-folder /folderThatDoesntExist"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-folder /folderThatDoesntExist"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folder", "/folderThatDoesntExist" });
                     final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
@@ -267,7 +267,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatDoesntExist"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-folder folderThatDoesntExist"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-folder folderThatDoesntExist"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folder", "folderThatDoesntExist" });
 
@@ -285,7 +285,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatDoesntExist"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("/folderThatExists"), test ->
+                runner.test("with " + Strings.escapeAndQuote("/folderThatExists"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "/folderThatExists" });
 
@@ -304,7 +304,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatExists"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-folder /folderThatExists"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-folder /folderThatExists"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folder", "/folderThatExists" });
 
@@ -323,7 +323,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatExists"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-folders /folderThatExists"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-folders /folderThatExists"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folders", "/folderThatExists" });
 
@@ -342,7 +342,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatExists"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("folderThatExists"), test ->
+                runner.test("with " + Strings.escapeAndQuote("folderThatExists"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "folderThatExists" });
 
@@ -361,7 +361,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatExists"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-folder folderThatExists"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-folder folderThatExists"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folder", "folderThatExists" });
 
@@ -380,7 +380,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatExists"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-folders folderThatExists"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-folders folderThatExists"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folders", "folderThatExists" });
 
@@ -399,7 +399,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.folderExists("/folderThatExists"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("existingFileAndFolder.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("existingFileAndFolder.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "existingFileAndFolder.txt" });
 
@@ -420,7 +420,7 @@ public class DeleteActionTests
                     test.assertTrue(fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-file existingFileAndFolder.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-file existingFileAndFolder.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "existingFileAndFolder.txt" });
 
@@ -441,7 +441,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-folder existingFileAndFolder.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-folder existingFileAndFolder.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folder", "existingFileAndFolder.txt" });
 
@@ -462,7 +462,7 @@ public class DeleteActionTests
                     test.assertTrue(fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-file -folder existingFile.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-file -folder existingFile.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "-folder", "existingFile.txt" });
 
@@ -484,7 +484,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-file -folder existingFileAndFolder.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-file -folder existingFileAndFolder.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "-folder", "existingFileAndFolder.txt" });
 
@@ -508,7 +508,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-file -folder nonExistingFileAndFolder.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("-file -folder nonExistingFileAndFolder.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "-folder", "nonExistingFileAndFolder.txt" });
 
@@ -528,7 +528,7 @@ public class DeleteActionTests
                     test.assertFalse(fileSystem.fileExists("/nonExistingFileAndFolder.txt"));
                 });
 
-                runner.test("with " + runner.escapeAndQuote("undeletableExistingFile.txt"), test ->
+                runner.test("with " + Strings.escapeAndQuote("undeletableExistingFile.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "undeletableExistingFile.txt" });
 

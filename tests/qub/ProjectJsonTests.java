@@ -37,7 +37,7 @@ public class ProjectJsonTests
 
                 final Action3<String,Action2<Test,ProjectJson>,String> parseTest = (String projectJsonText, Action2<Test,ProjectJson> projectJsonAssertions, String expectedOutput) ->
                 {
-                    runner.test("with " + runner.escapeAndQuote(projectJsonText), (Test test) ->
+                    runner.test("with " + Strings.escapeAndQuote(projectJsonText), (Test test) ->
                     {
                         try (final Console console = new Console())
                         {

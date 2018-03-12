@@ -40,12 +40,12 @@ public class KitchenAction implements Action
 
         final NamedAction addRecipeAction = new NamedAction("Add recipe", () ->
         {
-            final Kitchen.Recipe.Creator recipeCreator = kitchen.getRecipeCreator();
-            console.write("Enter recipe name: ");
+            final RecipeCreator recipeCreator = kitchen.getRecipeCreator();
+            console.writeLine("Enter recipe name: ");
 
             String input = readNonEmptyLine(console);
             console.writeLine();
-            if (input.equalsIgnoreCase("quit"))
+            if (quitAction.matches(input))
             {
                 quitAction.run();
             }
@@ -53,12 +53,12 @@ public class KitchenAction implements Action
             {
                 recipeCreator.setName(input);
 
+                console.writeLine("Enter ingredients. Press enter with an empty line to stop:");
                 boolean addIngredients = true;
                 while (addIngredients)
                 {
-                    console.write("Enter ingredient or \"done\": ");
-                    input = readNonEmptyLine(console);
-                    if (input.equalsIgnoreCase("done") || quitAction.matches(input))
+                    input = readTrimmedLine(console);
+                    if (input == null || input.isEmpty() || quitAction.matches(input))
                     {
                         addIngredients = false;
                     }
@@ -67,7 +67,6 @@ public class KitchenAction implements Action
                         recipeCreator.addIngredient(input);
                     }
                 }
-                console.writeLine();
 
                 if (quitAction.matches(input))
                 {
@@ -75,12 +74,12 @@ public class KitchenAction implements Action
                 }
                 else
                 {
+                    console.writeLine("Enter steps. Press enter with an empty line to stop:");
                     boolean addSteps = true;
                     while (addSteps)
                     {
-                        console.write("Enter step or \"done\": ");
-                        input = readNonEmptyLine(console);
-                        if (input.equalsIgnoreCase("done") || quitAction.matches(input))
+                        input = readTrimmedLine(console);
+                        if (input == null || input.isEmpty() || quitAction.matches(input))
                         {
                             addSteps = false;
                         }
@@ -96,10 +95,36 @@ public class KitchenAction implements Action
                     }
                     else
                     {
-                        recipeCreator.apply();
-                        console.writeLine();
-                        console.writeLine("Added recipe.");
-                        console.writeLine();
+                        console.writeLine("Enter source:");
+                        input = readTrimmedLine(console);
+
+                        if (quitAction.matches(input))
+                        {
+                            quitAction.run();
+                        }
+                        else
+                        {
+                            recipeCreator.setSource(input);
+
+                            console.writeLine("Enter notes. Press enter with an empty line to stop:");
+                            boolean addNotes = true;
+                            while (addNotes)
+                            {
+                                input = readTrimmedLine(console);
+                                if (input == null || input.isEmpty() || quitAction.matches(input))
+                                {
+                                    addNotes = false;
+                                }
+                                else
+                                {
+                                    recipeCreator.addNote(input);
+                                }
+                            }
+
+                            recipeCreator.apply();
+                            console.writeLine("Added recipe.");
+                            console.writeLine();
+                        }
                     }
                 }
             }
@@ -109,7 +134,7 @@ public class KitchenAction implements Action
         {
             console.writeLine("Recipes:");
             int recipeNumber = 1;
-            for (final String recipeName : kitchen.getRecipes().map(Kitchen.Recipe::getName))
+            for (final String recipeName : kitchen.getRecipes().map(Recipe::getName))
             {
                 console.writeLine(recipeNumber + ") " + recipeName);
                 ++recipeNumber;
@@ -119,7 +144,7 @@ public class KitchenAction implements Action
 
         final NamedAction readRecipeAction = new NamedAction("Read recipe", () ->
         {
-            final Kitchen.Recipe recipe = selectRecipe(console, kitchen);
+            final Recipe recipe = selectRecipe(console, kitchen);
             if (recipe != null)
             {
                 console.writeLine();
@@ -149,28 +174,169 @@ public class KitchenAction implements Action
                     }
                     console.writeLine();
                 }
+
+                final String source = recipe.getSource();
+                if (source != null && !source.isEmpty())
+                {
+                    console.writeLine("Source:");
+                    console.writeLine("  " + source);
+                    console.writeLine();
+                }
             }
         });
 
         final NamedAction editRecipeAction = new NamedAction("Edit recipe", () ->
         {
-            final Kitchen.Recipe recipeToEdit = selectRecipe(console, kitchen);
+            final Recipe recipeToEdit = selectRecipe(console, kitchen);
             if (recipeToEdit != null)
             {
-                final Kitchen.Recipe.Editor recipeEditor = kitchen.getRecipeEditor(recipeToEdit);
+                final RecipeEditor recipeEditor = kitchen.getRecipeEditor(recipeToEdit);
 
-                console.write("Enter new recipe name: ");
-                recipeEditor.setName(readNonEmptyLine(console));
-                recipeEditor.apply();
+                final Value<Boolean> doneEditing = new Value<>(false);
 
-                console.writeLine();
-                console.writeLine("Recipe updated.");
+                while (!done.get() && !doneEditing.get())
+                {
+                    console.writeLine("What do you want to edit?");
+                    console.writeLine("1) Name");
+                    console.writeLine("2) Source");
+                    console.writeLine("3) Done");
+
+                    String input = readNonEmptyLine(console);
+                    if (quitAction.matches(input))
+                    {
+                        quitAction.run();
+                    }
+                    else if (input.equals("1") || input.equalsIgnoreCase("Name"))
+                    {
+                        console.writeLine();
+                        console.writeLine("Enter the new recipe name:");
+                        recipeEditor.setName(readNonEmptyLine(console));
+                    }
+                    else if (input.equals("2") || input.equalsIgnoreCase("Source"))
+                    {
+                        console.writeLine();
+                        console.writeLine("Enter the new recipe source:");
+                        recipeEditor.setSource(readTrimmedLine(console));
+                    }
+                    else if (input.equals("3") || input.equalsIgnoreCase("Notes"))
+                    {
+                        console.writeLine();
+
+                        final Iterable<String> notes = recipeToEdit.getNotes();
+                        if (!notes.any())
+                        {
+                            console.writeLine("Enter notes. Press enter with an empty line to stop:");
+                            boolean addNotes = true;
+                            while (addNotes)
+                            {
+                                input = readTrimmedLine(console);
+                                if (input == null || input.isEmpty() || quitAction.matches(input))
+                                {
+                                    addNotes = false;
+                                }
+                                else
+                                {
+                                    recipeEditor.addNote(input);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            console.writeLine("Enter number of note to edit, \"New\" to add a new notes, or \"Done\" to go back:");
+                            int noteNumber = 0;
+                            for (final String note : notes)
+                            {
+                                console.writeLine(++noteNumber + ") " + note);
+                            }
+                            final int newNoteNumber = ++noteNumber;
+                            console.writeLine(newNoteNumber + ") New");
+
+                            final int doneNoteNumber = ++noteNumber;
+                            console.writeLine(doneNoteNumber + ") Done");
+
+                            int noteNumberSelection;
+                            try
+                            {
+                                noteNumberSelection = Integer.valueOf(input);
+                            }
+                            catch (NumberFormatException ignored)
+                            {
+                                noteNumberSelection = -1;
+                            }
+
+                            input = readNonEmptyLine(console);
+                            if (quitAction.matches(input))
+                            {
+                                quitAction.run();
+                            }
+                            else if (noteNumberSelection == doneNoteNumber || input.equalsIgnoreCase("Done"))
+                            {
+                            }
+                            else if (noteNumberSelection == newNoteNumber || input.equalsIgnoreCase("New"))
+                            {
+                                console.writeLine("Enter notes. Press enter with an empty line to stop:");
+                                boolean addNotes = true;
+                                while (addNotes)
+                                {
+                                    input = readTrimmedLine(console);
+                                    if (input == null || input.isEmpty() || quitAction.matches(input))
+                                    {
+                                        addNotes = false;
+                                    }
+                                    else
+                                    {
+                                        recipeEditor.addNote(input);
+                                    }
+                                }
+                            }
+                            else if (0 <= noteNumberSelection && noteNumberSelection < newNoteNumber)
+                            {
+                                console.writeLine("Enter note. Press enter with an empty line to remove note " + noteNumberSelection + ":");
+                                input = readTrimmedLine(console);
+                                if (quitAction.matches(input))
+                                {
+                                    quitAction.run();
+                                }
+                                else if (input == null || input.isEmpty())
+                                {
+                                    recipeEditor.removeNote(noteNumberSelection);
+                                }
+                                else
+                                {
+                                    recipeEditor.setNote(noteNumberSelection, input);
+                                }
+                            }
+                            else
+                            {
+                                console.writeLine("Sorry, I didn't recognize your selection.");
+                                console.writeLine();
+                            }
+                        }
+                    }
+                    else if (input.equals("4") || input.equalsIgnoreCase("Done"))
+                    {
+                        doneEditing.set(true);
+                    }
+                    else
+                    {
+                        console.writeLine("Sorry, I didn't recognize your selection. Please try again.");
+                        console.writeLine();
+                    }
+                }
+
+                if (!done.get())
+                {
+                    recipeEditor.apply();
+
+                    console.writeLine();
+                    console.writeLine("Recipe updated.");
+                }
             }
         });
 
         final NamedAction removeRecipeAction = new NamedAction("Remove recipe", () ->
         {
-            final Kitchen.Recipe recipeToRemove = selectRecipe(console, kitchen);
+            final Recipe recipeToRemove = selectRecipe(console, kitchen);
             if (recipeToRemove != null)
             {
                 kitchen.removeRecipe(recipeToRemove);
@@ -232,13 +398,13 @@ public class KitchenAction implements Action
         }
     }
 
-    private static Kitchen.Recipe selectRecipe(Console console, Kitchen kitchen)
+    private static Recipe selectRecipe(Console console, Kitchen kitchen)
     {
         console.write("Which recipe: ");
 
         final String recipeIdentifier = readNonEmptyLine(console);
-        final Indexable<Kitchen.Recipe> recipes = kitchen.getRecipes();
-        Kitchen.Recipe selectedRecipe = recipes.first((Kitchen.Recipe recipe) -> recipe.getName().equalsIgnoreCase(recipeIdentifier));
+        final Indexable<Recipe> recipes = kitchen.getRecipes();
+        Recipe selectedRecipe = recipes.first((Recipe recipe) -> recipe.getName().equalsIgnoreCase(recipeIdentifier));
         if (selectedRecipe == null)
         {
             try
@@ -262,17 +428,21 @@ public class KitchenAction implements Action
 
     private static String readNonEmptyLine(Console console)
     {
-        String result;
-        do
+        String result = null;
+        while (result == null || result.isEmpty())
         {
-            result = console.readLine();
-            if (result != null)
-            {
-                result = result.trim();
-            }
+            result = readTrimmedLine(console);
         }
-        while (result == null || result.isEmpty());
+        return result;
+    }
 
+    private static String readTrimmedLine(Console console)
+    {
+        String result = console.readLine();
+        if (result != null)
+        {
+            result = result.trim();
+        }
         return result;
     }
 
@@ -321,14 +491,14 @@ public class KitchenAction implements Action
             this.recipes = recipes;
         }
 
-        Recipe.Creator getRecipeCreator()
+        RecipeCreator getRecipeCreator()
         {
-            return new Recipe.Creator(this);
+            return new RecipeCreator(this);
         }
 
-        Recipe.Editor getRecipeEditor(Recipe recipe)
+        RecipeEditor getRecipeEditor(Recipe recipe)
         {
-            return new Recipe.Editor(this, recipe);
+            return new RecipeEditor(this, recipe);
         }
 
         void removeRecipe(Recipe recipe)
@@ -384,6 +554,9 @@ public class KitchenAction implements Action
                             {
                                 final String recipeName = recipeNameSegment.toUnquotedString();
 
+                                final JSONQuotedString sourceSegment = (JSONQuotedString)jsonRecipe.getPropertyValue("source");
+                                final String source = sourceSegment == null ? null : sourceSegment.toUnquotedString();
+
                                 final List<String> ingredients = new ArrayList<>();
                                 final JSONArray ingredientsSegment = (JSONArray)jsonRecipe.getPropertyValue("ingredients");
                                 if (ingredientsSegment != null)
@@ -404,7 +577,17 @@ public class KitchenAction implements Action
                                         .map(JSONQuotedString::toUnquotedString));
                                 }
 
-                                recipe = new Recipe(recipeName, ingredients, steps);
+                                final List<String> notes = new ArrayList<>();
+                                final JSONArray notesSegment = Types.as(jsonRecipe.getPropertyValue("notes"), JSONArray.class);
+                                if (notesSegment != null)
+                                {
+                                    notes.addAll(notesSegment
+                                        .getElements()
+                                        .instanceOf(JSONQuotedString.class)
+                                        .map(JSONQuotedString::toUnquotedString));
+                                }
+
+                                recipe = new Recipe(source, recipeName, ingredients, steps, notes);
                             }
 
                             return recipe;
@@ -467,6 +650,24 @@ public class KitchenAction implements Action
                                     }
                                 });
                             }
+
+                            final String source = recipe.getSource();
+                            if (source != null && !source.isEmpty())
+                            {
+                                recipeSegment.writeQuotedStringProperty("source", source);
+                            }
+
+                            final Iterable<String> notes = recipe.getNotes();
+                            if (notes.any())
+                            {
+                                recipeSegment.writeArrayProperty("notes", (JSONArrayWriteStream notesSegment) ->
+                                {
+                                    for (final String note : notes)
+                                    {
+                                        notesSegment.writeQuotedString(note);
+                                    }
+                                });
+                            }
                         });
                     }
                 });
@@ -477,100 +678,192 @@ public class KitchenAction implements Action
         {
             return folder.getFile("kitchen.json");
         }
+    }
 
-        static class Recipe
+    static class Recipe
+    {
+        private String source;
+        private String name;
+        private final Iterable<String> ingredients;
+        private final Iterable<String> steps;
+        private Iterable<String> notes;
+
+        Recipe(String source, String name, Iterable<String> ingredients, Iterable<String> steps, Iterable<String> notes)
         {
-            private String name;
-            private final Iterable<String> ingredients;
-            private final Iterable<String> steps;
+            this.source = source;
+            this.name = name;
+            this.ingredients = ingredients;
+            this.steps = steps;
+            this.notes = notes;
+        }
 
-            Recipe(String name, List<String> ingredients, List<String> steps)
+        String getSource()
+        {
+            return source;
+        }
+
+        void setSource(String source)
+        {
+            this.source = source;
+        }
+
+        String getName()
+        {
+            return name;
+        }
+
+        void setName(String name)
+        {
+            this.name = name;
+        }
+
+        Iterable<String> getIngredients()
+        {
+            return ingredients;
+        }
+
+        Iterable<String> getSteps()
+        {
+            return steps;
+        }
+
+        Iterable<String> getNotes()
+        {
+            return notes;
+        }
+
+        void setNotes(Iterable<String> notes)
+        {
+            this.notes = notes;
+        }
+    }
+
+    static class RecipeCreator
+    {
+        private final Kitchen kitchen;
+        private String name;
+        private final List<String> ingredients;
+        private final List<String> steps;
+        private String source;
+        private final List<String> notes;
+
+        RecipeCreator(Kitchen kitchen)
+        {
+            this.kitchen = kitchen;
+            ingredients = new ArrayList<>();
+            steps = new ArrayList<>();
+            notes = new ArrayList<>();
+        }
+
+        void setSource(String source)
+        {
+            this.source = source;
+        }
+
+        void setName(String name)
+        {
+            this.name = name;
+        }
+
+        void addIngredient(String ingredient)
+        {
+            ingredients.add(ingredient);
+        }
+
+        void addStep(String step)
+        {
+            steps.add(step);
+        }
+
+        void addNote(String note)
+        {
+            notes.add(note);
+        }
+
+        void apply()
+        {
+            kitchen.addRecipe(new Recipe(source, name, ingredients, steps, notes));
+        }
+    }
+
+    static class RecipeEditor
+    {
+        private final Kitchen kitchen;
+        private final Recipe toEdit;
+        private Value<String> name;
+        private Value<List<String>> notes;
+        private Value<String> source;
+
+        RecipeEditor(Kitchen kitchen, Recipe toEdit)
+        {
+            this.kitchen = kitchen;
+            this.toEdit = toEdit;
+            this.name = new Value<>();
+            this.notes = new Value<>();
+            this.source = new Value<>();
+        }
+
+        void setName(String name)
+        {
+            this.name.set(name);
+        }
+
+        private void initializeNotes()
+        {
+            if (!this.notes.hasValue())
             {
-                this.name = name;
-                this.ingredients = ingredients;
-                this.steps = steps;
+                this.notes.set(ArrayList.fromValues(toEdit.getNotes()));
+            }
+        }
+
+        void addNote(String note)
+        {
+            initializeNotes();
+            this.notes.get().add(note);
+        }
+
+        public void setNote(int noteNumber, String note)
+        {
+            initializeNotes();
+            this.notes.get().set(noteNumber, note);
+        }
+
+        void removeNote(int noteNumber)
+        {
+            initializeNotes();
+            this.notes.get().removeAt(noteNumber - 1);
+        }
+
+        void setSource(String source)
+        {
+            this.source.set(source);
+        }
+
+        void apply()
+        {
+            boolean changed = false;
+
+            if (name.hasValue() && !Comparer.equal(name.get(), toEdit.getName()))
+            {
+                toEdit.setName(name.get());
+                changed = true;
             }
 
-            String getName()
+            if (notes.hasValue() && !Comparer.equal(notes.get(), toEdit.getNotes()))
             {
-                return name;
+                toEdit.setNotes(notes.get());
+                changed = true;
             }
 
-            private void setName(String name)
+            if (source.hasValue() && !Comparer.equal(source.get(), toEdit.getSource()))
             {
-                this.name = name;
+                toEdit.setSource(source.get());
+                changed = true;
             }
 
-            Iterable<String> getIngredients()
+            if (changed)
             {
-                return ingredients;
-            }
-
-            Iterable<String> getSteps()
-            {
-                return steps;
-            }
-
-            static class Creator
-            {
-                private final Kitchen kitchen;
-                private String name;
-                private final List<String> ingredients;
-                private final List<String> steps;
-
-                Creator(Kitchen kitchen)
-                {
-                    this.kitchen = kitchen;
-                    ingredients = new ArrayList<>();
-                    steps = new ArrayList<>();
-                }
-
-                void setName(String name)
-                {
-                    this.name = name;
-                }
-
-                void addIngredient(String ingredient)
-                {
-                    ingredients.add(ingredient);
-                }
-
-                void addStep(String step)
-                {
-                    steps.add(step);
-                }
-
-                void apply()
-                {
-                    kitchen.addRecipe(new Recipe(name, ingredients, steps));
-                }
-            }
-
-            static class Editor
-            {
-                private final Kitchen kitchen;
-                private final Recipe toEdit;
-                private String name;
-
-                Editor(Kitchen kitchen, Recipe toEdit)
-                {
-                    this.kitchen = kitchen;
-                    this.toEdit = toEdit;
-                }
-
-                void setName(String name)
-                {
-                    this.name = name;
-                }
-
-                void apply()
-                {
-                    if (name != null)
-                    {
-                        toEdit.setName(name);
-                        kitchen.setChanged();
-                    }
-                }
+                kitchen.setChanged();
             }
         }
     }

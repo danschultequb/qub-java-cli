@@ -15,7 +15,7 @@ public class BondsActionTests
         {
             final Action2<String[],String> bondsTest = (String[] commandLineArguments, String expectedOutput) ->
             {
-                runner.test("with " + runner.escapeAndQuote(String.join(" ", commandLineArguments)), (Test test) ->
+                runner.test("with " + Strings.escapeAndQuote(String.join(" ", commandLineArguments)), (Test test) ->
                 {
                     final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
 

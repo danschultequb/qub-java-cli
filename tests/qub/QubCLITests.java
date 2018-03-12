@@ -49,7 +49,7 @@ public class QubCLITests
         {
             runner.testGroup("main(Console)", () ->
             {
-                runner.test("with " + runner.escapeAndQuote(""), (Test test) ->
+                runner.test("with " + Strings.escapeAndQuote(""), (Test test) ->
                 {
                     final Console console = createConsole(new String[0]);
                     final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
@@ -60,7 +60,7 @@ public class QubCLITests
                     test.assertEqual(expectedUsageString, output.getText());
                 });
 
-                runner.test("with " + runner.escapeAndQuote("-?"), (Test test) ->
+                runner.test("with " + Strings.escapeAndQuote("-?"), (Test test) ->
                 {
                     final Console console = createConsole(new String[] { "-?" });
                     final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
@@ -71,7 +71,7 @@ public class QubCLITests
                     test.assertEqual(expectedUsageString, output.getText());
                 });
 
-                runner.test("with " + runner.escapeAndQuote("/?"), (Test test) ->
+                runner.test("with " + Strings.escapeAndQuote("/?"), (Test test) ->
                 {
                     final Console console = createConsole(new String[] { "/?" });
                     final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
@@ -82,7 +82,7 @@ public class QubCLITests
                     test.assertEqual(expectedUsageString, output.getText());
                 });
 
-                runner.test("with " + runner.escapeAndQuote("spam"), (Test test) ->
+                runner.test("with " + Strings.escapeAndQuote("spam"), (Test test) ->
                 {
                     final Console console = createConsole(new String[] { "spam" });
                     final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
