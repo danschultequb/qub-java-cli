@@ -40,6 +40,8 @@ public class KitchenAction implements Action
 
         final NamedAction addRecipeAction = new NamedAction("Add recipe", () ->
         {
+            console.writeLine();
+
             final RecipeCreator recipeCreator = kitchen.getRecipeCreator();
             console.writeLine("Enter recipe name: ");
 
@@ -97,6 +99,7 @@ public class KitchenAction implements Action
                     {
                         console.writeLine("Enter source:");
                         input = readTrimmedLine(console);
+                        console.writeLine();
 
                         if (quitAction.matches(input))
                         {
@@ -132,6 +135,7 @@ public class KitchenAction implements Action
 
         final NamedAction listRecipesAction = new NamedAction("List recipes", () ->
         {
+            console.writeLine();
             console.writeLine("Recipes:");
             int recipeNumber = 1;
             for (final String recipeName : kitchen.getRecipes().map(Recipe::getName))
@@ -144,6 +148,7 @@ public class KitchenAction implements Action
 
         final NamedAction readRecipeAction = new NamedAction("Read recipe", () ->
         {
+            console.writeLine();
             final Recipe recipe = selectRecipe(console, kitchen);
             if (recipe != null)
             {
@@ -175,6 +180,17 @@ public class KitchenAction implements Action
                     console.writeLine();
                 }
 
+                final Iterable<String> notes = recipe.getNotes();
+                if (notes.any())
+                {
+                    console.writeLine("Notes:");
+                    for (final String note : notes)
+                    {
+                        console.writeLine("  - " + note);
+                    }
+                    console.writeLine();
+                }
+
                 final String source = recipe.getSource();
                 if (source != null && !source.isEmpty())
                 {
@@ -187,6 +203,7 @@ public class KitchenAction implements Action
 
         final NamedAction editRecipeAction = new NamedAction("Edit recipe", () ->
         {
+            console.writeLine();
             final Recipe recipeToEdit = selectRecipe(console, kitchen);
             if (recipeToEdit != null)
             {
@@ -194,36 +211,78 @@ public class KitchenAction implements Action
 
                 final Value<Boolean> doneEditing = new Value<>(false);
 
-                while (!done.get() && !doneEditing.get())
+                final NamedAction editNameAction = new NamedAction("Name", () ->
                 {
-                    console.writeLine("What do you want to edit?");
-                    console.writeLine("1) Name");
-                    console.writeLine("2) Source");
-                    console.writeLine("3) Done");
+                    console.writeLine();
+                    console.writeLine("Enter the new recipe name:");
+                    recipeEditor.setName(readNonEmptyLine(console));
+                    console.writeLine();
+                });
 
-                    String input = readNonEmptyLine(console);
-                    if (quitAction.matches(input))
-                    {
-                        quitAction.run();
-                    }
-                    else if (input.equals("1") || input.equalsIgnoreCase("Name"))
-                    {
-                        console.writeLine();
-                        console.writeLine("Enter the new recipe name:");
-                        recipeEditor.setName(readNonEmptyLine(console));
-                    }
-                    else if (input.equals("2") || input.equalsIgnoreCase("Source"))
-                    {
-                        console.writeLine();
-                        console.writeLine("Enter the new recipe source:");
-                        recipeEditor.setSource(readTrimmedLine(console));
-                    }
-                    else if (input.equals("3") || input.equalsIgnoreCase("Notes"))
-                    {
-                        console.writeLine();
+                final NamedAction editSourceAction = new NamedAction("Source", () ->
+                {
+                    console.writeLine();
+                    console.writeLine("Enter the new recipe source:");
+                    recipeEditor.setSource(readTrimmedLine(console));
+                    console.writeLine();
+                });
 
-                        final Iterable<String> notes = recipeToEdit.getNotes();
-                        if (!notes.any())
+                final NamedAction editNotesAction = new NamedAction("Notes", () ->
+                {
+                    console.writeLine();
+
+                    final Iterable<String> notes = recipeToEdit.getNotes();
+                    if (!notes.any())
+                    {
+                        console.writeLine("Enter notes. Press enter with an empty line to stop:");
+                        boolean addNotes = true;
+                        while (addNotes)
+                        {
+                            final String input = readTrimmedLine(console);
+                            if (input == null || input.isEmpty() || quitAction.matches(input))
+                            {
+                                addNotes = false;
+                            }
+                            else
+                            {
+                                recipeEditor.addNote(input);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        console.writeLine("Enter number of note to edit, \"New\" to add a new notes, or \"Done\" to go back:");
+                        int noteNumber = 0;
+                        for (final String note : notes)
+                        {
+                            console.writeLine(++noteNumber + ") " + note);
+                        }
+                        final int newNoteNumber = ++noteNumber;
+                        console.writeLine(newNoteNumber + ") New");
+
+                        final int doneNoteNumber = ++noteNumber;
+                        console.writeLine(doneNoteNumber + ") Done");
+
+                        String input = readNonEmptyLine(console);
+
+                        int noteNumberSelection;
+                        try
+                        {
+                            noteNumberSelection = Integer.valueOf(input);
+                        }
+                        catch (NumberFormatException ignored)
+                        {
+                            noteNumberSelection = -1;
+                        }
+
+                        if (quitAction.matches(input))
+                        {
+                            quitAction.run();
+                        }
+                        else if (noteNumberSelection == doneNoteNumber || input.equalsIgnoreCase("Done"))
+                        {
+                        }
+                        else if (noteNumberSelection == newNoteNumber || input.equalsIgnoreCase("New"))
                         {
                             console.writeLine("Enter notes. Press enter with an empty line to stop:");
                             boolean addNotes = true;
@@ -240,88 +299,47 @@ public class KitchenAction implements Action
                                 }
                             }
                         }
-                        else
+                        else if (0 <= noteNumberSelection && noteNumberSelection < newNoteNumber)
                         {
-                            console.writeLine("Enter number of note to edit, \"New\" to add a new notes, or \"Done\" to go back:");
-                            int noteNumber = 0;
-                            for (final String note : notes)
-                            {
-                                console.writeLine(++noteNumber + ") " + note);
-                            }
-                            final int newNoteNumber = ++noteNumber;
-                            console.writeLine(newNoteNumber + ") New");
-
-                            final int doneNoteNumber = ++noteNumber;
-                            console.writeLine(doneNoteNumber + ") Done");
-
-                            int noteNumberSelection;
-                            try
-                            {
-                                noteNumberSelection = Integer.valueOf(input);
-                            }
-                            catch (NumberFormatException ignored)
-                            {
-                                noteNumberSelection = -1;
-                            }
-
-                            input = readNonEmptyLine(console);
+                            console.writeLine("Enter note. Press enter with an empty line to remove note " + noteNumberSelection + ":");
+                            input = readTrimmedLine(console);
                             if (quitAction.matches(input))
                             {
                                 quitAction.run();
                             }
-                            else if (noteNumberSelection == doneNoteNumber || input.equalsIgnoreCase("Done"))
+                            else if (input == null || input.isEmpty())
                             {
-                            }
-                            else if (noteNumberSelection == newNoteNumber || input.equalsIgnoreCase("New"))
-                            {
-                                console.writeLine("Enter notes. Press enter with an empty line to stop:");
-                                boolean addNotes = true;
-                                while (addNotes)
-                                {
-                                    input = readTrimmedLine(console);
-                                    if (input == null || input.isEmpty() || quitAction.matches(input))
-                                    {
-                                        addNotes = false;
-                                    }
-                                    else
-                                    {
-                                        recipeEditor.addNote(input);
-                                    }
-                                }
-                            }
-                            else if (0 <= noteNumberSelection && noteNumberSelection < newNoteNumber)
-                            {
-                                console.writeLine("Enter note. Press enter with an empty line to remove note " + noteNumberSelection + ":");
-                                input = readTrimmedLine(console);
-                                if (quitAction.matches(input))
-                                {
-                                    quitAction.run();
-                                }
-                                else if (input == null || input.isEmpty())
-                                {
-                                    recipeEditor.removeNote(noteNumberSelection);
-                                }
-                                else
-                                {
-                                    recipeEditor.setNote(noteNumberSelection, input);
-                                }
+                                recipeEditor.removeNote(noteNumberSelection);
                             }
                             else
                             {
-                                console.writeLine("Sorry, I didn't recognize your selection.");
-                                console.writeLine();
+                                recipeEditor.setNote(noteNumberSelection, input);
                             }
                         }
+                        else
+                        {
+                            console.writeLine("Sorry, I didn't recognize your selection.");
+                            console.writeLine();
+                        }
                     }
-                    else if (input.equals("4") || input.equalsIgnoreCase("Done"))
-                    {
-                        doneEditing.set(true);
-                    }
-                    else
-                    {
-                        console.writeLine("Sorry, I didn't recognize your selection. Please try again.");
-                        console.writeLine();
-                    }
+                });
+
+                final NamedAction doneEditingAction = new NamedAction("Done", () ->
+                {
+                    doneEditing.set(true);
+                });
+
+                final Array<NamedAction> editingActions = Array.fromValues(new NamedAction[]
+                {
+                    editNameAction,
+                    editSourceAction,
+                    editNotesAction,
+                    doneEditingAction
+                });
+
+                while (!done.get() && !doneEditing.get())
+                {
+                    selectAndRunAction(console, "What do you want to edit?", editingActions);
                 }
 
                 if (!done.get())
@@ -330,12 +348,14 @@ public class KitchenAction implements Action
 
                     console.writeLine();
                     console.writeLine("Recipe updated.");
+                    console.writeLine();
                 }
             }
         });
 
         final NamedAction removeRecipeAction = new NamedAction("Remove recipe", () ->
         {
+            console.writeLine();
             final Recipe recipeToRemove = selectRecipe(console, kitchen);
             if (recipeToRemove != null)
             {
@@ -348,53 +368,53 @@ public class KitchenAction implements Action
         });
 
         final Array<NamedAction> namedActions = Array.fromValues(new NamedAction[]
-            {
-                addRecipeAction,
-                listRecipesAction,
-                readRecipeAction,
-                editRecipeAction,
-                removeRecipeAction,
-                quitAction
-            });
+        {
+            addRecipeAction,
+            listRecipesAction,
+            readRecipeAction,
+            editRecipeAction,
+            removeRecipeAction,
+            quitAction
+        });
 
         while (!done.get())
         {
-            console.writeLine("Please pick an action:");
-            for (int i = 0; i < namedActions.getCount(); ++i)
+            selectAndRunAction(console, "Please pick an action:", namedActions);
+        }
+    }
+
+    private static void selectAndRunAction(Console console, String prompt, Indexable<NamedAction> actions)
+    {
+        console.writeLine(prompt);
+        for (int i = 0; i < actions.getCount(); ++i)
+        {
+            console.writeLine((i + 1) + ") " + actions.get(i).getName());
+        }
+        console.writeLine();
+
+        final String input = readNonEmptyLine(console).toLowerCase();
+        NamedAction selectedAction = actions.first((NamedAction namedAction) -> namedAction.matches(input));
+        if (selectedAction == null)
+        {
+            try
             {
-                console.writeLine((i + 1) + ") " + namedActions.get(i).getName());
+                final int actionNumber = Integer.parseInt(input);
+                final int actionIndex = actionNumber - 1;
+                selectedAction = actions.get(actionIndex);
             }
+            catch (NumberFormatException ignored)
+            {
+            }
+        }
+
+        if (selectedAction == null)
+        {
+            console.writeLine("Sorry, I didn't recognize your selection. Please try again.");
             console.writeLine();
-
-            final String input = readNonEmptyLine(console).toLowerCase();
-            NamedAction selectedAction = namedActions.first((NamedAction namedAction) -> namedAction.matches(input));
-            if (selectedAction == null)
-            {
-                try
-                {
-                    final int actionNumber = Integer.parseInt(input);
-                    final int actionIndex = actionNumber - 1;
-                    selectedAction = namedActions.get(actionIndex);
-                }
-                catch (NumberFormatException ignored)
-                {
-                }
-            }
-
-            if (selectedAction == null || !selectedAction.matches("quit"))
-            {
-                console.writeLine();
-            }
-
-            if (selectedAction == null)
-            {
-                console.writeLine("Sorry, I didn't recognize your selection. Please try again.");
-                console.writeLine();
-            }
-            else
-            {
-                selectedAction.run();
-            }
+        }
+        else
+        {
+            selectedAction.run();
         }
     }
 

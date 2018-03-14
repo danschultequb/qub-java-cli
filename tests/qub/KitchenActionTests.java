@@ -243,8 +243,7 @@ public class KitchenActionTests
 
     private static String unrecognizedSelection()
     {
-        return "\n" +
-            "Sorry, I didn't recognize your selection. Please try again.\n";
+        return "Sorry, I didn't recognize your selection. Please try again.\n";
     }
 
     private static FileSystem createFileSystem()
