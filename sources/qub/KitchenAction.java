@@ -28,7 +28,7 @@ public class KitchenAction implements Action
         console.writeLine("Welcome to Qub Kitchen!");
         console.writeLine();
 
-        final Folder currentFolder = console.getCurrentFolder();
+        final Folder currentFolder = console.getCurrentFolder().getValue();
         final Kitchen kitchen = Kitchen.parse(currentFolder);
         final Value<Boolean> done = new Value<>(false);
 
@@ -458,7 +458,7 @@ public class KitchenAction implements Action
 
     private static String readTrimmedLine(Console console)
     {
-        String result = console.readLine();
+        String result = console.readLine().getValue();
         if (result != null)
         {
             result = result.trim();
@@ -549,7 +549,7 @@ public class KitchenAction implements Action
 
         static Kitchen parse(File kitchenFile)
         {
-            return parse(kitchenFile.getContentsAsString());
+            return parse(CharacterEncoding.UTF_8.decode(kitchenFile.getContents().getValue()));
         }
 
         static Kitchen parse(String kitchenContents)
@@ -696,7 +696,7 @@ public class KitchenAction implements Action
 
         static File getKitchenFile(Folder folder)
         {
-            return folder.getFile("kitchen.json");
+            return folder.getFile("kitchen.json").getValue();
         }
     }
 

@@ -71,7 +71,7 @@ public class OrcBattleAction implements Action
                 while (!performedAction)
                 {
                     console.write("Attack style - [s]tab, [d]ouble swing, [r]oundhouse: ");
-                    final String playerInput = console.readLine();
+                    final String playerInput = console.readLine().getValue();
                     final String playerInputLower = playerInput.toLowerCase();
 
                     if (playerInputLower.equals("s") || playerInputLower.equals("stab"))
@@ -252,7 +252,7 @@ public class OrcBattleAction implements Action
         {
             console.write("Monster #: ");
 
-            final String input = console.readLine();
+            final String input = console.readLine().getValue();
             if (input != null && !input.isEmpty())
             {
                 try
@@ -643,15 +643,9 @@ public class OrcBattleAction implements Action
         }
 
         @Override
-        public void setExceptionHandler(Action1<IOException> exceptionHandler)
+        public Result<Boolean> write(byte b)
         {
-            innerByteWriteStream.setExceptionHandler(exceptionHandler);
-        }
-
-        @Override
-        public boolean write(byte b)
-        {
-            final boolean result = innerByteWriteStream.write(b);
+            final Result<Boolean> result = innerByteWriteStream.write(b);
             if (b == '\n')
             {
                 try
@@ -666,15 +660,15 @@ public class OrcBattleAction implements Action
         }
 
         @Override
-        public boolean isOpen()
+        public boolean isDisposed()
         {
-            return innerByteWriteStream.isOpen();
+            return innerByteWriteStream.isDisposed();
         }
 
         @Override
-        public void close()
+        public Result<Boolean> dispose()
         {
-            innerByteWriteStream.close();
+            return innerByteWriteStream.dispose();
         }
     }
 }

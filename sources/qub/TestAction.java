@@ -50,10 +50,10 @@ public class TestAction implements Action
                     final Folder javaTestsFolder = projectJson.getJavaTestsFolder();
                     if (javaTestsFolder != null)
                     {
-                        final Folder testOutputsFolder = javaOutputsFolder.getFolder(javaTestsFolder.getName());
+                        final Folder testOutputsFolder = javaOutputsFolder.getFolder(javaTestsFolder.getName()).getValue();
 
                         final Folder sourcesFolder = projectJson.getJavaSourcesFolder();
-                        final Folder sourceOutputsFolder = sourcesFolder == null ? null : javaOutputsFolder.getFolder(sourcesFolder.getName());
+                        final Folder sourceOutputsFolder = sourcesFolder == null ? null : javaOutputsFolder.getFolder(sourcesFolder.getName()).getValue();
 
                         final List<String> classpaths = ArrayList.fromValues(projectJson.getAllClasspaths(QubCLI.getQubFolder(console)));
                         if (sourceOutputsFolder != null)
@@ -68,7 +68,7 @@ public class TestAction implements Action
                             console.writeLine("Classpath: \"" + classpath + "\"");
                         }
 
-                        final Iterable<File> testClassFiles = testOutputsFolder.getFilesRecursively()
+                        final Iterable<File> testClassFiles = testOutputsFolder.getFilesRecursively().getValue()
                             .where(file -> file.getFileExtension().equals(".class") && !file.getName().contains("$"));
                         if (!testClassFiles.any())
                         {
@@ -79,25 +79,27 @@ public class TestAction implements Action
                             final Iterable<Path> relativeTestSourcePaths = testClassFiles
                                 .map(file -> file.relativeTo(testOutputsFolder));
 
+                            if (debug)
+                            {
+                                console.writeLine("Found (" + relativeTestSourcePaths.getCount() + ") test classes found: " + relativeTestSourcePaths);
+                            }
+
                             final Iterable<String> fullTestClassNames = relativeTestSourcePaths
                                 .map(relativeTestSourcePath -> relativeTestSourcePath.withoutFileExtension().toString().replace('/', '.').replace('\\', '.'));
 
-                            final ProcessBuilder java = console.getProcessBuilder("java");
+                            final ProcessBuilder java = console.getProcessBuilder("java").getValue();
                             java.redirectOutput(console.getOutputAsByteWriteStream());
                             java.redirectError(console.getErrorAsByteWriteStream());
 
                             final Folder qubFolder = QubCLI.getQubFolder(console);
-                            final Folder jacocoFolder = qubFolder
-                                .getFolder("jacoco")
-                                .getFolder("jacococli")
-                                .getFolder("0.8.0");
+                            final Folder jacocoFolder = qubFolder.getFolder("jacoco/jacococli/0.8.0").getValue();
 
                             final Double javaTestsLineCoverageRequirement = projectJson.getJavaTestsLineCoverageRequirement();
                             File coverageExecFile = null;
                             if (coverage)
                             {
-                                final File jacocoAgentJarFile = jacocoFolder.getFile("jacocoagent.jar");
-                                coverageExecFile = javaOutputsFolder.getFile("coverage.exec");
+                                final File jacocoAgentJarFile = jacocoFolder.getFile("jacocoagent.jar").getValue();
+                                coverageExecFile = javaOutputsFolder.getFile("coverage.exec").getValue();
                                 java.addArgument("-javaagent:" + jacocoAgentJarFile.getPath().toString() + "=destfile=" + coverageExecFile.getPath().toString());
                             }
 
@@ -129,12 +131,12 @@ public class TestAction implements Action
                                 final Stopwatch coverageStopwatch = console.getStopwatch();
                                 coverageStopwatch.start();
 
-                                final Iterable<File> classFiles = sourceOutputsFolder.getFilesRecursively()
+                                final Iterable<File> classFiles = sourceOutputsFolder.getFilesRecursively().getValue()
                                     .where((File file) -> file.getFileExtension().equals(".class"));
-                                final File jacocoCLIJarFile = jacocoFolder.getFile("jacococli.jar");
-                                final Folder coverageFolder = javaOutputsFolder.getFolder("coverage");
+                                final File jacocoCLIJarFile = jacocoFolder.getFile("jacococli.jar").getValue();
+                                final Folder coverageFolder = javaOutputsFolder.getFolder("coverage").getValue();
 
-                                final ProcessBuilder jacococli = console.getProcessBuilder("java");
+                                final ProcessBuilder jacococli = console.getProcessBuilder("java").getValue();
                                 if (debug)
                                 {
                                     jacococli.redirectOutput(console.getOutputAsByteWriteStream());
@@ -154,7 +156,7 @@ public class TestAction implements Action
                                 if (javaTestsLineCoverageRequirement != null)
                                 {
                                     coverageFolder.create();
-                                    coverageCSVFile = coverageFolder.getFile("coverage.csv");
+                                    coverageCSVFile = coverageFolder.getFile("coverage.csv").getValue();
                                     jacococli.addArguments("--csv", coverageCSVFile.toString());
                                 }
                                 if (debug)
@@ -169,10 +171,14 @@ public class TestAction implements Action
 
                                 if (javaTestsLineCoverageRequirement != null)
                                 {
-                                    CSVDocument coverageCSVDocument;
-                                    try (final CharacterReadStream coverageCSVFileReadStream = coverageCSVFile.getContentCharacterReadStream())
+                                    CSVDocument coverageCSVDocument = null;
+                                    try (final CharacterReadStream coverageCSVFileReadStream = coverageCSVFile.getContentByteReadStream().getValue().asCharacterReadStream())
                                     {
                                         coverageCSVDocument = CSV.parse(coverageCSVFileReadStream);
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        console.writeLine(e.toString());
                                     }
 
                                     final Function1<CSVRow, String> getFullClassName = (CSVRow coverageEntry) -> coverageEntry.get(1) + "." + coverageEntry.get(2);
@@ -215,7 +221,7 @@ public class TestAction implements Action
 
                                 try
                                 {
-                                    Desktop.getDesktop().open(new java.io.File(coverageFolder.getFile("index.html").getPath().toString()));
+                                    Desktop.getDesktop().open(new java.io.File(coverageFolder.getFile("index.html").getValue().getPath().toString()));
                                 }
                                 catch (IOException e)
                                 {

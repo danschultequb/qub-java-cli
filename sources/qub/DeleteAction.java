@@ -36,7 +36,7 @@ public class DeleteAction implements Action
         final Action2<String, FileSystemEntry> deleteEntry = (String entryType, FileSystemEntry entry) ->
         {
             console.write("Deleting " + entryType + " " + entry.getPath().toString() + "...");
-            if (entry.delete())
+            if (entry.delete().getValue())
             {
                 console.writeLine(" Done.");
             }
@@ -52,7 +52,7 @@ public class DeleteAction implements Action
             .map((CommandLineArgument argument) -> Path.parse(argument.toString()));
 
         final FileSystem fileSystem = console.getFileSystem();
-        final Folder currentFolder = console.getCurrentFolder();
+        final Folder currentFolder = console.getCurrentFolder().getValue();
         for (final Path pathToDelete : pathsToDelete)
         {
             File fileToDelete = null;
@@ -62,15 +62,15 @@ public class DeleteAction implements Action
             boolean fileExists = false;
             if (fileFlag || !folderFlag)
             {
-                fileToDelete = pathIsRooted ? fileSystem.getFile(pathToDelete) : currentFolder.getFile(pathToDelete);
-                fileExists = fileToDelete.exists();
+                fileToDelete = pathIsRooted ? fileSystem.getFile(pathToDelete).getValue() : currentFolder.getFile(pathToDelete).getValue();
+                fileExists = fileToDelete.exists().getValue();
             }
 
             boolean folderExists = false;
             if (folderFlag || !fileFlag)
             {
-                folderToDelete = pathIsRooted ? fileSystem.getFolder(pathToDelete) : currentFolder.getFolder(pathToDelete);
-                folderExists = folderToDelete.exists();
+                folderToDelete = pathIsRooted ? fileSystem.getFolder(pathToDelete).getValue() : currentFolder.getFolder(pathToDelete).getValue();
+                folderExists = folderToDelete.exists().getValue();
             }
 
             if (fileFlag && folderFlag)

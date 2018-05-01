@@ -32,13 +32,13 @@ public class GuessMyNumberActionTests
                             final GuessMyNumberAction action = new GuessMyNumberAction();
                             action.run(console);
                         }
-                        catch(Exception ignored)
+                        catch(Exception e)
                         {
-                            test.fail(ignored);
+                            test.fail(e);
                         }
 
                         test.assertTrue(writeStream.getText().contains(expectedTextToFind));
-                        test.assertNull(readStream.readLine());
+                        test.assertSuccess(null, readStream.readLine());
                     });
                 };
 

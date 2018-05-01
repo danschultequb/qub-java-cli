@@ -246,9 +246,9 @@ public class KitchenActionTests
         return "Sorry, I didn't recognize your selection. Please try again.\n";
     }
 
-    private static FileSystem createFileSystem()
+    private static FileSystem createFileSystem(Test test)
     {
-        final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
+        final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
         fileSystem.createRoot("/");
         return fileSystem;
     }
@@ -276,7 +276,7 @@ public class KitchenActionTests
 
     private static void test(Test test, String userInput, String expectedOutput)
     {
-        final FileSystem fileSystem = createFileSystem();
+        final FileSystem fileSystem = createFileSystem(test);
         test(test, userInput, expectedOutput, fileSystem);
     }
 
@@ -285,13 +285,7 @@ public class KitchenActionTests
         test(test, userInput, expectedOutput, fileSystem, new Value<>());
     }
 
-    private static void test(Test test, String userInput, String expectedOutput, Out<Console> outputConsole)
-    {
-        final FileSystem fileSystem = createFileSystem();
-        test(test, userInput, expectedOutput, fileSystem, outputConsole);
-    }
-
-    private static void test(Test test, String userInput, String expectedOutput, FileSystem fileSystem, Out<Console> outputConsole)
+    private static void test(Test test, String userInput, String expectedOutput, FileSystem fileSystem, Setable<Console> outputConsole)
     {
         final InMemoryLineWriteStream stdout = createLineWriteStream();
         final Console console = createConsole(new String[0], stdout, userInput, fileSystem);

@@ -70,25 +70,25 @@ public class InstallAction implements Action
                                         {
                                             jarFileName += ".jar";
                                         }
-                                        final File outputsJarFile = javaOutputsFolder.getFile(jarFileName);
+                                        final File outputsJarFile = javaOutputsFolder.getFile(jarFileName).getValue();
 
                                         final Folder qubFolder = QubCLI.getQubFolder(console);
-                                        final Folder publisherFolder = qubFolder.getFolder(publisher);
-                                        final Folder projectFolder = publisherFolder.getFolder(project);
-                                        final Folder versionFolder = projectFolder.getFolder(version);
+                                        final Folder publisherFolder = qubFolder.getFolder(publisher).getValue();
+                                        final Folder projectFolder = publisherFolder.getFolder(project).getValue();
+                                        final Folder versionFolder = projectFolder.getFolder(version).getValue();
 
-                                        final File installedJarFile = versionFolder.getFile(jarFileName);
+                                        final File installedJarFile = versionFolder.getFile(jarFileName).getValue();
 
                                         final Stopwatch stopwatch = console.getStopwatch();
                                         console.write("Copying " + outputsJarFile + " to " + installedJarFile + "...");
                                         stopwatch.start();
-                                        installedJarFile.setContents(outputsJarFile.getContents());
+                                        installedJarFile.setContents(outputsJarFile.getContents().getValue());
                                         console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
 
-                                        final File installedProjectJsonFile = versionFolder.getFile("project.json");
+                                        final File installedProjectJsonFile = versionFolder.getFile("project.json").getValue();
                                         console.write("Copying project.json to " + installedProjectJsonFile + "...");
                                         stopwatch.start();
-                                        installedProjectJsonFile.setContents(rootObject.toString(), CharacterEncoding.UTF_8);
+                                        installedProjectJsonFile.setContents(CharacterEncoding.UTF_8.encode(rootObject.toString()));
                                         console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
 
                                         final String mainClass = projectJson.getMainClass();
@@ -118,13 +118,13 @@ public class InstallAction implements Action
                                                 classpath += ";%~dp0" + dependency.toString();
                                             }
 
-                                            final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd");
+                                            final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd").getValue();
                                             final String shortcutFileContents =
                                                 "@echo OFF\n" +
                                                     "java -cp " + classpath + " " + mainClass + " %*\n";
                                             console.write("Writing " + shortcutFile + "...");
                                             stopwatch.start();
-                                            shortcutFile.setContents(shortcutFileContents, CharacterEncoding.UTF_8);
+                                            shortcutFile.setContents(CharacterEncoding.UTF_8.encode(shortcutFileContents));
                                             console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
                                         }
                                     }

@@ -8,6 +8,10 @@ public class QubCLI
         {
             QubCLI.main(console);
         }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     static void main(Console console)
@@ -97,7 +101,12 @@ public class QubCLI
 
     static Folder getQubFolder(Console console)
     {
-        return console.getFileSystem().getFolder("C:/qub");
+        return console.getFileSystem().getFolder("C:/qub").getValue();
+    }
+
+    static Folder getJavaFolder(Console console)
+    {
+        return console.getFileSystem().getFolder("C:/Program Files/Java/").getValue();
     }
 
     static boolean parseDebug(Console console)

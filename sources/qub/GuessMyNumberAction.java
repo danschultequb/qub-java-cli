@@ -46,7 +46,7 @@ public class GuessMyNumberAction implements Action
             final int guess = (upperBound + lowerBound) / 2;
             console.write("Is it less than, equal to, or greater than " + guess + "? [less, equal, greater] ");
 
-            final String response = console.readLine();
+            final String response = console.readLine().getValue();
 
             if (response.equalsIgnoreCase("equal"))
             {
@@ -94,7 +94,7 @@ public class GuessMyNumberAction implements Action
     {
         console.write("Do you want to main again? [yes, no] ");
 
-        final boolean playAgain = console.readLine().equalsIgnoreCase("yes");
+        final boolean playAgain = console.readLine().getValue().equalsIgnoreCase("yes");
 
         console.writeLine();
 

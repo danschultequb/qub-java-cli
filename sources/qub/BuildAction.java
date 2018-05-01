@@ -61,7 +61,7 @@ public class BuildAction implements Action
                     }
                     else
                     {
-                        sourceOutputsFolder = javaOutputsFolder.getFolder(sourcesFolder.getName());
+                        sourceOutputsFolder = javaOutputsFolder.getFolder(sourcesFolder.getName()).getValue();
 
                         shouldCompileSources = shouldCompile(sourcesFolder, sourceFiles, sourceOutputsFolder);
                         if (!shouldCompileSources)
@@ -86,20 +86,20 @@ public class BuildAction implements Action
                             }
                             else
                             {
-                                final File jarFile = javaOutputsFolder.getFile(project + ".jar");
+                                final File jarFile = javaOutputsFolder.getFile(project + ".jar").getValue();
 
                                 File manifestFile = null;
                                 final String mainClass = projectJson.getMainClass();
                                 if (mainClass != null)
                                 {
-                                    manifestFile = sourceOutputsFolder.getFolder("META-INF").getFile("MANIFEST.MF");
+                                    manifestFile = sourceOutputsFolder.getFile("META-INF/MANIFEST.MF").getValue();
                                     final String manifestFileContents =
                                         "Manifest-Version: 1.0\n" +
-                                            "Main-Class: " + mainClass + "\n";
-                                    manifestFile.setContents(manifestFileContents, CharacterEncoding.UTF_8);
+                                        "Main-Class: " + mainClass + "\n";
+                                    manifestFile.setContents(CharacterEncoding.UTF_8.encode(manifestFileContents));
                                 }
 
-                                final ProcessBuilder jar = console.getProcessBuilder("jar");
+                                final ProcessBuilder jar = console.getProcessBuilder("jar").getValue();
                                 jar.setWorkingFolder(sourceOutputsFolder);
                                 jar.redirectOutput(console.getOutputAsByteWriteStream());
                                 jar.redirectError(console.getErrorAsByteWriteStream());
@@ -150,7 +150,7 @@ public class BuildAction implements Action
                         }
                         else
                         {
-                            final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName());
+                            final Folder testOutputsFolder = javaOutputsFolder.getFolder(testsFolder.getName()).getValue();
                             final boolean shouldCompileTests = shouldCompileSources || shouldCompile(testsFolder, testFiles, testOutputsFolder);
                             if (!shouldCompileTests)
                             {
@@ -186,13 +186,13 @@ public class BuildAction implements Action
         return sourceFiles.contains((File sourceFile) ->
         {
             final Path relativePath = sourceFile.relativeTo(sourceFileFolder);
-            final File classFile = outputFolder.getFile(relativePath.withoutFileExtension().concatenate(".class"));
+            final File classFile = outputFolder.getFile(relativePath.withoutFileExtension().concatenate(".class")).getValue();
             boolean needsCompile;
-            if (!classFile.exists())
+            if (!classFile.exists().getValue())
             {
                 needsCompile = true;
             }
-            else if (sourceFile.getLastModified().greaterThan(classFile.getLastModified()))
+            else if (sourceFile.getLastModified().getValue().greaterThan(classFile.getLastModified().getValue()))
             {
                 needsCompile = true;
             }
@@ -214,7 +214,7 @@ public class BuildAction implements Action
         }
         stopwatch.start();
 
-        final ProcessBuilder javac = console.getProcessBuilder("javac");
+        final ProcessBuilder javac = console.getProcessBuilder("javac").getValue();
         javac.redirectOutput(console.getOutputAsByteWriteStream());
         javac.redirectError(console.getErrorAsByteWriteStream());
 
@@ -230,24 +230,20 @@ public class BuildAction implements Action
 
             if (javaVersion.equals("1.7") || javaVersion.equals("7"))
             {
-                final Folder qubFolder = QubCLI.getQubFolder(console);
+                final Folder javaFolder = QubCLI.getJavaFolder(console);
                 addNamedArgument(javac, "-bootclasspath",
-                    qubFolder.getPath().
-                        concatenateSegment("oracle").
-                        concatenateSegment("jre").
-                        concatenateSegment("1.7").
+                    javaFolder.getPath().
+                        concatenateSegment("jre7").
                         concatenateSegment("lib").
                         concatenateSegment("rt.jar")
                         .toString());
             }
             else if (javaVersion.equals("1.8") || javaVersion.equals("8"))
             {
-                final Folder qubFolder = QubCLI.getQubFolder(console);
+                final Folder javaFolder = QubCLI.getJavaFolder(console);
                 addNamedArgument(javac, "-bootclasspath",
-                    qubFolder.getPath().
-                        concatenateSegment("oracle").
-                        concatenateSegment("jre").
-                        concatenateSegment("1.8").
+                    javaFolder.getPath().
+                        concatenateSegment("jre1.8.0_171").
                         concatenateSegment("lib").
                         concatenateSegment("rt.jar")
                         .toString());
@@ -263,7 +259,7 @@ public class BuildAction implements Action
 
         final int exitCode = javac.run();
 
-        for (final File outputFile : outputFolder.getFilesRecursively())
+        for (final File outputFile : outputFolder.getFilesRecursively().getValue())
         {
             if (outputFile.getFileExtension().equals(".class"))
             {
@@ -278,7 +274,7 @@ public class BuildAction implements Action
                 }
                 relativeJavaFilePath += ".java";
 
-                if (!folderToCompile.fileExists(relativeJavaFilePath))
+                if (!folderToCompile.fileExists(relativeJavaFilePath).getValue())
                 {
                     outputFile.delete();
                 }

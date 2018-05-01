@@ -23,9 +23,10 @@ public class DependencyTests
                 runner.test("with non-null", (Test test) ->
                 {
                     final Dependency dependency = new Dependency("1", "2", "3");
-                    final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
-                    final Folder qubFolder = fileSystem.getFolder("/my/qub/folder");
-                    test.assertEqual("/my/qub/folder/1/2/3/2.jar", dependency.toString(qubFolder));
+                    final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
+                    final Result<Folder> qubFolder = fileSystem.getFolder("/my/qub/folder");
+                    test.assertSuccess(qubFolder);
+                    test.assertEqual("/my/qub/folder/1/2/3/2.jar", dependency.toString(qubFolder.getValue()));
                 });
             });
 

@@ -33,7 +33,8 @@ public class CleanAction implements Action
             if (outputsFolder != null)
             {
                 console.write("Deleting folder " + outputsFolder + "...");
-                if (outputsFolder.delete())
+                final Result<Boolean> deleteResult = outputsFolder.delete();
+                if (deleteResult.getValue())
                 {
                     console.writeLine(" Done.");
                 }

@@ -79,7 +79,7 @@ public class TextAdventureAction implements Action
                 String input;
                 do
                 {
-                    input = console.readLine();
+                    input = console.readLine().getValue();
                 }
                 while (input.isEmpty());
 

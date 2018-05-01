@@ -108,10 +108,24 @@ public class ProjectJson
 
     public Iterable<File> getJavaSourceFiles()
     {
-        return javaSourcesFolder == null ?
-            new Array<>(0) :
-            javaSourcesFolder.getFilesRecursively()
-                .where((File file) -> file.getFileExtension().equals(".java"));
+        Iterable<File> result;
+        if (javaSourcesFolder == null)
+        {
+            result = new Array<File>(0);
+        }
+        else
+        {
+            final Result<Iterable<File>> javaSourcesFolderFiles = javaSourcesFolder.getFilesRecursively();
+            if (javaSourcesFolderFiles.getValue() == null)
+            {
+                result = new Array<File>(0);
+            }
+            else
+            {
+                result = javaSourcesFolderFiles.getValue().where((File file) -> file.getFileExtension().equals(".java"));
+            }
+        }
+        return result;
     }
 
     public String getJavaSourcesVersion()
@@ -131,10 +145,24 @@ public class ProjectJson
 
     public Iterable<File> getJavaTestFiles()
     {
-        return javaTestsFolder == null ?
-            new Array<>(0) :
-            javaTestsFolder.getFilesRecursively()
-                .where((File file) -> file.getFileExtension().equals(".java"));
+        Iterable<File> result;
+        if (javaTestsFolder == null)
+        {
+            result = new Array<File>(0);
+        }
+        else
+        {
+            final Result<Iterable<File>> javaSourcesFolderFiles = javaTestsFolder.getFilesRecursively();
+            if (javaSourcesFolderFiles.getValue() == null)
+            {
+                result = new Array<File>(0);
+            }
+            else
+            {
+                result = javaSourcesFolderFiles.getValue().where((File file) -> file.getFileExtension().equals(".java"));
+            }
+        }
+        return result;
     }
 
     public String getJavaTestsVersion()
@@ -163,17 +191,21 @@ public class ProjectJson
 
         if (console != null)
         {
-            final File projectJsonFile = console.getCurrentFolder().getFile("project.json");
-            if (!projectJsonFile.exists())
+            final File projectJsonFile = console.getCurrentFolder().getValue().getFile("project.json").getValue();
+            if (!projectJsonFile.exists().getValue())
             {
                 console.writeLine("project.json file doesn't exist in the current folder.");
             }
             else
             {
-                JSONDocument projectJsonDocument;
-                try (final CharacterReadStream projectJsonFileReadStream = projectJsonFile.getContentCharacterReadStream())
+                JSONDocument projectJsonDocument = null;
+                try (final CharacterReadStream projectJsonFileReadStream = projectJsonFile.getContentByteReadStream().getValue().asCharacterReadStream())
                 {
                     projectJsonDocument = JSON.parse(projectJsonFileReadStream);
+                }
+                catch (Exception e)
+                {
+                    console.writeLine(e.toString());
                 }
 
                 JSONObject rootObject = null;
@@ -328,7 +360,7 @@ public class ProjectJson
                             }
                         }
 
-                        final Folder currentFolder = console.getCurrentFolder();
+                        final Folder currentFolder = console.getCurrentFolder().getValue();
 
                         final JSONSegment javaSourcesSegment = javaObject.getPropertyValue("sources");
                         String sources = null;
@@ -393,7 +425,7 @@ public class ProjectJson
 
                         if (sources != null)
                         {
-                            javaSourcesFolder = currentFolder.getFolder(sources);
+                            javaSourcesFolder = currentFolder.getFolder(sources).getValue();
                         }
 
                         final JSONSegment testsSegment = javaObject.getPropertyValue("tests");
@@ -461,7 +493,7 @@ public class ProjectJson
 
                         if (tests != null)
                         {
-                            javaTestsFolder = currentFolder.getFolder(tests);
+                            javaTestsFolder = currentFolder.getFolder(tests).getValue();
                         }
 
                         final JSONSegment outputsSegment = javaObject.getPropertyValue("outputs");
@@ -486,7 +518,7 @@ public class ProjectJson
 
                         if (outputs != null)
                         {
-                            javaOutputsFolder = currentFolder.getFolder(outputs);
+                            javaOutputsFolder = currentFolder.getFolder(outputs).getValue();
                         }
 
                         final JSONSegment dependenciesSegment = javaObject.getPropertyValue("dependencies");

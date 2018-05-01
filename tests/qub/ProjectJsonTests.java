@@ -22,7 +22,7 @@ public class ProjectJsonTests
                         final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
                         console.setOutput(output);
 
-                        final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
+                        final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
                         fileSystem.createRoot("/");
                         console.setFileSystem(fileSystem);
                         console.setCurrentFolderPathString("/");
@@ -32,6 +32,10 @@ public class ProjectJsonTests
                         test.assertEqual(
                             "project.json file doesn't exist in the current folder.\n",
                             output.getText());
+                    }
+                    catch (Exception e)
+                    {
+                        Exceptions.throwAsRuntime(e);
                     }
                 });
 
@@ -46,9 +50,9 @@ public class ProjectJsonTests
                             final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
                             console.setOutput(output);
 
-                            final InMemoryFileSystem fileSystem = new InMemoryFileSystem();
+                            final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
                             fileSystem.createRoot("/");
-                            fileSystem.createFile("/project.json", projectJsonText);
+                            fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode(projectJsonText));
                             fileSystem.createFile("/sources/p/SourceFile.java");
                             fileSystem.createFile("/tests/p/TestFile.java");
                             console.setFileSystem(fileSystem);
@@ -59,6 +63,10 @@ public class ProjectJsonTests
                             projectJsonAssertions.run(test, projectJson);
 
                             test.assertEqual(expectedOutput, output.getText());
+                        }
+                        catch (Exception e)
+                        {
+                            Exceptions.throwAsRuntime(e);
                         }
                     });
                 };
