@@ -92,7 +92,7 @@ public class TestAction implements Action
                             java.redirectError(console.getErrorAsByteWriteStream());
 
                             final Folder qubFolder = QubCLI.getQubFolder(console);
-                            final Folder jacocoFolder = qubFolder.getFolder("jacoco/jacococli/0.8.0").getValue();
+                            final Folder jacocoFolder = qubFolder.getFolder("jacoco/jacococli/0.8.1").getValue();
 
                             final Double javaTestsLineCoverageRequirement = projectJson.getJavaTestsLineCoverageRequirement();
                             File coverageExecFile = null;
