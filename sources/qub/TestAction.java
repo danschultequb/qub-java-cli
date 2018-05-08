@@ -145,9 +145,11 @@ public class TestAction implements Action
                                 jacococli.addArguments("-jar", jacocoCLIJarFile.getPath().toString());
                                 jacococli.addArgument("report");
                                 jacococli.addArgument(coverageExecFile.getPath().toString());
+
+                                final Path currentFolderPath = console.getCurrentFolderPath();
                                 for (final File classFile : classFiles)
                                 {
-                                    jacococli.addArguments("--classfiles", classFile.toString());
+                                    jacococli.addArguments("--classfiles", classFile.getPath().relativeTo(currentFolderPath).toString());
                                 }
                                 jacococli.addArguments("--sourcefiles", sourcesFolder.getPath().toString());
                                 jacococli.addArguments("--html", coverageFolder.getPath().toString());
@@ -163,6 +165,8 @@ public class TestAction implements Action
                                 {
                                     console.writeLine();
                                     console.writeLine("Command: \"" + jacococli.getCommand() + "\"");
+                                    jacococli.redirectOutput(console.getOutputAsByteWriteStream());
+                                    jacococli.redirectError(console.getErrorAsByteWriteStream());
                                 }
                                 jacococli.run();
 
