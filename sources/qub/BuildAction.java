@@ -211,8 +211,62 @@ public class BuildAction implements Action
         stopwatch.start();
 
         final ProcessBuilder javac = console.getProcessBuilder("javac").getValue();
-        javac.redirectOutput(console.getOutputAsByteWriteStream());
-        javac.redirectError(console.getErrorAsByteWriteStream());
+
+        final Value<Boolean> wroteNewLineBeforeOutputOrError = new Value<Boolean>();
+
+        final ByteWriteStream consoleOutput = console.getOutputAsByteWriteStream();
+        javac.redirectOutput(new ByteWriteStreamBase()
+        {
+            @Override
+            public Result<Boolean> write(byte b)
+            {
+                if (!wroteNewLineBeforeOutputOrError.hasValue())
+                {
+                    wroteNewLineBeforeOutputOrError.set(true);
+                    consoleOutput.asLineWriteStream(console.getLineSeparator()).writeLine();
+                }
+                return consoleOutput.write(b);
+            }
+
+            @Override
+            public boolean isDisposed()
+            {
+                return consoleOutput.isDisposed();
+            }
+
+            @Override
+            public Result<Boolean> dispose()
+            {
+                return consoleOutput.dispose();
+            }
+        });
+
+        final ByteWriteStream consoleError = console.getErrorAsByteWriteStream();
+        javac.redirectError(new ByteWriteStreamBase()
+        {
+            @Override
+            public Result<Boolean> write(byte b)
+            {
+                if (!wroteNewLineBeforeOutputOrError.hasValue())
+                {
+                    wroteNewLineBeforeOutputOrError.set(true);
+                    consoleError.asLineWriteStream(console.getLineSeparator()).writeLine();
+                }
+                return consoleError.write(b);
+            }
+
+            @Override
+            public boolean isDisposed()
+            {
+                return consoleError.isDisposed();
+            }
+
+            @Override
+            public Result<Boolean> dispose()
+            {
+                return consoleError.dispose();
+            }
+        });
 
         addNamedArgument(javac, "-classpath", String.join(";", classpaths));
         addNamedArgument(javac, "-d", outputFolder.getPath().toString());
