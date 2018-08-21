@@ -28,7 +28,7 @@ public class OrcBattleActionTests
             runner.test("monstersDead()", (Test test) ->
             {
                 final FixedRandom random = new FixedRandom(10);
-                final InMemoryLineWriteStream lineWriteStream = new InMemoryLineWriteStream();
+                final InMemoryLineStream lineWriteStream = new InMemoryLineStream();
 
                 final Array<Monster> monsters = new Array<>(2);
                 monsters.set(0, new Brigand(random));
@@ -126,10 +126,10 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(0);
                     final Brigand brigand = new Brigand(random);
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
                     brigand.show(textWriteStream);
 
-                    test.assertEqual("A fierce brigand.\n", textWriteStream.getText());
+                    test.assertSuccess("A fierce brigand.\n", textWriteStream.getText());
                 });
 
                 runner.test("takeDamage()", (Test test) ->
@@ -138,24 +138,24 @@ public class OrcBattleActionTests
                     final Brigand brigand = new Brigand(random);
                     test.assertEqual(2, brigand.getHealth());
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     brigand.takeDamage(1, textWriteStream);
                     test.assertEqual(1, brigand.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the brigand, knocking off 1 health points!\n",
                         textWriteStream.getText());
 
                     brigand.takeDamage(1, textWriteStream);
                     test.assertEqual(0, brigand.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the brigand, knocking off 1 health points!\n" +
                             "You killed the brigand!\n",
                         textWriteStream.getText());
 
                     brigand.takeDamage(10, textWriteStream);
                     test.assertEqual(-10, brigand.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the brigand, knocking off 1 health points!\n" +
                             "You killed the brigand!\n" +
                             "You killed the brigand!\n",
@@ -167,13 +167,13 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(1);
                     final Brigand brigand = new Brigand(random);
                     final Player player = new Player();
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     brigand.act(player, random, textWriteStream);
                     test.assertEqual(28, player.getHealth());
                     test.assertEqual(30, player.getAgility());
                     test.assertEqual(30, player.getStrength());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A brigand hits you with his slingshot, taking off 2 health points!\n",
                         textWriteStream.getText());
 
@@ -181,7 +181,7 @@ public class OrcBattleActionTests
                     test.assertEqual(28, player.getHealth());
                     test.assertEqual(28, player.getAgility());
                     test.assertEqual(30, player.getStrength());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A brigand hits you with his slingshot, taking off 2 health points!\n" +
                             "A brigand catches your leg with his whip, taking off 2 agility points!\n",
                         textWriteStream.getText());
@@ -190,7 +190,7 @@ public class OrcBattleActionTests
                     test.assertEqual(28, player.getHealth());
                     test.assertEqual(28, player.getAgility());
                     test.assertEqual(28, player.getStrength());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A brigand hits you with his slingshot, taking off 2 health points!\n" +
                             "A brigand catches your leg with his whip, taking off 2 agility points!\n" +
                             "A brigand cuts your arm with his whip, taking off 2 strength points!\n", textWriteStream.getText());
@@ -213,10 +213,10 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(0);
                     final Hydra hydra = new Hydra(random);
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
                     hydra.show(textWriteStream);
 
-                    test.assertEqual("A malicious hydra with 1 heads.\n", textWriteStream.getText());
+                    test.assertSuccess("A malicious hydra with 1 heads.\n", textWriteStream.getText());
                 });
 
                 runner.test("takeDamage()", (Test test) ->
@@ -225,24 +225,24 @@ public class OrcBattleActionTests
                     final Hydra hydra = new Hydra(random);
                     test.assertEqual(2, hydra.getHealth());
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     hydra.takeDamage(1, textWriteStream);
                     test.assertEqual(1, hydra.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You lop off 1 of the hydra's heads!\n",
                         textWriteStream.getText());
 
                     hydra.takeDamage(1, textWriteStream);
                     test.assertEqual(0, hydra.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You lop off 1 of the hydra's heads!\n" +
                             "The corpse of the fully decapitated and decapacitated hydra falls to the floor!\n",
                         textWriteStream.getText());
 
                     hydra.takeDamage(10, textWriteStream);
                     test.assertEqual(-10, hydra.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You lop off 1 of the hydra's heads!\n" +
                             "The corpse of the fully decapitated and decapacitated hydra falls to the floor!\n" +
                             "The corpse of the fully decapitated and decapacitated hydra falls to the floor!\n",
@@ -254,19 +254,19 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(1);
                     final Hydra hydra = new Hydra(random);
                     final Player player = new Player();
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     hydra.act(player, random, textWriteStream);
                     test.assertEqual(29, player.getHealth());
                     test.assertEqual(3, hydra.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A hydra attacks you with 1 of its heads! It also grows back one more head!\n",
                         textWriteStream.getText());
 
                     hydra.act(player, random, textWriteStream);
                     test.assertEqual(28, player.getHealth());
                     test.assertEqual(4, hydra.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A hydra attacks you with 1 of its heads! It also grows back one more head!\n" +
                             "A hydra attacks you with 1 of its heads! It also grows back one more head!\n",
                         textWriteStream.getText());
@@ -274,7 +274,7 @@ public class OrcBattleActionTests
                     hydra.act(player, random, textWriteStream);
                     test.assertEqual(27, player.getHealth());
                     test.assertEqual(5, hydra.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A hydra attacks you with 1 of its heads! It also grows back one more head!\n" +
                             "A hydra attacks you with 1 of its heads! It also grows back one more head!\n" +
                             "A hydra attacks you with 1 of its heads! It also grows back one more head!\n",
@@ -298,10 +298,10 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(0);
                     final Orc orc = new Orc(random);
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
                     orc.show(textWriteStream);
 
-                    test.assertEqual("A wicked orc with a level 1 club.\n", textWriteStream.getText());
+                    test.assertSuccess("A wicked orc with a level 1 club.\n", textWriteStream.getText());
                 });
 
                 runner.test("takeDamage()", (Test test) ->
@@ -310,24 +310,24 @@ public class OrcBattleActionTests
                     final Orc orc = new Orc(random);
                     test.assertEqual(2, orc.getHealth());
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     orc.takeDamage(1, textWriteStream);
                     test.assertEqual(1, orc.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the orc, knocking off 1 health points!\n",
                         textWriteStream.getText());
 
                     orc.takeDamage(1, textWriteStream);
                     test.assertEqual(0, orc.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the orc, knocking off 1 health points!\n" +
                             "You killed the orc!\n",
                         textWriteStream.getText());
 
                     orc.takeDamage(10, textWriteStream);
                     test.assertEqual(-10, orc.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the orc, knocking off 1 health points!\n" +
                             "You killed the orc!\n" +
                             "You killed the orc!\n",
@@ -339,24 +339,24 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(1);
                     final Orc orc = new Orc(random);
                     final Player player = new Player();
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     orc.act(player, random, textWriteStream);
                     test.assertEqual(28, player.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "An orc swings his club at you and knocks off 2 of your health points.\n",
                         textWriteStream.getText());
 
                     orc.act(player, random, textWriteStream);
                     test.assertEqual(26, player.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "An orc swings his club at you and knocks off 2 of your health points.\n" +
                             "An orc swings his club at you and knocks off 2 of your health points.\n",
                         textWriteStream.getText());
 
                     orc.act(player, random, textWriteStream);
                     test.assertEqual(24, player.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "An orc swings his club at you and knocks off 2 of your health points.\n" +
                             "An orc swings his club at you and knocks off 2 of your health points.\n" +
                             "An orc swings his club at you and knocks off 2 of your health points.\n",
@@ -417,10 +417,10 @@ public class OrcBattleActionTests
                 runner.test("show()", (Test test) ->
                 {
                     final Player player = new Player();
-                    final InMemoryLineWriteStream lineWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream lineWriteStream = new InMemoryLineStream();
 
                     player.show(lineWriteStream);
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You are a valiant knight with a health of 30, an agility of 30, and a strength of 30.\n",
                         lineWriteStream.getText());
 
@@ -429,7 +429,7 @@ public class OrcBattleActionTests
                     player.subtractStrength(3);
 
                     player.show(lineWriteStream);
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You are a valiant knight with a health of 30, an agility of 30, and a strength of 30.\n" +
                             "You are a valiant knight with a health of 29, an agility of 28, and a strength of 27.\n",
                         lineWriteStream.getText());
@@ -452,10 +452,10 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(0);
                     final Slime slime = new Slime(random);
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
                     slime.show(textWriteStream);
 
-                    test.assertEqual("A slime mold with a sliminess of 1.\n", textWriteStream.getText());
+                    test.assertSuccess("A slime mold with a sliminess of 1.\n", textWriteStream.getText());
                 });
 
                 runner.test("takeDamage()", (Test test) ->
@@ -464,24 +464,24 @@ public class OrcBattleActionTests
                     final Slime slime = new Slime(random);
                     test.assertEqual(2, slime.getHealth());
 
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     slime.takeDamage(1, textWriteStream);
                     test.assertEqual(1, slime.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the slime, knocking off 1 health points.\n",
                         textWriteStream.getText());
 
                     slime.takeDamage(1, textWriteStream);
                     test.assertEqual(0, slime.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the slime, knocking off 1 health points.\n" +
                             "You killed the slime!\n",
                         textWriteStream.getText());
 
                     slime.takeDamage(10, textWriteStream);
                     test.assertEqual(-10, slime.getHealth());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "You hit the slime, knocking off 1 health points.\n" +
                             "You killed the slime!\n" +
                             "You killed the slime!\n",
@@ -493,12 +493,12 @@ public class OrcBattleActionTests
                     final FixedRandom random = new FixedRandom(1);
                     final Slime slime = new Slime(random);
                     final Player player = new Player();
-                    final InMemoryLineWriteStream textWriteStream = new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+                    final InMemoryLineStream textWriteStream = new InMemoryLineStream();
 
                     slime.act(player, random, textWriteStream);
                     test.assertEqual(30, player.getHealth());
                     test.assertEqual(29, player.getAgility());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A slime mold wraps around your legs and decreases your agility by 1!\n",
                         textWriteStream.getText());
 
@@ -507,7 +507,7 @@ public class OrcBattleActionTests
                     slime.act(player, random, textWriteStream);
                     test.assertEqual(29, player.getHealth());
                     test.assertEqual(27, player.getAgility());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A slime mold wraps around your legs and decreases your agility by 1!\n" +
                             "A slime mold wraps around your legs and decreases your agility by 2! It also squirts in your face, taking away a health point!\n",
                         textWriteStream.getText());
@@ -515,7 +515,7 @@ public class OrcBattleActionTests
                     slime.act(player, random, textWriteStream);
                     test.assertEqual(28, player.getHealth());
                     test.assertEqual(25, player.getAgility());
-                    test.assertEqual(
+                    test.assertSuccess(
                         "A slime mold wraps around your legs and decreases your agility by 1!\n" +
                             "A slime mold wraps around your legs and decreases your agility by 2! It also squirts in your face, taking away a health point!\n" +
                             "A slime mold wraps around your legs and decreases your agility by 2! It also squirts in your face, taking away a health point!\n",

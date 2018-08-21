@@ -88,7 +88,7 @@ public class InstallAction implements Action
                                         final File installedProjectJsonFile = versionFolder.getFile("project.json").getValue();
                                         console.write("Copying project.json to " + installedProjectJsonFile + "...");
                                         stopwatch.start();
-                                        installedProjectJsonFile.setContents(CharacterEncoding.UTF_8.encode(rootObject.toString()));
+                                        installedProjectJsonFile.setContents(CharacterEncoding.UTF_8.encode(rootObject.toString()).getValue());
                                         console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
 
                                         final String mainClass = projectJson.getMainClass();
@@ -124,7 +124,7 @@ public class InstallAction implements Action
                                                     "java -cp " + classpath + " " + mainClass + " %*\n";
                                             console.write("Writing " + shortcutFile + "...");
                                             stopwatch.start();
-                                            shortcutFile.setContents(CharacterEncoding.UTF_8.encode(shortcutFileContents));
+                                            shortcutFile.setContents(CharacterEncoding.UTF_8.encode(shortcutFileContents).getValue());
                                             console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
                                         }
                                     }

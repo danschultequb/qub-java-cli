@@ -549,7 +549,12 @@ public class KitchenAction implements Action
 
         static Kitchen parse(File kitchenFile)
         {
-            return parse(CharacterEncoding.UTF_8.decode(kitchenFile.getContents().getValue()));
+            return parse(CharacterEncoding.UTF_8.decode(kitchenFile.getContents().getValue()).getValue());
+        }
+
+        static Kitchen parse(char[] kitchenContents)
+        {
+            return parse(kitchenContents == null ? null : String.valueOf(kitchenContents));
         }
 
         static Kitchen parse(String kitchenContents)
@@ -628,9 +633,9 @@ public class KitchenAction implements Action
         {
             if (changed)
             {
-                final InMemoryLineWriteStream lineWriteStream = new InMemoryLineWriteStream();
-                save(lineWriteStream);
-                kitchenFile.setContents(lineWriteStream.getBytes());
+                final InMemoryLineStream lineStream = new InMemoryLineStream();
+                save(lineStream);
+                kitchenFile.setContents(lineStream.getBytes());
             }
         }
 

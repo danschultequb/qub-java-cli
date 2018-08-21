@@ -19,11 +19,11 @@ public class GuessMyNumberActionTests
                     {
                         final Console console = new Console();
 
-                        final InMemoryLineWriteStream writeStream = new InMemoryLineWriteStream();
+                        final InMemoryLineStream writeStream = new InMemoryLineStream();
                         console.setOutput(writeStream);
 
                         final String inputText = String.join("\n", inputLines);
-                        final InMemoryLineReadStream readStream = new InMemoryLineReadStream(inputText);
+                        final InMemoryLineStream readStream = new InMemoryLineStream(inputText).endOfStream();
                         console.setInput(readStream);
 
                         console.writeLine("TEST LOG");
@@ -37,7 +37,8 @@ public class GuessMyNumberActionTests
                             test.fail(e);
                         }
 
-                        test.assertTrue(writeStream.getText().contains(expectedTextToFind));
+                        writeStream.endOfStream();
+                        test.assertTrue(writeStream.getText().getValue().contains(expectedTextToFind));
                         test.assertSuccess(null, readStream.readLine());
                     });
                 };
@@ -103,7 +104,7 @@ public class GuessMyNumberActionTests
 
                         console.setOutput((LineWriteStream)null);
 
-                        console.setInput(new InMemoryLineReadStream(line));
+                        console.setInput(new InMemoryLineStream(line).endOfStream());
 
                         try
                         {

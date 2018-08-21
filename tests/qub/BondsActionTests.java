@@ -17,7 +17,7 @@ public class BondsActionTests
             {
                 runner.test("with " + Strings.escapeAndQuote(String.join(" ", commandLineArguments)), (Test test) ->
                 {
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
 
                     final List<String> arguments = new ArrayList<>();
                     arguments.add("bonds");
@@ -28,7 +28,7 @@ public class BondsActionTests
                     final BondsAction action = new BondsAction();
                     action.run(console);
 
-                    test.assertEqual(expectedOutput, output.getText());
+                    test.assertSuccess(expectedOutput, output.getText());
                 });
             };
 

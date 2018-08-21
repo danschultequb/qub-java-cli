@@ -19,7 +19,7 @@ public class ProjectJsonTests
                     {
                         console.setLineSeparator("\n");
 
-                        final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                        final InMemoryLineStream output = new InMemoryLineStream();
                         console.setOutput(output);
 
                         final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
@@ -29,7 +29,7 @@ public class ProjectJsonTests
 
                         test.assertNull(ProjectJson.parse(console));
 
-                        test.assertEqual(
+                        test.assertSuccess(
                             "project.json file doesn't exist in the current folder.\n",
                             output.getText());
                     }
@@ -47,12 +47,12 @@ public class ProjectJsonTests
                         {
                             console.setLineSeparator("\n");
 
-                            final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                            final InMemoryLineStream output = new InMemoryLineStream();
                             console.setOutput(output);
 
                             final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
                             fileSystem.createRoot("/");
-                            fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode(projectJsonText));
+                            fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode(projectJsonText).getValue());
                             fileSystem.createFile("/sources/p/SourceFile.java");
                             fileSystem.createFile("/tests/p/TestFile.java");
                             console.setFileSystem(fileSystem);
@@ -62,7 +62,7 @@ public class ProjectJsonTests
                             test.assertNotNull(projectJson);
                             projectJsonAssertions.run(test, projectJson);
 
-                            test.assertEqual(expectedOutput, output.getText());
+                            test.assertSuccess(expectedOutput, output.getText());
                         }
                         catch (Exception e)
                         {

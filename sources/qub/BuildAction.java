@@ -96,7 +96,7 @@ public class BuildAction implements Action
                                     final String manifestFileContents =
                                         "Manifest-Version: 1.0\n" +
                                         "Main-Class: " + mainClass + "\n";
-                                    manifestFile.setContents(CharacterEncoding.UTF_8.encode(manifestFileContents));
+                                    manifestFile.setContents(CharacterEncoding.UTF_8.encode(manifestFileContents).getValue());
                                 }
 
                                 final ProcessBuilder jar = console.getProcessBuilder("jar").getValue();
@@ -192,13 +192,9 @@ public class BuildAction implements Action
             {
                 needsCompile = true;
             }
-            else if (sourceFile.getLastModified().getValue().greaterThan(classFile.getLastModified().getValue()))
-            {
-                needsCompile = true;
-            }
             else
             {
-                needsCompile = false;
+                needsCompile = sourceFile.getLastModified().getValue().greaterThan(classFile.getLastModified().getValue());
             }
             return needsCompile;
         });
@@ -233,7 +229,8 @@ public class BuildAction implements Action
                 final Folder javaFolder = QubCLI.getJavaFolder(console);
                 addNamedArgument(javac, "-bootclasspath",
                     javaFolder.getPath().
-                        concatenateSegment("jre7").
+                        concatenateSegment("jdk1.7.0_80").
+                        concatenateSegment("jre").
                         concatenateSegment("lib").
                         concatenateSegment("rt.jar")
                         .toString());
@@ -243,7 +240,7 @@ public class BuildAction implements Action
                 final Folder javaFolder = QubCLI.getJavaFolder(console);
                 addNamedArgument(javac, "-bootclasspath",
                     javaFolder.getPath().
-                        concatenateSegment("jre1.8.0_171").
+                        concatenateSegment("jre1.8.0_181").
                         concatenateSegment("lib").
                         concatenateSegment("rt.jar")
                         .toString());

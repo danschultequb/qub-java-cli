@@ -32,14 +32,15 @@ public class TextAdventureActionTests
                     {
                         final Console console = new Console();
                         console.setLineSeparator("\n");
-                        console.setInput(new InMemoryLineReadStream(inputText));
-                        final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                        console.setInput(new InMemoryLineStream(inputText).endOfStream());
+                        final InMemoryLineStream output = new InMemoryLineStream();
                         console.setOutput(output);
 
                         final TextAdventureAction action = new TextAdventureAction();
                         action.run(console);
 
-                        test.assertEqual(expectedOutput, output.getText());
+                        output.endOfStream();
+                        test.assertSuccess(expectedOutput, output.getText());
                     });
                 };
 

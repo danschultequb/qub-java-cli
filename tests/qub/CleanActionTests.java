@@ -12,7 +12,7 @@ public class CleanActionTests
                 fileSystem.createRoot("/");
                 fileSystem.createFile("/outputs/qub/TestFile.class");
 
-                final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                final InMemoryLineStream output = new InMemoryLineStream();
 
                 final Console console = new Console();
                 console.setLineSeparator("\n");
@@ -23,7 +23,7 @@ public class CleanActionTests
                 final CleanAction clean = new CleanAction();
                 clean.run(console);
 
-                test.assertEqual("project.json file doesn't exist in the current folder.\n", output.getText());
+                test.assertSuccess("project.json file doesn't exist in the current folder.\n", output.getText());
                 test.assertSuccess(true, fileSystem.fileExists("/outputs/qub/TestFile.class"));
             });
 
@@ -32,9 +32,9 @@ public class CleanActionTests
                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
                 fileSystem.createRoot("/");
                 fileSystem.createFile("/outputs/qub/TestFile.class");
-                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"outputs\":null}}"));
+                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"outputs\":null}}").getValue());
 
-                final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                final InMemoryLineStream output = new InMemoryLineStream();
 
                 final Console console = new Console();
                 console.setLineSeparator("\n");
@@ -45,7 +45,7 @@ public class CleanActionTests
                 final CleanAction clean = new CleanAction();
                 clean.run(console);
 
-                test.assertEqual("Expected \"outputs\" property in \"java\" section to be a non-empty quoted-string.\n", output.getText());
+                test.assertSuccess("Expected \"outputs\" property in \"java\" section to be a non-empty quoted-string.\n", output.getText());
                 test.assertSuccess(true, fileSystem.fileExists("/outputs/qub/TestFile.class"));
             });
 
@@ -54,9 +54,9 @@ public class CleanActionTests
                 final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
                 fileSystem.createRoot("/");
                 fileSystem.createFile("/outputs/qub/TestFile.class");
-                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{}}"));
+                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{}}").getValue());
 
-                final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                final InMemoryLineStream output = new InMemoryLineStream();
 
                 final Console console = new Console();
                 console.setLineSeparator("\n");
@@ -67,7 +67,7 @@ public class CleanActionTests
                 final CleanAction clean = new CleanAction();
                 clean.run(console);
 
-                test.assertEqual("Deleting folder /outputs... Done.\n", output.getText());
+                test.assertSuccess("Deleting folder /outputs... Done.\n", output.getText());
                 test.assertSuccess(false, fileSystem.folderExists("/outputs"));
             });
 
@@ -77,9 +77,9 @@ public class CleanActionTests
                 fileSystem.createRoot("/");
                 fileSystem.createFile("/outputs/qub/TestFile.class");
                 fileSystem.createFile("/spam/qub/TestFile.class");
-                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"outputs\":\"spam\"}}"));
+                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{\"outputs\":\"spam\"}}").getValue());
 
-                final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                final InMemoryLineStream output = new InMemoryLineStream();
 
                 final Console console = new Console();
                 console.setLineSeparator("\n");
@@ -90,7 +90,7 @@ public class CleanActionTests
                 final CleanAction clean = new CleanAction();
                 clean.run(console);
 
-                test.assertEqual("Deleting folder /spam... Done.\n", output.getText());
+                test.assertSuccess("Deleting folder /spam... Done.\n", output.getText());
                 test.assertSuccess(false, fileSystem.folderExists("/spam"));
                 test.assertSuccess(true, fileSystem.fileExists("/outputs/qub/TestFile.class"));
             });
@@ -101,9 +101,9 @@ public class CleanActionTests
                 fileSystem.createRoot("/");
                 fileSystem.createFile("/outputs/qub/TestFile.class");
                 fileSystem.setFileCanDelete("/outputs/qub/TestFile.class", false);
-                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{}}"));
+                fileSystem.setFileContent("/project.json", CharacterEncoding.UTF_8.encode("{\"publisher\":\"a\",\"project\":\"b\",\"version\":\"c\",\"java\":{}}").getValue());
 
-                final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                final InMemoryLineStream output = new InMemoryLineStream();
 
                 final Console console = new Console();
                 console.setLineSeparator("\n");
@@ -114,7 +114,7 @@ public class CleanActionTests
                 final CleanAction clean = new CleanAction();
                 clean.run(console);
 
-                test.assertEqual("Deleting folder /outputs... Failed.\n", output.getText());
+                test.assertSuccess("Deleting folder /outputs... Failed.\n", output.getText());
                 test.assertSuccess(true, fileSystem.fileExists("/outputs/qub/TestFile.class"));
             });
         });

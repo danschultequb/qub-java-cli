@@ -253,18 +253,18 @@ public class KitchenActionTests
         return fileSystem;
     }
 
-    private static InMemoryLineWriteStream createLineWriteStream()
+    private static InMemoryLineStream createLineWriteStream()
     {
-        return new InMemoryLineWriteStream(CharacterEncoding.UTF_8, "\n");
+        return new InMemoryLineStream();
     }
 
-    private static Console createConsole(String[] commandLine, InMemoryLineWriteStream stdout, String stdinText, FileSystem fileSystem)
+    private static Console createConsole(String[] commandLine, InMemoryLineStream stdout, String stdinText, FileSystem fileSystem)
     {
         final Console console = new Console(commandLine);
         console.setLineSeparator("\n");
         console.setOutput(stdout);
 
-        final InMemoryLineReadStream stdin = new InMemoryLineReadStream(stdinText);
+        final InMemoryLineStream stdin = new InMemoryLineStream(stdinText);
         console.setInput(stdin);
 
         console.setFileSystem(fileSystem);
@@ -287,7 +287,7 @@ public class KitchenActionTests
 
     private static void test(Test test, String userInput, String expectedOutput, FileSystem fileSystem, Setable<Console> outputConsole)
     {
-        final InMemoryLineWriteStream stdout = createLineWriteStream();
+        final InMemoryLineStream stdout = createLineWriteStream();
         final Console console = createConsole(new String[0], stdout, userInput, fileSystem);
 
         outputConsole.set(console);
@@ -295,6 +295,6 @@ public class KitchenActionTests
         final KitchenAction action = new KitchenAction();
         action.run(console);
 
-        test.assertEqual(expectedOutput, stdout.getText());
+        test.assertSuccess(expectedOutput, stdout.getText());
     }
 }

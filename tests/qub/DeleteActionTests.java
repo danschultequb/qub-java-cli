@@ -18,7 +18,7 @@ public class DeleteActionTests
                 runner.test("with " + Strings.escapeAndQuote(""), test ->
                 {
                     final Console console = createConsole(new String[] { "delete" });
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
@@ -28,13 +28,13 @@ public class DeleteActionTests
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("", output.getText());
+                    test.assertSuccess("", output.getText());
                 });
 
                 runner.test("with " + Strings.escapeAndQuote("/fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "/fileThatDoesntExist.txt" });
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
@@ -44,14 +44,14 @@ public class DeleteActionTests
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("/fileThatDoesntExist.txt doesn't exist.\n", output.getText());
+                    test.assertSuccess("/fileThatDoesntExist.txt doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
                 runner.test("with " + Strings.escapeAndQuote("-flag /fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-file", "/fileThatDoesntExist.txt" });
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
@@ -61,14 +61,14 @@ public class DeleteActionTests
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("/fileThatDoesntExist.txt doesn't exist.\n", output.getText());
+                    test.assertSuccess("/fileThatDoesntExist.txt doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
                 runner.test("with " + Strings.escapeAndQuote("-files /fileThatDoesntExist.txt"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-files", "/fileThatDoesntExist.txt" });
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
@@ -78,7 +78,7 @@ public class DeleteActionTests
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("/fileThatDoesntExist.txt doesn't exist.\n", output.getText());
+                    test.assertSuccess("/fileThatDoesntExist.txt doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -91,12 +91,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("fileThatDoesntExist.txt doesn't exist.\n", output.getText());
+                    test.assertSuccess("fileThatDoesntExist.txt doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -109,12 +109,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("fileThatDoesntExist.txt doesn't exist.\n", output.getText());
+                    test.assertSuccess("fileThatDoesntExist.txt doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -127,12 +127,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("fileThatDoesntExist.txt doesn't exist.\n", output.getText());
+                    test.assertSuccess("fileThatDoesntExist.txt doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -146,12 +146,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting file /fileThatExists.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting file /fileThatExists.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -165,12 +165,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting file /fileThatExists.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting file /fileThatExists.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -184,12 +184,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting file /fileThatExists.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting file /fileThatExists.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -203,12 +203,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting file /fileThatExists.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting file /fileThatExists.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -222,12 +222,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting file /fileThatExists.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting file /fileThatExists.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
@@ -241,19 +241,19 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting file /fileThatExists.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting file /fileThatExists.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.fileExists("/fileThatDoesntExist.txt"));
                 });
 
                 runner.test("with " + Strings.escapeAndQuote("-folder /folderThatDoesntExist"), test ->
                 {
                     final Console console = createConsole(new String[] { "delete", "-folder", "/folderThatDoesntExist" });
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     final InMemoryFileSystem fileSystem = new InMemoryFileSystem(test.getMainAsyncRunner());
@@ -263,7 +263,7 @@ public class DeleteActionTests
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("/folderThatDoesntExist doesn't exist.\n", output.getText());
+                    test.assertSuccess("/folderThatDoesntExist doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatDoesntExist"));
                 });
 
@@ -276,12 +276,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("folderThatDoesntExist doesn't exist.\n", output.getText());
+                    test.assertSuccess("folderThatDoesntExist doesn't exist.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatDoesntExist"));
                 });
 
@@ -295,12 +295,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting folder /folderThatExists... Done.\n", output.getText());
+                    test.assertSuccess("Deleting folder /folderThatExists... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatExists"));
                 });
 
@@ -314,12 +314,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting folder /folderThatExists... Done.\n", output.getText());
+                    test.assertSuccess("Deleting folder /folderThatExists... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatExists"));
                 });
 
@@ -333,12 +333,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting folder /folderThatExists... Done.\n", output.getText());
+                    test.assertSuccess("Deleting folder /folderThatExists... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatExists"));
                 });
 
@@ -352,12 +352,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting folder /folderThatExists... Done.\n", output.getText());
+                    test.assertSuccess("Deleting folder /folderThatExists... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatExists"));
                 });
 
@@ -371,12 +371,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting folder /folderThatExists... Done.\n", output.getText());
+                    test.assertSuccess("Deleting folder /folderThatExists... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatExists"));
                 });
 
@@ -390,12 +390,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting folder /folderThatExists... Done.\n", output.getText());
+                    test.assertSuccess("Deleting folder /folderThatExists... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/folderThatExists"));
                 });
 
@@ -410,12 +410,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Can't delete \"existingFileAndFolder.txt\" because it is a path to both a file and folder. Please specify whether you want to delete the file (-file) or the folder (-folder), or both at the same time.\n", output.getText());
+                    test.assertSuccess("Can't delete \"existingFileAndFolder.txt\" because it is a path to both a file and folder. Please specify whether you want to delete the file (-file) or the folder (-folder), or both at the same time.\n", output.getText());
                     test.assertSuccess(true, fileSystem.folderExists("/existingFileAndFolder.txt"));
                     test.assertSuccess(true, fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
@@ -431,12 +431,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting file /existingFileAndFolder.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting file /existingFileAndFolder.txt... Done.\n", output.getText());
                     test.assertSuccess(true, fileSystem.folderExists("/existingFileAndFolder.txt"));
                     test.assertSuccess(false, fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
@@ -452,12 +452,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    test.assertEqual("Deleting folder /existingFileAndFolder.txt... Done.\n", output.getText());
+                    test.assertSuccess("Deleting folder /existingFileAndFolder.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/existingFileAndFolder.txt"));
                     test.assertSuccess(true, fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
@@ -472,14 +472,12 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
-                    final String expectedOutput =
-                        "Deleting file /existingFile.txt... Done.\n";
-                    test.assertEqual(expectedOutput, output.getText());
+                    test.assertSuccess("Deleting file /existingFile.txt... Done.\n", output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/existingFileAndFolder.txt"));
                     test.assertSuccess(false, fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
@@ -495,15 +493,15 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
                     final String expectedOutput =
                         "Deleting folder /existingFileAndFolder.txt... Done.\n" +
-                            "Deleting file /existingFileAndFolder.txt... Done.\n";
-                    test.assertEqual(expectedOutput, output.getText());
+                        "Deleting file /existingFileAndFolder.txt... Done.\n";
+                    test.assertSuccess(expectedOutput, output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/existingFileAndFolder.txt"));
                     test.assertSuccess(false, fileSystem.fileExists("/existingFileAndFolder.txt"));
                 });
@@ -517,13 +515,13 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
                     final String expectedOutput = "nonExistingFileAndFolder.txt doesn't exist.\n";
-                    test.assertEqual(expectedOutput, output.getText());
+                    test.assertSuccess(expectedOutput, output.getText());
                     test.assertSuccess(false, fileSystem.folderExists("/nonExistingFileAndFolder.txt"));
                     test.assertSuccess(false, fileSystem.fileExists("/nonExistingFileAndFolder.txt"));
                 });
@@ -539,13 +537,13 @@ public class DeleteActionTests
                     console.setFileSystem(fileSystem);
                     console.setCurrentFolderPathString("/");
 
-                    final InMemoryLineWriteStream output = new InMemoryLineWriteStream();
+                    final InMemoryLineStream output = new InMemoryLineStream();
                     console.setOutput(output);
 
                     new DeleteAction().run(console);
 
                     final String expectedOutput = "Deleting file /undeletableExistingFile.txt... Failed.\n";
-                    test.assertEqual(expectedOutput, output.getText());
+                    test.assertSuccess(expectedOutput, output.getText());
                     test.assertSuccess(true, fileSystem.fileExists("/undeletableExistingFile.txt"));
                 });
             });

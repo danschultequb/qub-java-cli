@@ -52,45 +52,45 @@ public class QubCLITests
                 runner.test("with " + Strings.escapeAndQuote(""), (Test test) ->
                 {
                     final Console console = createConsole(new String[0]);
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    final InMemoryCharacterStream output = new InMemoryCharacterStream();
                     console.setOutput(output);
 
                     QubCLI.main(console);
 
-                    test.assertEqual(expectedUsageString, output.getText());
+                    test.assertSuccess(expectedUsageString, output.getText());
                 });
 
                 runner.test("with " + Strings.escapeAndQuote("-?"), (Test test) ->
                 {
                     final Console console = createConsole(new String[] { "-?" });
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    final InMemoryCharacterStream output = new InMemoryCharacterStream();
                     console.setOutput(output);
 
                     QubCLI.main(console);
 
-                    test.assertEqual(expectedUsageString, output.getText());
+                    test.assertSuccess(expectedUsageString, output.getText());
                 });
 
                 runner.test("with " + Strings.escapeAndQuote("/?"), (Test test) ->
                 {
                     final Console console = createConsole(new String[] { "/?" });
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    final InMemoryCharacterStream output = new InMemoryCharacterStream();
                     console.setOutput(output);
 
                     QubCLI.main(console);
 
-                    test.assertEqual(expectedUsageString, output.getText());
+                    test.assertSuccess(expectedUsageString, output.getText());
                 });
 
                 runner.test("with " + Strings.escapeAndQuote("spam"), (Test test) ->
                 {
                     final Console console = createConsole(new String[] { "spam" });
-                    final InMemoryCharacterWriteStream output = new InMemoryCharacterWriteStream();
+                    final InMemoryCharacterStream output = new InMemoryCharacterStream();
                     console.setOutput(output);
 
                     QubCLI.main(console);
 
-                    test.assertEqual("Unrecognized action: \"spam\"\n", output.getText());
+                    test.assertSuccess("Unrecognized action: \"spam\"\n", output.getText());
                 });
             });
         });
