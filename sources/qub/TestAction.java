@@ -68,11 +68,13 @@ public class TestAction implements Action
                             console.writeLine("Classpath: \"" + classpath + "\"");
                         }
 
-                        final Iterable<File> testClassFiles = testOutputsFolder.getFilesRecursively().getValue()
+                        final Iterable<File> outputFiles = testOutputsFolder.getFilesRecursively().getValue();
+                        final Iterable<File> testClassFiles = outputFiles == null ? null : outputFiles
                             .where(file -> file.getFileExtension().equals(".class") && !file.getName().contains("$"));
-                        if (!testClassFiles.any())
+                        if (testClassFiles == null || !testClassFiles.any())
                         {
                             console.writeLine("No compiled test classes found.");
+                            testsPassed = true;
                         }
                         else
                         {

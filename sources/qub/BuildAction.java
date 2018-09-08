@@ -310,24 +310,28 @@ public class BuildAction implements Action
 
         final int exitCode = javac.run();
 
-        for (final File outputFile : outputFolder.getFilesRecursively().getValue())
+        final Iterable<File> outputFolderFiles = outputFolder.getFilesRecursively().getValue();
+        if (outputFolderFiles != null)
         {
-            if (outputFile.getFileExtension().equals(".class"))
+            for (final File outputFile : outputFolderFiles)
             {
-                final Path relativeClassFilePath = outputFile.relativeTo(outputFolder).withoutFileExtension();
-
-                final int dollarSignIndex = relativeClassFilePath.toString().indexOf('$');
-
-                String relativeJavaFilePath = relativeClassFilePath.toString();
-                if (dollarSignIndex >= 0)
+                if (outputFile.getFileExtension().equals(".class"))
                 {
-                    relativeJavaFilePath = relativeJavaFilePath.substring(0, dollarSignIndex);
-                }
-                relativeJavaFilePath += ".java";
+                    final Path relativeClassFilePath = outputFile.relativeTo(outputFolder).withoutFileExtension();
 
-                if (!folderToCompile.fileExists(relativeJavaFilePath).getValue())
-                {
-                    outputFile.delete();
+                    final int dollarSignIndex = relativeClassFilePath.toString().indexOf('$');
+
+                    String relativeJavaFilePath = relativeClassFilePath.toString();
+                    if (dollarSignIndex >= 0)
+                    {
+                        relativeJavaFilePath = relativeJavaFilePath.substring(0, dollarSignIndex);
+                    }
+                    relativeJavaFilePath += ".java";
+
+                    if (!folderToCompile.fileExists(relativeJavaFilePath).getValue())
+                    {
+                        outputFile.delete();
+                    }
                 }
             }
         }

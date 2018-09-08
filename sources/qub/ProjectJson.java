@@ -89,10 +89,39 @@ public class ProjectJson
         return classpath;
     }
 
+    public Iterable<Dependency> getResolvedDependencies(Folder qubFolder)
+    {
+        final List<Dependency> result = new ArrayList<>();
+
+        for (final Dependency dependency : dependencies)
+        {
+            final VersionRange dependencyVersionRange = VersionRange.parse(dependency.getVersionRange());
+            if (dependencyVersionRange instanceof ExactVersionRange)
+            {
+                result.add(dependency);
+            }
+            else
+            {
+                final Folder projectFolder = dependency.getProjectFolder(qubFolder);
+                final Iterable<Folder> projectVersionFolders = projectFolder.getFolders().getValue();
+                final Iterable<String> projectVersionStrings = projectVersionFolders.map(Folder::getName);
+                final Iterable<VersionNumber> projectVersionNumbers = projectVersionStrings.map(VersionNumber::parse);
+                final Iterable<VersionNumber> matchingProjectVersionNumbers = projectVersionNumbers.where(dependencyVersionRange::matches);
+                final VersionNumber maximumMatch = matchingProjectVersionNumbers.maximum((VersionNumber lhs, VersionNumber rhs) -> lhs.compareTo(rhs));
+                result.add(new Dependency(dependency.getPublisher(), dependency.getProject(), maximumMatch.toString()));
+            }
+        }
+
+        PostCondition.assertNotNull(result, "result");
+
+        return result;
+    }
+
     public Iterable<String> getAllClasspaths(Folder qubFolder)
     {
         final List<String> result = ArrayList.fromValues(classpath);
-        result.addAll(dependencies.map((Dependency dependency) -> dependency.toString(qubFolder)));
+        final Iterable<Dependency> resolvedDependencies = getResolvedDependencies(qubFolder);
+        result.addAll(resolvedDependencies.map((Dependency dependency) -> dependency.toString(qubFolder)));
         return result;
     }
 

@@ -77,55 +77,62 @@ public class InstallAction implements Action
                                         final Folder projectFolder = publisherFolder.getFolder(project).getValue();
                                         final Folder versionFolder = projectFolder.getFolder(version).getValue();
 
-                                        final File installedJarFile = versionFolder.getFile(jarFileName).getValue();
-
-                                        final Stopwatch stopwatch = console.getStopwatch();
-                                        console.write("Copying " + outputsJarFile + " to " + installedJarFile + "...");
-                                        stopwatch.start();
-                                        installedJarFile.setContents(outputsJarFile.getContents().getValue());
-                                        console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
-
-                                        final File installedProjectJsonFile = versionFolder.getFile("project.json").getValue();
-                                        console.write("Copying project.json to " + installedProjectJsonFile + "...");
-                                        stopwatch.start();
-                                        installedProjectJsonFile.setContents(CharacterEncoding.UTF_8.encode(rootObject.toString()).getValue());
-                                        console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
-
-                                        final String mainClass = projectJson.getMainClass();
-                                        if (mainClass != null)
+                                        if (versionFolder.exists().getValue())
                                         {
-                                            String shortcutName = null;
-                                            final JSONSegment shortcutNameSegment = javaObject.getPropertyValue("shortcutName");
-                                            if (shortcutNameSegment != null)
-                                            {
-                                                if (!(shortcutNameSegment instanceof JSONQuotedString))
-                                                {
-                                                    console.writeLine("The \"shortcutName\" property in the java section of the project.json file must be a quoted-string.");
-                                                }
-                                                else
-                                                {
-                                                    shortcutName = ((JSONQuotedString)shortcutNameSegment).toUnquotedString();
-                                                }
-                                            }
-                                            if (shortcutName == null || shortcutName.isEmpty())
-                                            {
-                                                shortcutName = installedJarFile.getNameWithoutFileExtension();
-                                            }
+                                            console.writeLine("This package (" + publisher + "/" + project + ":" + version + ") can't be installed because a package with that signature already exists.");
+                                        }
+                                        else
+                                        {
+                                            final File installedJarFile = versionFolder.getFile(jarFileName).getValue();
 
-                                            String classpath = "%~dp0" + installedJarFile.relativeTo(qubFolder);
-                                            for (final Dependency dependency : projectJson.getDependencies())
-                                            {
-                                                classpath += ";%~dp0" + dependency.toString();
-                                            }
-
-                                            final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd").getValue();
-                                            final String shortcutFileContents =
-                                                "@echo OFF\n" +
-                                                    "java -cp " + classpath + " " + mainClass + " %*\n";
-                                            console.write("Writing " + shortcutFile + "...");
+                                            final Stopwatch stopwatch = console.getStopwatch();
+                                            console.write("Copying " + outputsJarFile + " to " + installedJarFile + "...");
                                             stopwatch.start();
-                                            shortcutFile.setContents(CharacterEncoding.UTF_8.encode(shortcutFileContents).getValue());
+                                            installedJarFile.setContents(outputsJarFile.getContents().getValue());
                                             console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
+
+                                            final File installedProjectJsonFile = versionFolder.getFile("project.json").getValue();
+                                            console.write("Copying project.json to " + installedProjectJsonFile + "...");
+                                            stopwatch.start();
+                                            installedProjectJsonFile.setContents(CharacterEncoding.UTF_8.encode(rootObject.toString()).getValue());
+                                            console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
+
+                                            final String mainClass = projectJson.getMainClass();
+                                            if (mainClass != null)
+                                            {
+                                                String shortcutName = null;
+                                                final JSONSegment shortcutNameSegment = javaObject.getPropertyValue("shortcutName");
+                                                if (shortcutNameSegment != null)
+                                                {
+                                                    if (!(shortcutNameSegment instanceof JSONQuotedString))
+                                                    {
+                                                        console.writeLine("The \"shortcutName\" property in the java section of the project.json file must be a quoted-string.");
+                                                    }
+                                                    else
+                                                    {
+                                                        shortcutName = ((JSONQuotedString)shortcutNameSegment).toUnquotedString();
+                                                    }
+                                                }
+                                                if (shortcutName == null || shortcutName.isEmpty())
+                                                {
+                                                    shortcutName = installedJarFile.getNameWithoutFileExtension();
+                                                }
+
+                                                String classpath = "%~dp0" + installedJarFile.relativeTo(qubFolder);
+                                                for (final Dependency dependency : projectJson.getDependencies())
+                                                {
+                                                    classpath += ";%~dp0" + dependency.toString();
+                                                }
+
+                                                final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd").getValue();
+                                                final String shortcutFileContents =
+                                                    "@echo OFF\n" +
+                                                        "java -cp " + classpath + " " + mainClass + " %*\n";
+                                                console.write("Writing " + shortcutFile + "...");
+                                                stopwatch.start();
+                                                shortcutFile.setContents(CharacterEncoding.UTF_8.encode(shortcutFileContents).getValue());
+                                                console.writeLine(" Done (" + stopwatch.stop().toSeconds().toString("#.#") + ")");
+                                            }
                                         }
                                     }
                                 }
