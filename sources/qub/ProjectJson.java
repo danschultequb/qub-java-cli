@@ -107,7 +107,7 @@ public class ProjectJson
                 final Iterable<String> projectVersionStrings = projectVersionFolders.map(Folder::getName);
                 final Iterable<VersionNumber> projectVersionNumbers = projectVersionStrings.map(VersionNumber::parse);
                 final Iterable<VersionNumber> matchingProjectVersionNumbers = projectVersionNumbers.where(dependencyVersionRange::matches);
-                final VersionNumber maximumMatch = matchingProjectVersionNumbers.maximum((VersionNumber lhs, VersionNumber rhs) -> lhs.compareTo(rhs));
+                final VersionNumber maximumMatch = Comparer.maximum(matchingProjectVersionNumbers);
                 result.add(new Dependency(dependency.getPublisher(), dependency.getProject(), maximumMatch.toString()));
             }
         }

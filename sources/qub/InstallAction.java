@@ -119,7 +119,7 @@ public class InstallAction implements Action
                                                 }
 
                                                 String classpath = "%~dp0" + installedJarFile.relativeTo(qubFolder);
-                                                for (final Dependency dependency : projectJson.getDependencies())
+                                                for (final Dependency dependency : projectJson.getResolvedDependencies(qubFolder))
                                                 {
                                                     classpath += ";%~dp0" + dependency.toString();
                                                 }
