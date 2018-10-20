@@ -1,7 +1,6 @@
 package qub;
 
 import java.awt.Desktop;
-import java.io.IOException;
 
 public class TestAction implements Action
 {
@@ -89,7 +88,7 @@ public class TestAction implements Action
                             final Iterable<String> fullTestClassNames = relativeTestSourcePaths
                                 .map(relativeTestSourcePath -> relativeTestSourcePath.withoutFileExtension().toString().replace('/', '.').replace('\\', '.'));
 
-                            final ProcessBuilder java = console.getProcessBuilder("java").getValue();
+                            final ProcessBuilder java = console.getProcessBuilder("java.exe").getValue();
                             java.redirectOutput(console.getOutputAsByteWriteStream());
                             java.redirectError(console.getErrorAsByteWriteStream());
 
@@ -123,7 +122,8 @@ public class TestAction implements Action
                                 console.writeLine("Command: \"" + java.getCommand() + "\"");
                             }
 
-                            testsPassed = (java.run() == 0);
+                            final Integer exitCode = java.run();
+                            testsPassed = (exitCode != null && exitCode.intValue() == 0);
 
                             if (coverage && sourceOutputsFolder != null)
                             {
@@ -229,7 +229,7 @@ public class TestAction implements Action
                                 {
                                     Desktop.getDesktop().open(new java.io.File(coverageFolder.getFile("index.html").getValue().getPath().toString()));
                                 }
-                                catch (IOException e)
+                                catch (java.io.IOException e)
                                 {
                                     e.printStackTrace();
                                 }

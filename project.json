@@ -1,15 +1,21 @@
 {
   "publisher": "qub",
   "project": "qub-cli-java",
-  "version": "0.1.10",
+  "version": "0.1.17",
   "java": {
     "mainClass": "qub.QubCLI",
     "shortcutName": "qub",
+    "sources": {
+      "version": "1.8"
+    },
+    "tests": {
+      "version": "1.8"
+    },
     "dependencies": [
       {
         "publisher": "qub",
         "project": "qub-java",
-        "version": "^0.2.5"
+        "version": "^0.2.28"
       }
     ]
   }

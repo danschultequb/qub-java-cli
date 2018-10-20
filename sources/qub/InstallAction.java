@@ -26,11 +26,35 @@ public class InstallAction implements Action
     @Override
     public void run(Console console)
     {
+        final boolean runTests = parseRunTests(console);
+
         final ProjectJson projectJson = ProjectJson.parse(console);
-        if (projectJson != null)
+        if (projectJson == null)
         {
-            final boolean coverage = projectJson.getJavaTestsLineCoverageRequirement() != null;
-            if (TestAction.run(console, false, null, coverage))
+            console.writeLine("Not installing because there was no project.json.");
+        }
+        else
+        {
+            boolean shouldInstall = true;
+
+            if (runTests)
+            {
+                console.writeLine("Running tests...");
+                final boolean coverage = projectJson.getJavaTestsLineCoverageRequirement() != null;
+                shouldInstall = TestAction.run(console, false, null, coverage);
+            }
+            else
+            {
+                console.writeLine("Skipping tests...");
+                shouldInstall = BuildAction.run(console, false);
+            }
+
+            if (!shouldInstall)
+            {
+                console.writeLine();
+                console.writeLine("Not installing because the tests failed.");
+            }
+            if (shouldInstall)
             {
                 console.writeLine();
 
@@ -38,16 +62,32 @@ public class InstallAction implements Action
                 totalInstall.start();
 
                 final JSONObject rootObject = projectJson.getRootObject();
-                if (rootObject != null)
+                if (rootObject == null)
+                {
+                    console.writeLine("The project.json file must have a root object.");
+                }
+                else
                 {
                     final String publisher = projectJson.getPublisher();
-                    if (publisher != null)
+                    if (Strings.isNullOrEmpty(publisher))
+                    {
+                        console.writeLine("The project.json file must have a publisher property.");
+                    }
+                    else
                     {
                         final String project = projectJson.getProject();
-                        if (project != null)
+                        if (Strings.isNullOrEmpty(project))
+                        {
+                            console.writeLine("The project.json file must have a project property.");
+                        }
+                        else
                         {
                             final String version = projectJson.getVersion();
-                            if (version != null)
+                            if (Strings.isNullOrEmpty(version))
+                            {
+                                console.writeLine("The project.json file must have a version property.");
+                            }
+                            else
                             {
                                 final JSONObject javaObject = projectJson.getJavaObject();
                                 if (javaObject != null)
@@ -127,7 +167,7 @@ public class InstallAction implements Action
                                                 final File shortcutFile = qubFolder.getFile(shortcutName + ".cmd").getValue();
                                                 final String shortcutFileContents =
                                                     "@echo OFF\n" +
-                                                        "java -cp " + classpath + " " + mainClass + " %*\n";
+                                                    "java -cp " + classpath + " " + mainClass + " %*\n";
                                                 console.write("Writing " + shortcutFile + "...");
                                                 stopwatch.start();
                                                 shortcutFile.setContents(CharacterEncoding.UTF_8.encode(shortcutFileContents).getValue());
@@ -145,5 +185,15 @@ public class InstallAction implements Action
                 console.writeLine("Install Duration: " + totalBuildDuration.toString("0.0"));
             }
         }
+    }
+
+    static boolean parseRunTests(Console console)
+    {
+        CommandLineArgument runTestsArgument = console.getCommandLine().remove("runTests");
+        if (runTestsArgument == null)
+        {
+            runTestsArgument = console.getCommandLine().remove("run-tests");
+        }
+        return runTestsArgument == null || (runTestsArgument.getValue() == null || runTestsArgument.getValue().equalsIgnoreCase("true"));
     }
 }

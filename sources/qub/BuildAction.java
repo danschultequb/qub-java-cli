@@ -210,9 +210,9 @@ public class BuildAction implements Action
         }
         stopwatch.start();
 
-        final ProcessBuilder javac = console.getProcessBuilder("javac").getValue();
+        final ProcessBuilder javac = console.getProcessBuilder("javac.exe").getValue();
 
-        final Value<Boolean> wroteNewLineBeforeOutputOrError = new Value<Boolean>();
+        final Value<Boolean> wroteNewLineBeforeOutputOrError = new Value<>();
 
         final ByteWriteStream consoleOutput = console.getOutputAsByteWriteStream();
         javac.redirectOutput(new ByteWriteStreamBase()
@@ -272,29 +272,19 @@ public class BuildAction implements Action
         addNamedArgument(javac, "-d", outputFolder.getPath().toString());
         javac.addArgument("-g");
         javac.addArgument("-Xlint:unchecked");
+        javac.addArgument("-Xlint:deprecation");
 
         if (javaVersion != null && !javaVersion.isEmpty())
         {
             javac.addArguments("-source", javaVersion);
             javac.addArguments("-target", javaVersion);
 
-            if (javaVersion.equals("1.7") || javaVersion.equals("7"))
+            if (javaVersion.equals("1.8") || javaVersion.equals("8"))
             {
                 final Folder javaFolder = QubCLI.getJavaFolder(console);
                 addNamedArgument(javac, "-bootclasspath",
                     javaFolder.getPath().
-                        concatenateSegment("jdk1.7.0_80").
-                        concatenateSegment("jre").
-                        concatenateSegment("lib").
-                        concatenateSegment("rt.jar")
-                        .toString());
-            }
-            else if (javaVersion.equals("1.8") || javaVersion.equals("8"))
-            {
-                final Folder javaFolder = QubCLI.getJavaFolder(console);
-                addNamedArgument(javac, "-bootclasspath",
-                    javaFolder.getPath().
-                        concatenateSegment("jre1.8.0_181").
+                        concatenateSegment("jre1.8.0_192").
                         concatenateSegment("lib").
                         concatenateSegment("rt.jar")
                         .toString());
@@ -308,6 +298,7 @@ public class BuildAction implements Action
             console.writeLine(javac.getCommand());
         }
 
+        outputFolder.create();
         final int exitCode = javac.run();
 
         final Iterable<File> outputFolderFiles = outputFolder.getFilesRecursively().getValue();
