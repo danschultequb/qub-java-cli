@@ -1,7 +1,7 @@
 {
   "publisher": "qub",
   "project": "qub-cli-java",
-  "version": "0.1.17",
+  "version": "1",
   "java": {
     "mainClass": "qub.QubCLI",
     "shortcutName": "qub",
@@ -15,7 +15,7 @@
       {
         "publisher": "qub",
         "project": "qub-java",
-        "version": "^0.2.28"
+        "version": "3"
       }
     ]
   }

@@ -16,27 +16,22 @@ public class QubCLI
 
     static void main(Console console)
     {
-        final Map<String,Action> actions = new ListMap<>();
-        addAction(actions, new BondsAction());
+        final MutableMap<String,Action> actions = Map.create();
         addAction(actions, new BuildAction());
         addAction(actions, new CleanAction());
         addAction(actions, new DeleteAction());
-        addAction(actions, new GuessMyNumberAction());
         addAction(actions, new InstallAction());
-        addAction(actions, new KitchenAction());
-        addAction(actions, new OrcBattleAction());
         addAction(actions, new TestAction());
-        addAction(actions, new TextAdventureAction());
 
         final CommandLine commandLine = console.getCommandLine();
 
-        final CommandLineArgument actionArgument = commandLine.get(0);
-        if (actionArgument == null)
+        if (!commandLine.any())
         {
             showUsage(console, actions);
         }
         else
         {
+            final CommandLineArgument actionArgument = commandLine.get(0);
             final String actionString = actionArgument.toString();
             if (actionString.equals("-?") || actionString.equals("/?"))
             {
@@ -44,15 +39,9 @@ public class QubCLI
             }
             else
             {
-                final Action action = getAction(actions, actionString);
-                if (action == null)
-                {
-                    console.writeLine("Unrecognized action: \"" + actionString + "\"");
-                }
-                else
-                {
-                    action.run(console);
-                }
+                getAction(actions, actionString)
+                    .then((Action action) -> action.run(console))
+                    .catchError(() -> console.writeLine("Unrecognized action: " + Strings.escapeAndQuote(actionString)));
             }
         }
     }
@@ -67,13 +56,13 @@ public class QubCLI
         return actionName == null ? null : actionName.toLowerCase();
     }
 
-    private static void addAction(Map<String,Action> actions, Action toAdd)
+    private static void addAction(MutableMap<String,Action> actions, Action toAdd)
     {
         final String actionKey = getActionKey(toAdd);
         actions.set(actionKey, toAdd);
     }
 
-    private static Action getAction(Map<String,Action> actions, String actionName)
+    private static Result<Action> getAction(Map<String,Action> actions, String actionName)
     {
         final String actionKey = getActionKey(actionName);
         return actions.get(actionKey);

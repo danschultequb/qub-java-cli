@@ -215,17 +215,17 @@ public class BuildAction implements Action
         final Value<Boolean> wroteNewLineBeforeOutputOrError = new Value<>();
 
         final ByteWriteStream consoleOutput = console.getOutputAsByteWriteStream();
-        javac.redirectOutput(new ByteWriteStreamBase()
+        javac.redirectOutput(new ByteWriteStream()
         {
             @Override
-            public Result<Boolean> write(byte b)
+            public Result<Integer> writeBytes(byte[] bytes, int startIndex, int length)
             {
                 if (!wroteNewLineBeforeOutputOrError.hasValue())
                 {
                     wroteNewLineBeforeOutputOrError.set(true);
                     consoleOutput.asLineWriteStream(console.getLineSeparator()).writeLine();
                 }
-                return consoleOutput.write(b);
+                return consoleOutput.writeBytes(bytes, startIndex, length);
             }
 
             @Override
@@ -242,17 +242,17 @@ public class BuildAction implements Action
         });
 
         final ByteWriteStream consoleError = console.getErrorAsByteWriteStream();
-        javac.redirectError(new ByteWriteStreamBase()
+        javac.redirectError(new ByteWriteStream()
         {
             @Override
-            public Result<Boolean> write(byte b)
+            public Result<Integer> writeBytes(byte[] bytes, int startIndex, int length)
             {
                 if (!wroteNewLineBeforeOutputOrError.hasValue())
                 {
                     wroteNewLineBeforeOutputOrError.set(true);
-                    consoleError.asLineWriteStream(console.getLineSeparator()).writeLine();
+                    consoleOutput.asLineWriteStream(console.getLineSeparator()).writeLine();
                 }
-                return consoleError.write(b);
+                return consoleOutput.writeBytes(bytes, startIndex, length);
             }
 
             @Override
